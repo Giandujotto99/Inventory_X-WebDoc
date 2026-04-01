@@ -1,22 +1,97 @@
-<section id="l2-commit" class="tutorial-section">
-    <h1>Atomicity and Commit Guarantees</h1>
-    <p>In Layer 2 of Inventory_X, Atomicity and Commit Guarantees represent the foundation of system stability when an operation involves two different owners (for example, the player and a chest). Unlike Layer 1, where the modification is confined to a single component, here the system must ensure that both inventories are updated in a coordinated manner or that neither undergoes changes in case of an error.</p>
-    <p>Here is how the plugin ensures total data integrity during these critical transactions:</p>
-    <h2>The "All or Nothing" Principle</h2>
-    <p>Every cross-inventory operation (Transfer, Split, Merge, or Swap) is treated as an indivisible transaction. The system is designed to prevent the two major risks of distributed architectures:</p>
-    <p>Item loss: An item removed from the first inventory but never inserted into the second due to a sudden error.</p>
-    <p>Duplication: An item that appears in the second inventory without being properly removed from the first.</p>
-    <h2>Transaction Coordinator and Planning</h2>
-    <p>Execution never happens impulsively. The system uses a dedicated Transaction Coordinator that follows a strict flow:</p>
-    <p>Planning (Transaction Plan): Before touching the data, the coordinator creates a declarative plan of all the necessary mutations on both endpoints.</p>
-    <p>Final Validation: The plan is checked one last time to ensure that space and rules are still valid at the exact moment of commit.</p>
-    <p>Coordinated Commit: The changes are applied following a pre-established logical order to minimize conflict risks.</p>
-    <h2>The Authoritative Rollback Journal</h2>
-    <p>The technological pillar of Layer 2 security is the Rollback Journal. This is a compensating log that exists exclusively on the server during the operation.</p>
-    <p>Compensating Actions: As the commit proceeds, the system records in the journal how to "undo" each individual successful modification.</p>
-    <p>Automatic Restore: If a step of the transaction fails (for example, the destination inventory rejects the insertion at the last moment), the coordinator consults the journal and immediately executes the reverse actions, restoring both inventories to the exact state they were in before the operation began.</p>
-    <h2>Subtree Snapshots and Data Integrity</h2>
-    <p>When moving complex objects, such as a backpack full of other items, Layer 2 uses the Subtree Snapshots mechanism. Instead of trying to "move" identifiers from one component to another, the system captures a complete and deep snapshot of the content. This snapshot is used to recreate the entire hierarchy in the destination component with new local identifiers, ensuring that no data is corrupted or lost during the "journey" between endpoints.</p>
-    <h2>Revision Barrier</h2>
-    <p>To ensure that the client is also perfectly aligned with the server, the commit generates a Revision Barrier. This barrier defines the exact synchronization point that the client must observe on both inventories before considering the operation as completed and final. Without reaching this threshold on both sides, the transaction remains in a protected waiting state.</p>
+<section class="tutorial-section" id="l2-commit">
+ <h1>
+  Atomicity and Commit Guarantees
+ </h1>
+ <p class="doc-lead">
+  In Layer 2 of Inventory_X, Atomicity and Commit Guarantees represent the foundation of system stability when an operation involves two different owners (for example, the player and a chest). Unlike Layer 1, where the modification is confined to a single component, here the system must ensure that both inventories are updated in a coordinated manner or that neither undergoes changes in case of an error.
+ </p>
+ <p class="doc-list-intro">
+  Here is how the plugin ensures total data integrity during these critical transactions:
+ </p>
+ <h2>
+  The "All or Nothing" Principle
+ </h2>
+ <p class="doc-list-intro">
+  Every cross-inventory operation (Transfer, Split, Merge, or Swap) is treated as an indivisible transaction. The system is designed to prevent the two major risks of distributed architectures:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Item loss:
+  </span>
+  <span class="doc-keyline-desc">
+   An item removed from the first inventory but never inserted into the second due to a sudden error.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Duplication:
+  </span>
+  <span class="doc-keyline-desc">
+   An item that appears in the second inventory without being properly removed from the first.
+  </span>
+ </p>
+ <h2>
+  Transaction Coordinator and Planning
+ </h2>
+ <p class="doc-list-intro">
+  Execution never happens impulsively. The system uses a dedicated Transaction Coordinator that follows a strict flow:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Planning (Transaction Plan):
+  </span>
+  <span class="doc-keyline-desc">
+   Before touching the data, the coordinator creates a declarative plan of all the necessary mutations on both endpoints.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Final Validation:
+  </span>
+  <span class="doc-keyline-desc">
+   The plan is checked one last time to ensure that space and rules are still valid at the exact moment of commit.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Coordinated Commit:
+  </span>
+  <span class="doc-keyline-desc">
+   The changes are applied following a pre-established logical order to minimize conflict risks.
+  </span>
+ </p>
+ <h2>
+  The Authoritative Rollback Journal
+ </h2>
+ <p>
+  The technological pillar of Layer 2 security is the Rollback Journal. This is a compensating log that exists exclusively on the server during the operation.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Compensating Actions:
+  </span>
+  <span class="doc-keyline-desc">
+   As the commit proceeds, the system records in the journal how to "undo" each individual successful modification.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Automatic Restore:
+  </span>
+  <span class="doc-keyline-desc">
+   If a step of the transaction fails (for example, the destination inventory rejects the insertion at the last moment), the coordinator consults the journal and immediately executes the reverse actions, restoring both inventories to the exact state they were in before the operation began.
+  </span>
+ </p>
+ <h2>
+  Subtree Snapshots and Data Integrity
+ </h2>
+ <p>
+  When moving complex objects, such as a backpack full of other items, Layer 2 uses the Subtree Snapshots mechanism. Instead of trying to "move" identifiers from one component to another, the system captures a complete and deep snapshot of the content. This snapshot is used to recreate the entire hierarchy in the destination component with new local identifiers, ensuring that no data is corrupted or lost during the "journey" between endpoints.
+ </p>
+ <h2>
+  Revision Barrier
+ </h2>
+ <p>
+  To ensure that the client is also perfectly aligned with the server, the commit generates a Revision Barrier. This barrier defines the exact synchronization point that the client must observe on both inventories before considering the operation as completed and final. Without reaching this threshold on both sides, the transaction remains in a protected waiting state.
+ </p>
 </section>

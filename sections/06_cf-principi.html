@@ -1,29 +1,64 @@
-<section id="cf-principi" class="tutorial-section">
-    <h1>Architectural Principles</h1>
-    <p>The architecture of Inventory_X is built on foundations designed to ensure scalability, multiplayer security, and maximum performance. The system follows seven key principles.</p>
-    
-    <h2>1. Backend-First and UI-Agnostic</h2>
-    <p>The core of the plugin is focused exclusively on data, rules, operations, and networking. The system does not impose widgets, graphical layouts, or input bindings. This separation allows developers to build completely customized user interfaces (from simple lists to complex grids) that consume the plugin APIs without dependencies on rendering.</p>
-    
-    <h2>2. Server-Authoritative with Client Prediction</h2>
-    <p>The source of truth is always the server. To eliminate perceived latency, the client locally simulates operations (Prediction), providing immediate feedback to the UI. However, every action is validated and confirmed by the server; in case of discrepancies, the system automatically handles reconciliation (Reconciliation) to realign the client with the authoritative state.</p>
-    
-    <h2>3. Trusted Identity (Authority Context)</h2>
-    <p>Security is not based on data sent by the client. The server independently reconstructs an Authority Context (FInventoryAuthorityContext) based on the real network connection. This ensures that access policies (such as “Owner Only”) are verified against the real identity of the requester and not against tags declared by the client that could be forged.</p>
-    
-    <h2>4. Data-Driven and Tag-Driven</h2>
-    <p>The system’s behavior is not hardcoded. Stacking rules, slot compatibility, and placement restrictions are defined through reusable Data Assets and GameplayTags. This allows designers to modify gameplay dynamics (e.g., create a new category of weapons or containers) without programmer intervention.</p>
-    
-    <h2>5. Lightweight Structures and Flat Registry</h2>
-    <p>To optimize memory and networking, objects are not modeled as heavy UObject instances per item. The system uses flat data structures (Flat Registry) composed of USTRUCTs and referenced through stable Handles. This approach drastically simplifies network delta replication (FFastArraySerializer) and significantly improves performance in inventories with hundreds of items.</p>
-    
-    <h2>6. Layered Architecture (Layering)</h2>
-    <p>The plugin is divided into independent modules to manage complexity in a granular way:</p>
-    <ul>
-        <li><strong>Layer 1 (Core):</strong> Manages the fundamental logic of a single component (grid, nesting, internal rules).</li>
-        <li><strong>Layer 2 (Interaction):</strong> Coordinates secure transactions between two distinct components (e.g., Player <-> Chest) by introducing sessions and locking systems.</li>
-    </ul>
-    
-    <h2>7. Operation Atomicity</h2>
-    <p>Every state change follows a rigorous pipeline: Validate -> Simulate -> Commit. Complex operations, such as swapping two items (Swap) or transferring a full bag (Subtree Transfer), are treated as atomic transactions: either the entire operation succeeds on both endpoints, or no change is applied, ensuring data integrity at all times.</p>
+<section class="tutorial-section" id="cf-principi">
+ <h1>
+  Architectural Principles
+ </h1>
+ <p class="doc-lead">
+  The architecture of Inventory_X is built on foundations designed to ensure scalability, multiplayer security, and maximum performance. The system follows seven key principles.
+ </p>
+ <h2>
+  1. Backend-First and UI-Agnostic
+ </h2>
+ <p>
+  The core of the plugin is focused exclusively on data, rules, operations, and networking. The system does not impose widgets, graphical layouts, or input bindings. This separation allows developers to build completely customized user interfaces (from simple lists to complex grids) that consume the plugin APIs without dependencies on rendering.
+ </p>
+ <h2>
+  2. Server-Authoritative with Client Prediction
+ </h2>
+ <p>
+  The source of truth is always the server. To eliminate perceived latency, the client locally simulates operations (Prediction), providing immediate feedback to the UI. However, every action is validated and confirmed by the server; in case of discrepancies, the system automatically handles reconciliation (Reconciliation) to realign the client with the authoritative state.
+ </p>
+ <h2>
+  3. Trusted Identity (Authority Context)
+ </h2>
+ <p>
+  Security is not based on data sent by the client. The server independently reconstructs an Authority Context (FInventoryAuthorityContext) based on the real network connection. This ensures that access policies (such as “Owner Only”) are verified against the real identity of the requester and not against tags declared by the client that could be forged.
+ </p>
+ <h2>
+  4. Data-Driven and Tag-Driven
+ </h2>
+ <p>
+  The system’s behavior is not hardcoded. Stacking rules, slot compatibility, and placement restrictions are defined through reusable Data Assets and GameplayTags. This allows designers to modify gameplay dynamics (e.g., create a new category of weapons or containers) without programmer intervention.
+ </p>
+ <h2>
+  5. Lightweight Structures and Flat Registry
+ </h2>
+ <p>
+  To optimize memory and networking, objects are not modeled as heavy UObject instances per item. The system uses flat data structures (Flat Registry) composed of USTRUCTs and referenced through stable Handles. This approach drastically simplifies network delta replication (FFastArraySerializer) and significantly improves performance in inventories with hundreds of items.
+ </p>
+ <h2>
+  6. Layered Architecture (Layering)
+ </h2>
+ <p class="doc-list-intro">
+  The plugin is divided into independent modules to manage complexity in a granular way:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Layer 1 (Core):
+   </strong>
+   Manages the fundamental logic of a single component (grid, nesting, internal rules).
+  </li>
+  <li>
+   <strong>
+    Layer 2 (Interaction):
+   </strong>
+   Coordinates secure transactions between two distinct components (e.g., Player <-> Chest) by introducing sessions and locking systems.
+  </li>
+ </ul>
+ <h2>
+  7. Operation Atomicity
+ </h2>
+ <p>
+  Every state change follows a rigorous pipeline: Validate -> Simulate -> Commit. Complex operations, such as swapping two items (Swap) or transferring a full bag (Subtree Transfer), are treated as atomic transactions: either the entire operation succeeds on both endpoints, or no change is applied, ensuring data integrity at all times.
+ </p>
 </section>

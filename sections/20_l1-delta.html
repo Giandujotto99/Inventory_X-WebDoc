@@ -1,16 +1,54 @@
-<section id="l1-delta" class="tutorial-section">
-    <h1>Optimized Differential Synchronization</h1>
-    <p>To ensure high-level performance and drastically reduce bandwidth consumption in multiplayer contexts, Inventory_X uses an extremely sophisticated Differential Synchronization (Delta Replication) engine.</p>
-    <p>Instead of transmitting the entire inventory state at every update, the system is designed to identify and send exclusively the individual data that have undergone a change, optimizing communication between server and client.</p>
-    <h2>Linearized Data Structure</h2>
-    <p>The efficiency of this system is based on the use of a Linearized Memory Model (Flat Registry). Although logically the inventory may appear complex and hierarchical (for example, a bag inside a backpack), the runtime data are organized into independent "flat" registries.</p>
-    <p>This architecture allows the network engine to track each entity separately, avoiding the synchronization of heavy nested structures that would be inefficient in projects with hundreds of objects.</p>
-    <h2>Mutation Detection Protocol</h2>
-    <p>Synchronization is not left to the engine’s generic automation, but follows a Granular Notification Protocol integrated into the plugin APIs.</p>
-    <p>Structural Updates: When the composition of the inventory changes (addition or removal of elements), the system marks the entire registry for structural synchronization.</p>
-    <p>State Updates: When specific properties of an existing object change (position, rotation, or quantity), the system intervenes only on the specific entry concerned, minimizing the packets sent over the network.</p>
-    <h2>Intelligent Resource Management</h2>
-    <p>A key principle of the architecture is Local Cache Isolation. The system never transmits transient data such as grid occupancy maps or search indices; these structures are rebuilt autonomously by the client starting from the authoritative data received, saving additional network traffic.</p>
-    <h2>Enterprise Scalability and Dedicated Servers</h2>
-    <p>Thanks to the use of ultra-light records and the clear separation between logic and cosmetics, the system allows dedicated servers to handle the simulation by processing only the essential mathematical information. This ensures that the plugin can support both small indie projects and complex extraction shooters with a high number of players and simultaneous objects, without frame rate drops.</p>
+<section class="tutorial-section" id="l1-delta">
+ <h1>
+  Optimized Differential Synchronization
+ </h1>
+ <p class="doc-lead">
+  To ensure high-level performance and drastically reduce bandwidth consumption in multiplayer contexts, Inventory_X uses an extremely sophisticated Differential Synchronization (Delta Replication) engine.
+ </p>
+ <p>
+  Instead of transmitting the entire inventory state at every update, the system is designed to identify and send exclusively the individual data that have undergone a change, optimizing communication between server and client.
+ </p>
+ <h2>
+  Linearized Data Structure
+ </h2>
+ <p>
+  The efficiency of this system is based on the use of a Linearized Memory Model (Flat Registry). Although logically the inventory may appear complex and hierarchical (for example, a bag inside a backpack), the runtime data are organized into independent "flat" registries.
+ </p>
+ <p>
+  This architecture allows the network engine to track each entity separately, avoiding the synchronization of heavy nested structures that would be inefficient in projects with hundreds of objects.
+ </p>
+ <h2>
+  Mutation Detection Protocol
+ </h2>
+ <p>
+  Synchronization is not left to the engine’s generic automation, but follows a Granular Notification Protocol integrated into the plugin APIs.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Structural Updates:
+  </span>
+  <span class="doc-keyline-desc">
+   When the composition of the inventory changes (addition or removal of elements), the system marks the entire registry for structural synchronization.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   State Updates:
+  </span>
+  <span class="doc-keyline-desc">
+   When specific properties of an existing object change (position, rotation, or quantity), the system intervenes only on the specific entry concerned, minimizing the packets sent over the network.
+  </span>
+ </p>
+ <h2>
+  Intelligent Resource Management
+ </h2>
+ <p>
+  A key principle of the architecture is Local Cache Isolation. The system never transmits transient data such as grid occupancy maps or search indices; these structures are rebuilt autonomously by the client starting from the authoritative data received, saving additional network traffic.
+ </p>
+ <h2>
+  Enterprise Scalability and Dedicated Servers
+ </h2>
+ <p>
+  Thanks to the use of ultra-light records and the clear separation between logic and cosmetics, the system allows dedicated servers to handle the simulation by processing only the essential mathematical information. This ensures that the plugin can support both small indie projects and complex extraction shooters with a high number of players and simultaneous objects, without frame rate drops.
+ </p>
 </section>

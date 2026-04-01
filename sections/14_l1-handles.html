@@ -1,21 +1,84 @@
-<section id="l1-handles" class="tutorial-section">
-    <h1>Container e Item Handle</h1>
-    <p>In Inventory_X, references to objects and containers at runtime never occur via direct pointers to memory. Since the records are stored in "flat" arrays that can reallocate their own memory (Registry Flat), the use of raw pointers would be unstable and dangerous.</p>
-    <p>The system solves this problem through the architecture of stable Handles.</p>
-    <h2>Structure of a Handle</h2>
-    <p>Each handle (whether it is an Item, a Container, or a Fragment) is a lightweight structure (USTRUCT) composed of two fundamental elements:</p>
-    <p>Id: A numeric identifier (int32) that points to the specific slot in the registry.</p>
-    <p>Generation: A version counter (uint32) that guarantees the temporal uniqueness of the reference.</p>
-    <h2>The Generation Mechanism</h2>
-    <p>The core of handle stability lies in the Generation Counter. When an object is destroyed, its Id is added to a list of "free Ids" to be reused in the future. However, every time an Id is reassigned to a new object, the system increments the value of its Generation.</p>
-    <p>This ensures that an old handle held by the UI or another system instantly becomes invalid (stale), since its generation will no longer match the current one stored in the component registry.</p>
-    <h2>Strict Type Safety</h2>
-    <p>To prevent logical errors during development, handles are strongly typed via the DECLARE_INVENTORY_HANDLE macro. This means that:</p>
-    <p>FInventoryItemHandle and FInventoryContainerHandle are distinct types.</p>
-    <p>It is not possible to implicitly compare a handle of an item with that of a container, nor pass one where the other is expected; the code would not compile, guaranteeing maximum architectural safety.</p>
-    <h2>Integration and Networking</h2>
-    <p>Handles are designed to be the primary communication vehicle between the various plugin systems:</p>
-    <p>Blueprint: They are exposed as selectable variable types, allowing designers to store references to objects without risking crashes.</p>
-    <p>Networking: They implement custom serialization (NetSerialize) to minimize network traffic, sending only the bits necessary to identify the record on the client.</p>
-    <p>Read-Only: To ensure data integrity, the component provides resolution methods that temporarily transform a handle into a pointer to the record, valid only for the duration of the current operation.</p>
+<section class="tutorial-section" id="l1-handles">
+ <h1>
+  Container e Item Handle
+ </h1>
+ <p class="doc-lead">
+  In Inventory_X, references to objects and containers at runtime never occur via direct pointers to memory. Since the records are stored in "flat" arrays that can reallocate their own memory (Registry Flat), the use of raw pointers would be unstable and dangerous.
+ </p>
+ <p>
+  The system solves this problem through the architecture of stable Handles.
+ </p>
+ <h2>
+  Structure of a Handle
+ </h2>
+ <p class="doc-list-intro">
+  Each handle (whether it is an Item, a Container, or a Fragment) is a lightweight structure (USTRUCT) composed of two fundamental elements:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Id:
+  </span>
+  <span class="doc-keyline-desc">
+   A numeric identifier (int32) that points to the specific slot in the registry.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Generation:
+  </span>
+  <span class="doc-keyline-desc">
+   A version counter (uint32) that guarantees the temporal uniqueness of the reference.
+  </span>
+ </p>
+ <h2>
+  The Generation Mechanism
+ </h2>
+ <p>
+  The core of handle stability lies in the Generation Counter. When an object is destroyed, its Id is added to a list of "free Ids" to be reused in the future. However, every time an Id is reassigned to a new object, the system increments the value of its Generation.
+ </p>
+ <p>
+  This ensures that an old handle held by the UI or another system instantly becomes invalid (stale), since its generation will no longer match the current one stored in the component registry.
+ </p>
+ <h2>
+  Strict Type Safety
+ </h2>
+ <p class="doc-list-intro">
+  To prevent logical errors during development, handles are strongly typed via the DECLARE_INVENTORY_HANDLE macro. This means that:
+ </p>
+ <p>
+  FInventoryItemHandle and FInventoryContainerHandle are distinct types.
+ </p>
+ <p>
+  It is not possible to implicitly compare a handle of an item with that of a container, nor pass one where the other is expected; the code would not compile, guaranteeing maximum architectural safety.
+ </p>
+ <h2>
+  Integration and Networking
+ </h2>
+ <p class="doc-list-intro">
+  Handles are designed to be the primary communication vehicle between the various plugin systems:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Blueprint:
+  </span>
+  <span class="doc-keyline-desc">
+   They are exposed as selectable variable types, allowing designers to store references to objects without risking crashes.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Networking:
+  </span>
+  <span class="doc-keyline-desc">
+   They implement custom serialization (NetSerialize) to minimize network traffic, sending only the bits necessary to identify the record on the client.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Read-Only:
+  </span>
+  <span class="doc-keyline-desc">
+   To ensure data integrity, the component provides resolution methods that temporarily transform a handle into a pointer to the record, valid only for the duration of the current operation.
+  </span>
+ </p>
 </section>

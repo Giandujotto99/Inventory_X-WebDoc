@@ -1,22 +1,105 @@
-<section id="l1-cosmetic" class="tutorial-section">
-    <h1>Item Cosmetic</h1>
-    <p>The UInventoryItemCosmetic asset represents the visual and descriptive pillar of Inventory_X. Its main function is to completely separate aesthetic and presentation data from the inventory simulation logic, ensuring that the core of the plugin remains lightweight and "blind" to heavy multimedia content.</p>
-    <h2>Vision: Separation between Logic and Visual</h2>
-    <p>In an enterprise multiplayer context, the dedicated server does not need to load textures, meshes, or audio files to validate the movement of an item. For this reason, all data that does not influence gameplay simulation (such as the localized name, icon, or 3D model) is isolated in this dedicated asset.</p>
-    <h2>Integration and Isolation of the Dedicated Server</h2>
-    <p>The UInventoryItemDefinition (the logical asset) points to its cosmetic counterpart via a TSoftObjectPtr<UInventoryItemCosmetic>.</p>
-    <p>Total isolation: The core runtime module (Inventory_X) never directly references the cosmetic class nor attempts to load it.</p>
-    <p>Safe access: The item definition exposes a getter method that returns the "soft" pointer without forcing it to load, leaving memory management responsibility exclusively to the client or the UI.</p>
-    <h2>Asset Loading (Synchronous vs Asynchronous)</h2>
-    <p>To avoid slowdowns (hitches) on the main thread when opening inventories dense with items, the plugin enforces strict loading guidelines:</p>
-    <p>Asynchronous Loading (Recommended): For production UI, the AsyncLoadItemCosmetic method provided by the client library is used. This loads the asset in the background and invokes a callback only when loading is complete.</p>
-    <p>Synchronous Loading: The LoadItemCosmetic function is available but its use is limited to rapid prototyping, Editor tools, or the sample module (Sample UI), where frame rate smoothness is not critical.</p>
-    <h2>Typical Asset Properties</h2>
-    <p>Within a UInventoryItemCosmetic, it is possible to configure:</p>
-    <p>Text Information: Display Name and description, natively supporting Unreal localization.</p>
-    <p>Iconography: 2D textures for the grid and icons for tooltips.</p>
-    <p>Mesh References: 3D models used for displaying the item in the world (pickup) or for character preview.</p>
-    <p>Effects: References to Sound Cue (SFX) for drag-and-drop or particle effects (VFX) tied to the item's rarity.</p>
-    <h2>Packaging Optimization</h2>
-    <p>Thanks to this architecture, developers can tag cosmetic assets (for example with a CosmeticOnly tag in the Asset Registry) to completely exclude them from the cook process of dedicated server builds, drastically reducing file sizes and server startup times.</p>
+<section class="tutorial-section" id="l1-cosmetic">
+ <h1>
+  Item Cosmetic
+ </h1>
+ <p class="doc-lead">
+  The UInventoryItemCosmetic asset represents the visual and descriptive pillar of Inventory_X. Its main function is to completely separate aesthetic and presentation data from the inventory simulation logic, ensuring that the core of the plugin remains lightweight and "blind" to heavy multimedia content.
+ </p>
+ <h2>
+  Vision: Separation between Logic and Visual
+ </h2>
+ <p>
+  In an enterprise multiplayer context, the dedicated server does not need to load textures, meshes, or audio files to validate the movement of an item. For this reason, all data that does not influence gameplay simulation (such as the localized name, icon, or 3D model) is isolated in this dedicated asset.
+ </p>
+ <h2>
+  Integration and Isolation of the Dedicated Server
+ </h2>
+ <p>
+  The UInventoryItemDefinition (the logical asset) points to its cosmetic counterpart via a TSoftObjectPtr
+  <uinventoryitemcosmetic>
+   .
+  </uinventoryitemcosmetic>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Total isolation:
+  </span>
+  <span class="doc-keyline-desc">
+   The core runtime module (Inventory_X) never directly references the cosmetic class nor attempts to load it.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Safe access:
+  </span>
+  <span class="doc-keyline-desc">
+   The item definition exposes a getter method that returns the "soft" pointer without forcing it to load, leaving memory management responsibility exclusively to the client or the UI.
+  </span>
+ </p>
+ <h2>
+  Asset Loading (Synchronous vs Asynchronous)
+ </h2>
+ <p class="doc-list-intro">
+  To avoid slowdowns (hitches) on the main thread when opening inventories dense with items, the plugin enforces strict loading guidelines:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Asynchronous Loading (Recommended):
+  </span>
+  <span class="doc-keyline-desc">
+   For production UI, the AsyncLoadItemCosmetic method provided by the client library is used. This loads the asset in the background and invokes a callback only when loading is complete.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Synchronous Loading:
+  </span>
+  <span class="doc-keyline-desc">
+   The LoadItemCosmetic function is available but its use is limited to rapid prototyping, Editor tools, or the sample module (Sample UI), where frame rate smoothness is not critical.
+  </span>
+ </p>
+ <h2>
+  Typical Asset Properties
+ </h2>
+ <p class="doc-list-intro">
+  Within a UInventoryItemCosmetic, it is possible to configure:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Text Information:
+  </span>
+  <span class="doc-keyline-desc">
+   Display Name and description, natively supporting Unreal localization.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Iconography:
+  </span>
+  <span class="doc-keyline-desc">
+   2D textures for the grid and icons for tooltips.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Mesh References:
+  </span>
+  <span class="doc-keyline-desc">
+   3D models used for displaying the item in the world (pickup) or for character preview.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Effects:
+  </span>
+  <span class="doc-keyline-desc">
+   References to Sound Cue (SFX) for drag-and-drop or particle effects (VFX) tied to the item's rarity.
+  </span>
+ </p>
+ <h2>
+  Packaging Optimization
+ </h2>
+ <p>
+  Thanks to this architecture, developers can tag cosmetic assets (for example with a CosmeticOnly tag in the Asset Registry) to completely exclude them from the cook process of dedicated server builds, drastically reducing file sizes and server startup times.
+ </p>
 </section>

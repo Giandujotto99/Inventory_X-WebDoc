@@ -1,13 +1,60 @@
-<section id="l1-rules-engine" class="tutorial-section">
-    <h1>Rules Engine</h1>
-    <p>The Rules Engine represents the decision-making "brain" of Inventory_X. Its responsibility is to determine whether a modification request is legitimate or not, acting as a read-only layer that never modifies the state, but provides a deterministic verdict based on the data.</p>
-    <h2>Modular Validation and Composition</h2>
-    <p>Instead of a monolithic system, the engine is composed of a chain of independent validators. Each operation passes through these steps in sequence and is interrupted at the first failure (early-return principle), ensuring optimal performance and precise error codes.</p>
-    <p>Handle Verification: The system first ensures that the referenced objects and containers still exist and that their "Handles" are not obsolete (avoiding crashes from invalid pointers).</p>
-    <p>Access Controls (Security): It uses the Authority Context to verify the real identity of the requester. For example, an OwnerOnly policy prevents a player from moving items into another player's inventory, even if the action would technically be possible.</p>
-    <p>Acceptance Filters (Tag Queries): Thanks to the GameplayTags system, the engine checks whether a container accepts a specific item. It is possible to configure, for example, a "Medical Crate" that denies the insertion of weapons through a simple tag query, without writing code.</p>
-    <p>Geometric and Layout Validation: For grid-based inventories, the engine queries the Layout Engine to confirm that the item fits within the boundaries and that the destination cells are not occupied by other items.</p>
-    <p>Stacking and Nesting Rules: It verifies that merging two stacks does not exceed the maximum limit and prevents impossible operations such as placing a bag inside itself or exceeding the maximum nesting depth (set to 3 levels).</p>
-    <h2>Determinism and Feedback</h2>
-    <p>The Rules Engine is designed to be deterministic: given the same state and the same request, it will always return the same verdict on both the server and the client. In case of failure, the system does not return a generic "false", but a specific error code (e.g., CellOccupied, RuleDenied, MaxNestingDepthExceeded), which is essential for providing immediate feedback to the UI and the player.</p>
+<section class="tutorial-section" id="l1-rules-engine">
+ <h1>
+  Rules Engine
+ </h1>
+ <p class="doc-lead">
+  The Rules Engine represents the decision-making "brain" of Inventory_X. Its responsibility is to determine whether a modification request is legitimate or not, acting as a read-only layer that never modifies the state, but provides a deterministic verdict based on the data.
+ </p>
+ <h2>
+  Modular Validation and Composition
+ </h2>
+ <p>
+  Instead of a monolithic system, the engine is composed of a chain of independent validators. Each operation passes through these steps in sequence and is interrupted at the first failure (early-return principle), ensuring optimal performance and precise error codes.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Handle Verification:
+  </span>
+  <span class="doc-keyline-desc">
+   The system first ensures that the referenced objects and containers still exist and that their "Handles" are not obsolete (avoiding crashes from invalid pointers).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Access Controls (Security):
+  </span>
+  <span class="doc-keyline-desc">
+   It uses the Authority Context to verify the real identity of the requester. For example, an OwnerOnly policy prevents a player from moving items into another player's inventory, even if the action would technically be possible.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Acceptance Filters (Tag Queries):
+  </span>
+  <span class="doc-keyline-desc">
+   Thanks to the GameplayTags system, the engine checks whether a container accepts a specific item. It is possible to configure, for example, a "Medical Crate" that denies the insertion of weapons through a simple tag query, without writing code.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Geometric and Layout Validation:
+  </span>
+  <span class="doc-keyline-desc">
+   For grid-based inventories, the engine queries the Layout Engine to confirm that the item fits within the boundaries and that the destination cells are not occupied by other items.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Stacking and Nesting Rules:
+  </span>
+  <span class="doc-keyline-desc">
+   It verifies that merging two stacks does not exceed the maximum limit and prevents impossible operations such as placing a bag inside itself or exceeding the maximum nesting depth (set to 3 levels).
+  </span>
+ </p>
+ <h2>
+  Determinism and Feedback
+ </h2>
+ <p>
+  The Rules Engine is designed to be deterministic: given the same state and the same request, it will always return the same verdict on both the server and the client. In case of failure, the system does not return a generic "false", but a specific error code (e.g., CellOccupied, RuleDenied, MaxNestingDepthExceeded), which is essential for providing immediate feedback to the UI and the player.
+ </p>
 </section>

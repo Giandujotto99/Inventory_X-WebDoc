@@ -1,25 +1,96 @@
-<section id="l2-barrier" class="tutorial-section">
-    <h1>Revision Barrier</h1>
-    <p>The Revision Barrier is the fundamental synchronization mechanism of Layer 2 of Inventory_X, designed to ensure that a cross-inventory transaction is considered final by the client only when both involved inventories have actually received and applied the server’s authoritative changes.</p>
-    <p>Here are the technical and logical details of how it works:</p>
-    <h2>1. Definition and Purpose</h2>
-    <p>The barrier represents the minimum authoritative revision that the client must observe on both endpoints (Primary and Secondary) to close the reconciliation process of an operation.</p>
-    <p>In a multiplayer context, data from two different inventory components may arrive at the client in separate network packets and at different times.</p>
-    <p>Without the barrier, the client could “confirm” an action based only on the server’s response (ack), risking displaying a partial or inconsistent state if one of the two inventories has not yet been updated locally by replication.</p>
-    <h2>2. Server-Side Generation</h2>
-    <p>The barrier is generated exclusively by the server at the end of a successful atomic commit.</p>
-    <p>The server does not “estimate” the barrier in advance; after applying the mutations, it samples the real authoritative revisions of the two involved components through the Layer 1 bridge.</p>
-    <p>These two values (one for the Primary and one for the Secondary) are inserted into the FInventoryInteractionRevisionBarrier structure and sent to the client within the operation ack.</p>
-    <h2>3. Layer 1 Support</h2>
-    <p>To make the barrier operational, the system requires an extension to Layer 1: each UInventoryComponent must expose and replicate an authoritative component-level revision (ReplicatedAuthoritativeRevision).</p>
-    <p>This revision is incremented at every commit that modifies the inventory state and is replicated to all interested clients.</p>
-    <p>The identity of the authoritative component remains the only source of truth for verifying that the barrier has been reached.</p>
-    <h2>4. Satisfaction and Reconciliation (Client-Side)</h2>
-    <p>On the owner client, the barrier governs the lifecycle of prediction:</p>
-    <p>Waiting queue: When the client receives a success ack, the operation is not confirmed immediately. Instead, it is placed into a “barrier waiting” queue (PendingAuthoritativeAcks).</p>
-    <p>Continuous verification: The system constantly compares the barrier values with the current revisions of the local components. The barrier is satisfied only when both endpoints have a revision greater than or equal to the required one.</p>
-    <p>Reconcile trigger: Only once the barrier is satisfied does the prediction manager start the reconciliation protocol (rollback, remap, and replay), ensuring that the local authoritative base is complete and consistent.</p>
-    <h2>5. Implementation Characteristics</h2>
-    <p>Blueprint Visibility: By design philosophy, the barrier and raw revisions are treated as infrastructural details and are not exposed directly to Blueprint logic as manipulable numbers, instead preferring semantic predicates and updated views.</p>
-    <p>Serialization: The barrier supports NetSerialize to optimize network transport, ensuring that synchronization data weighs as little as possible on bandwidth.</p>
+<section class="tutorial-section" id="l2-barrier">
+ <h1>
+  Revision Barrier
+ </h1>
+ <p class="doc-lead">
+  The Revision Barrier is the fundamental synchronization mechanism of Layer 2 of Inventory_X, designed to ensure that a cross-inventory transaction is considered final by the client only when both involved inventories have actually received and applied the server’s authoritative changes.
+ </p>
+ <p class="doc-list-intro">
+  Here are the technical and logical details of how it works:
+ </p>
+ <h2>
+  1. Definition and Purpose
+ </h2>
+ <p>
+  The barrier represents the minimum authoritative revision that the client must observe on both endpoints (Primary and Secondary) to close the reconciliation process of an operation.
+ </p>
+ <p>
+  In a multiplayer context, data from two different inventory components may arrive at the client in separate network packets and at different times.
+ </p>
+ <p>
+  Without the barrier, the client could “confirm” an action based only on the server’s response (ack), risking displaying a partial or inconsistent state if one of the two inventories has not yet been updated locally by replication.
+ </p>
+ <h2>
+  2. Server-Side Generation
+ </h2>
+ <p>
+  The barrier is generated exclusively by the server at the end of a successful atomic commit.
+ </p>
+ <p>
+  The server does not “estimate” the barrier in advance; after applying the mutations, it samples the real authoritative revisions of the two involved components through the Layer 1 bridge.
+ </p>
+ <p>
+  These two values (one for the Primary and one for the Secondary) are inserted into the FInventoryInteractionRevisionBarrier structure and sent to the client within the operation ack.
+ </p>
+ <h2>
+  3. Layer 1 Support
+ </h2>
+ <p>
+  To make the barrier operational, the system requires an extension to Layer 1: each UInventoryComponent must expose and replicate an authoritative component-level revision (ReplicatedAuthoritativeRevision).
+ </p>
+ <p>
+  This revision is incremented at every commit that modifies the inventory state and is replicated to all interested clients.
+ </p>
+ <p>
+  The identity of the authoritative component remains the only source of truth for verifying that the barrier has been reached.
+ </p>
+ <h2>
+  4. Satisfaction and Reconciliation (Client-Side)
+ </h2>
+ <p class="doc-list-intro">
+  On the owner client, the barrier governs the lifecycle of prediction:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Waiting queue:
+  </span>
+  <span class="doc-keyline-desc">
+   When the client receives a success ack, the operation is not confirmed immediately. Instead, it is placed into a “barrier waiting” queue (PendingAuthoritativeAcks).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Continuous verification:
+  </span>
+  <span class="doc-keyline-desc">
+   The system constantly compares the barrier values with the current revisions of the local components. The barrier is satisfied only when both endpoints have a revision greater than or equal to the required one.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Reconcile trigger:
+  </span>
+  <span class="doc-keyline-desc">
+   Only once the barrier is satisfied does the prediction manager start the reconciliation protocol (rollback, remap, and replay), ensuring that the local authoritative base is complete and consistent.
+  </span>
+ </p>
+ <h2>
+  5. Implementation Characteristics
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Blueprint Visibility:
+  </span>
+  <span class="doc-keyline-desc">
+   By design philosophy, the barrier and raw revisions are treated as infrastructural details and are not exposed directly to Blueprint logic as manipulable numbers, instead preferring semantic predicates and updated views.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Serialization:
+  </span>
+  <span class="doc-keyline-desc">
+   The barrier supports NetSerialize to optimize network transport, ensuring that synchronization data weighs as little as possible on bandwidth.
+  </span>
+ </p>
 </section>

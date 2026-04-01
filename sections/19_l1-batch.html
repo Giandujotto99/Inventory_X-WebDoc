@@ -1,25 +1,101 @@
-<section id="l1-batch" class="tutorial-section">
-    <h1>Batch Operations</h1>
-    <p>Batch Operations represent an advanced feature of the Layer 1 of Inventory_X, designed to handle scenarios where it is necessary to execute multiple related inventory changes as if they were a single indivisible action.</p>
-    <p>This system is ideal for massive operations such as completely emptying an inventory, loading a predefined loadout, or simultaneously collecting multiple items from a container in the world.</p>
-    <p>Here are the fundamental details about how the batch system works and its constraints in the current version:</p>
-    <h2>1. "All-or-Nothing" Semantics</h2>
-    <p>The core principle of batch operations is atomicity. When an FInventoryBatchRequest is submitted, the system validates and simulates the entire sequence of operations before applying any change.</p>
-    <p>If even a single operation within the batch fails (due to space, tag, or permission rules), the entire batch is rejected and the inventory remains exactly in the state it was in before the request.</p>
-    <h2>2. Non-Cumulative Model (v1)</h2>
-    <p>A specific architectural choice of version v1 is that the batch is non-cumulative.</p>
-    <p>Each individual operation within the group is validated against the state of the inventory prior to the batch, and not against the results of the operations that precede it in the list.</p>
-    <p>Example: If operation A frees a slot and operation B attempts to occupy that same slot in the same batch, operation B may fail because, at the time of validation, the slot still appears occupied by the item removed in A.</p>
-    <p>This limitation was introduced to guarantee maximum performance and reduce the complexity of calculating Change Sets, while still covering the vast majority of real-world use cases (independent operations on different items).</p>
-    <h2>3. Technical Limits and Constraints</h2>
-    <p>To ensure system stability and prevent abuse or network overload, the following constraints are imposed:</p>
-    <p>Limit of 32 Operations: Each batch can contain a maximum of 32 individual operations (MaxBatchOperations). Any request that exceeds this limit is rejected with the error code BatchLimitExceeded.</p>
-    <p>Single Component: The operations in a batch must all belong to the same UInventoryComponent. It is not possible to include changes that span different components in a single Layer 1 batch.</p>
-    <p>No Conditional Logic: The batch is an ordered and fixed list; it does not support "if... then" instructions or alternatives in case a sub-operation fails.</p>
-    <h2>4. Notifications and Aggregated Events</h2>
-    <p>To optimize UI performance, the system does not emit an event for each individual change contained in the batch. At the end of the atomic commit of all operations, a single aggregated OnInventoryChanged event is emitted. This prevents the UI from performing unnecessary and costly multiple refreshes within the same frame.</p>
-    <h2>5. Networking and Prediction</h2>
-    <p>In multiplayer, batch operations follow the same strict security protocol as single operations:</p>
-    <p>Atomic Prediction: The client simulates the entire batch instantly, providing smooth feedback to the player.</p>
-    <p>Single Reconciliation: The server validates the batch and responds with a single confirmation or rejection message (Ack), ensuring that client and server remain perfectly synchronized over the entire block of changes.</p>
+<section class="tutorial-section" id="l1-batch">
+ <h1>
+  Batch Operations
+ </h1>
+ <p class="doc-lead">
+  Batch Operations represent an advanced feature of the Layer 1 of Inventory_X, designed to handle scenarios where it is necessary to execute multiple related inventory changes as if they were a single indivisible action.
+ </p>
+ <p>
+  This system is ideal for massive operations such as completely emptying an inventory, loading a predefined loadout, or simultaneously collecting multiple items from a container in the world.
+ </p>
+ <p class="doc-list-intro">
+  Here are the fundamental details about how the batch system works and its constraints in the current version:
+ </p>
+ <h2>
+  1. "All-or-Nothing" Semantics
+ </h2>
+ <p>
+  The core principle of batch operations is atomicity. When an FInventoryBatchRequest is submitted, the system validates and simulates the entire sequence of operations before applying any change.
+ </p>
+ <p>
+  If even a single operation within the batch fails (due to space, tag, or permission rules), the entire batch is rejected and the inventory remains exactly in the state it was in before the request.
+ </p>
+ <h2>
+  2. Non-Cumulative Model (v1)
+ </h2>
+ <p>
+  A specific architectural choice of version v1 is that the batch is non-cumulative.
+ </p>
+ <p>
+  Each individual operation within the group is validated against the state of the inventory prior to the batch, and not against the results of the operations that precede it in the list.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Example:
+  </span>
+  <span class="doc-keyline-desc">
+   If operation A frees a slot and operation B attempts to occupy that same slot in the same batch, operation B may fail because, at the time of validation, the slot still appears occupied by the item removed in A.
+  </span>
+ </p>
+ <p>
+  This limitation was introduced to guarantee maximum performance and reduce the complexity of calculating Change Sets, while still covering the vast majority of real-world use cases (independent operations on different items).
+ </p>
+ <h2>
+  3. Technical Limits and Constraints
+ </h2>
+ <p class="doc-list-intro">
+  To ensure system stability and prevent abuse or network overload, the following constraints are imposed:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Limit of 32 Operations:
+  </span>
+  <span class="doc-keyline-desc">
+   Each batch can contain a maximum of 32 individual operations (MaxBatchOperations). Any request that exceeds this limit is rejected with the error code BatchLimitExceeded.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Single Component:
+  </span>
+  <span class="doc-keyline-desc">
+   The operations in a batch must all belong to the same UInventoryComponent. It is not possible to include changes that span different components in a single Layer 1 batch.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   No Conditional Logic:
+  </span>
+  <span class="doc-keyline-desc">
+   The batch is an ordered and fixed list; it does not support "if... then" instructions or alternatives in case a sub-operation fails.
+  </span>
+ </p>
+ <h2>
+  4. Notifications and Aggregated Events
+ </h2>
+ <p>
+  To optimize UI performance, the system does not emit an event for each individual change contained in the batch. At the end of the atomic commit of all operations, a single aggregated OnInventoryChanged event is emitted. This prevents the UI from performing unnecessary and costly multiple refreshes within the same frame.
+ </p>
+ <h2>
+  5. Networking and Prediction
+ </h2>
+ <p class="doc-list-intro">
+  In multiplayer, batch operations follow the same strict security protocol as single operations:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Atomic Prediction:
+  </span>
+  <span class="doc-keyline-desc">
+   The client simulates the entire batch instantly, providing smooth feedback to the player.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Single Reconciliation:
+  </span>
+  <span class="doc-keyline-desc">
+   The server validates the batch and responds with a single confirmation or rejection message (Ack), ensuring that client and server remain perfectly synchronized over the entire block of changes.
+  </span>
+ </p>
 </section>

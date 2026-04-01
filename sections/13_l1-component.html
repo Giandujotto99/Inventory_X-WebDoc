@@ -1,30 +1,156 @@
-<section id="l1-component" class="tutorial-section">
-    <h1>Inventory Component</h1>
-    <p>The UInventoryComponent is the operational core of Layer 1 of Inventory_X. It is a UActorComponent that acts as the runtime owner for the entire inventory state associated with an Actor (such as a player or a container in the world).</p>
-    <p>Here are the fundamental details about the role and functioning of this component:</p>
-    <h2>1. Responsibilities and Role</h2>
-    <p>The component is designed to be the single point of access and management for runtime data. It is responsible for:</p>
-    <p>Management of Root Containers: Defines and owns the main inventory spaces (e.g., the main backpack or equipment slots).</p>
-    <p>Data Ownership: Owns the flat registries (Registry) of items, containers, and fragments.</p>
-    <p>Network Synchronization: Manages authoritative replication of the state from the server to clients and coordinates local prediction.</p>
-    <p>Engine Coordination: Integrates the Rules Engine for validation, the Layout Engine for grid geometry, and the Operation Engine for transaction execution.</p>
-    <h2>2. Internal Data Structure (Flat Registry)</h2>
-    <p>To optimize performance and networking, the component does not model items as heavy UObject instances, but instead uses three flat registries composed of USTRUCT structures:</p>
-    <p>Item Registry: Stores the records of all items (FInventoryItemRecord).</p>
-    <p>Container Registry: Manages both root containers (Root) and nested ones (Child) created by items.</p>
-    <p>Fragment Registry: Contains optional dynamic data associated with items, such as durability or ammunition.</p>
-    <p>The component also maintains a transient, non-replicated Lookup Cache, which is rebuilt from the registries to ensure fast O(1) queries on hierarchical relationships (e.g., “which items are in this container?”).</p>
-    <h2>3. Internal Mutation API</h2>
-    <p>The component exposes a series of protected functions (prefix Internal_) that the Operation Engine uses to apply changes to the state after validation:</p>
-    <p>Internal_CreateItem: Creates an item, its fragments, and any child containers in a single atomic operation.</p>
-    <p>Internal_DestroyItem: Removes an item by recursively cleaning up all fragments and nested containers.</p>
-    <p>Internal_MoveItem: Moves an item between containers or different cells, automatically updating the occupation logic.</p>
-    <p>Internal_SetItemQuantity/Rotation: Modifies specific properties of an existing record.</p>
-    <h2>4. Networking and Authority</h2>
-    <p>In a multiplayer context, the UInventoryComponent adopts a Server-Authoritative model:</p>
-    <p>Delta Replication: Uses FFastArraySerializer to send clients only the records that have actually changed, drastically reducing network traffic.</p>
-    <p>Revision Counter: Each component maintains a replicated authoritative revision (ReplicatedAuthoritativeRevision) that clients use as a barrier to confirm correct receipt of data from the server.</p>
-    <p>Client Prediction: On clients that own the Actor (Autonomous Proxy), the component locally simulates operations to cancel perceived latency, automatically handling rollback in case of server rejection.</p>
-    <h2>5. Initialization and Setup</h2>
-    <p>The component is designed to be configured in a Data-Driven way. Typically, during the BeginPlay event (server only), the root containers are defined through the UInventoryContainerDefinition asset and the initial items are populated.</p>
+<section class="tutorial-section" id="l1-component">
+ <h1>
+  Inventory Component
+ </h1>
+ <p class="doc-lead">
+  The UInventoryComponent is the operational core of Layer 1 of Inventory_X. It is a UActorComponent that acts as the runtime owner for the entire inventory state associated with an Actor (such as a player or a container in the world).
+ </p>
+ <p class="doc-list-intro">
+  Here are the fundamental details about the role and functioning of this component:
+ </p>
+ <h2>
+  1. Responsibilities and Role
+ </h2>
+ <p class="doc-list-intro">
+  The component is designed to be the single point of access and management for runtime data. It is responsible for:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Management of Root Containers:
+  </span>
+  <span class="doc-keyline-desc">
+   Defines and owns the main inventory spaces (e.g., the main backpack or equipment slots).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Data Ownership:
+  </span>
+  <span class="doc-keyline-desc">
+   Owns the flat registries (Registry) of items, containers, and fragments.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Network Synchronization:
+  </span>
+  <span class="doc-keyline-desc">
+   Manages authoritative replication of the state from the server to clients and coordinates local prediction.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Engine Coordination:
+  </span>
+  <span class="doc-keyline-desc">
+   Integrates the Rules Engine for validation, the Layout Engine for grid geometry, and the Operation Engine for transaction execution.
+  </span>
+ </p>
+ <h2>
+  2. Internal Data Structure (Flat Registry)
+ </h2>
+ <p class="doc-list-intro">
+  To optimize performance and networking, the component does not model items as heavy UObject instances, but instead uses three flat registries composed of USTRUCT structures:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Item Registry:
+  </span>
+  <span class="doc-keyline-desc">
+   Stores the records of all items (FInventoryItemRecord).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Container Registry:
+  </span>
+  <span class="doc-keyline-desc">
+   Manages both root containers (Root) and nested ones (Child) created by items.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Fragment Registry:
+  </span>
+  <span class="doc-keyline-desc">
+   Contains optional dynamic data associated with items, such as durability or ammunition.
+  </span>
+ </p>
+ <p>
+  The component also maintains a transient, non-replicated Lookup Cache, which is rebuilt from the registries to ensure fast O(1) queries on hierarchical relationships (e.g., “which items are in this container?”).
+ </p>
+ <h2>
+  3. Internal Mutation API
+ </h2>
+ <p class="doc-list-intro">
+  The component exposes a series of protected functions (prefix Internal_) that the Operation Engine uses to apply changes to the state after validation:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Internal_CreateItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Creates an item, its fragments, and any child containers in a single atomic operation.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Internal_DestroyItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Removes an item by recursively cleaning up all fragments and nested containers.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Internal_MoveItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Moves an item between containers or different cells, automatically updating the occupation logic.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Internal_SetItemQuantity/Rotation:
+  </span>
+  <span class="doc-keyline-desc">
+   Modifies specific properties of an existing record.
+  </span>
+ </p>
+ <h2>
+  4. Networking and Authority
+ </h2>
+ <p class="doc-list-intro">
+  In a multiplayer context, the UInventoryComponent adopts a Server-Authoritative model:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Delta Replication:
+  </span>
+  <span class="doc-keyline-desc">
+   Uses FFastArraySerializer to send clients only the records that have actually changed, drastically reducing network traffic.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Revision Counter:
+  </span>
+  <span class="doc-keyline-desc">
+   Each component maintains a replicated authoritative revision (ReplicatedAuthoritativeRevision) that clients use as a barrier to confirm correct receipt of data from the server.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Client Prediction:
+  </span>
+  <span class="doc-keyline-desc">
+   On clients that own the Actor (Autonomous Proxy), the component locally simulates operations to cancel perceived latency, automatically handling rollback in case of server rejection.
+  </span>
+ </p>
+ <h2>
+  5. Initialization and Setup
+ </h2>
+ <p>
+  The component is designed to be configured in a Data-Driven way. Typically, during the BeginPlay event (server only), the root containers are defined through the UInventoryContainerDefinition asset and the initial items are populated.
+ </p>
 </section>

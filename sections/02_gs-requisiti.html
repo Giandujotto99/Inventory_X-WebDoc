@@ -1,41 +1,107 @@
-<section id="gs-requisiti" class="tutorial-section">
-    <h1>Requirements and Compatibility</h1>
-    <p>To ensure optimal performance and maximum reliability in multiplayer transactions, Inventory_X is designed to integrate with the latest versions of Unreal Engine, leveraging the latest developments of the CoreUObject framework and the networking system.</p>
-    
-    <h2>Supported Unreal Engine Versions</h2>
-    <p>The plugin officially supports the following engine versions:</p>
-    <ul>
-        <li><strong>Unreal Engine 5.1 up to Unreal Engine 5.7 (and later).</strong></li>
-    </ul>
-
-    <div class="info-box info">
-        <div class="info-title">ℹ️ Note</div>
-        <p>For projects using Unreal Engine 5.7, the plugin includes specific optimizations that remove the dependency on the external StructUtils module, as its functionalities have been integrated natively into CoreUObject.</p>
-    </div>
-
-    <h2>Languages and Scripting</h2>
-    <p>Inventory_X is written entirely in C++ to ensure maximum performance and architectural stability, but it is designed to be Blueprint-friendly.</p>
-    <ul>
-        <li><strong>C++:</strong> Required for advanced extensions, new fragment types, or custom validation logic.</li>
-        <li><strong>Blueprint:</strong> All core functionalities, including command wrappers and state queries, are exposed for use via Blueprint nodes.</li>
-    </ul>
-
-    <h2>Module Dependencies</h2>
-    <p>The core of the plugin (Layer 1) is designed to be extremely lightweight and UI-agnostic. It does not require the installation of heavy UI frameworks or specific third-party plug-ins. Minimum dependencies include:</p>
-    <ul>
-        <li><strong>Core / CoreUObject:</strong> Fundamental object and data management.</li>
-        <li><strong>GameplayTags:</strong> Primary system for item classification and rules.</li>
-        <li><strong>NetCore:</strong> Support for network communication and delta replication.</li>
-    </ul>
-
-    <h2>Network and Server Architecture</h2>
-    <p>The system is tested and supported for the following configurations:</p>
-    <ul>
-        <li><strong>Single Player:</strong> Full local management.</li>
-        <li><strong>Listen Server:</strong> The host acts as both server and client with zero latency.</li>
-        <li><strong>Dedicated Server:</strong> Architecture optimized for enterprise dedicated servers with secure lock and session management.</li>
-    </ul>
-
-    <h2>Hardware Requirements and Platforms</h2>
-    <p>Thanks to the use of “flat” data structures (Registry Flat) and memory optimization through lightweight structs, the plugin is suitable for a wide range of platforms, from mobile titles to complex extraction shooters for PC and console.</p>
+<section class="tutorial-section" id="gs-requisiti">
+ <h1>
+  Requirements and Compatibility
+ </h1>
+ <p class="doc-lead">
+  To ensure optimal performance and maximum reliability in multiplayer transactions, Inventory_X is designed to integrate with the latest versions of Unreal Engine, leveraging the latest developments of the CoreUObject framework and the networking system.
+ </p>
+ <h2>
+  Supported Unreal Engine Versions
+ </h2>
+ <p class="doc-list-intro">
+  The plugin officially supports the following engine versions:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Unreal Engine 5.1 up to Unreal Engine 5.7 (and later).
+   </strong>
+  </li>
+ </ul>
+ <div class="info-box info">
+  <div class="info-title">
+   ℹ️ Note
+  </div>
+  <p>
+   For projects using Unreal Engine 5.7, the plugin includes specific optimizations that remove the dependency on the external StructUtils module, as its functionalities have been integrated natively into CoreUObject.
+  </p>
+ </div>
+ <h2>
+  Languages and Scripting
+ </h2>
+ <p class="doc-list-intro">
+  Inventory_X is written entirely in C++ to ensure maximum performance and architectural stability, but it is designed to be Blueprint-friendly.
+ </p>
+ <ul>
+  <li>
+   <strong>
+    C++:
+   </strong>
+   Required for advanced extensions, new fragment types, or custom validation logic.
+  </li>
+  <li>
+   <strong>
+    Blueprint:
+   </strong>
+   All core functionalities, including command wrappers and state queries, are exposed for use via Blueprint nodes.
+  </li>
+ </ul>
+ <h2>
+  Module Dependencies
+ </h2>
+ <p class="doc-list-intro">
+  The core of the plugin (Layer 1) is designed to be extremely lightweight and UI-agnostic. It does not require the installation of heavy UI frameworks or specific third-party plug-ins. Minimum dependencies include:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Core / CoreUObject:
+   </strong>
+   Fundamental object and data management.
+  </li>
+  <li>
+   <strong>
+    GameplayTags:
+   </strong>
+   Primary system for item classification and rules.
+  </li>
+  <li>
+   <strong>
+    NetCore:
+   </strong>
+   Support for network communication and delta replication.
+  </li>
+ </ul>
+ <h2>
+  Network and Server Architecture
+ </h2>
+ <p class="doc-list-intro">
+  The system is tested and supported for the following configurations:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Single Player:
+   </strong>
+   Full local management.
+  </li>
+  <li>
+   <strong>
+    Listen Server:
+   </strong>
+   The host acts as both server and client with zero latency.
+  </li>
+  <li>
+   <strong>
+    Dedicated Server:
+   </strong>
+   Architecture optimized for enterprise dedicated servers with secure lock and session management.
+  </li>
+ </ul>
+ <h2>
+  Hardware Requirements and Platforms
+ </h2>
+ <p>
+  Thanks to the use of “flat” data structures (Registry Flat) and memory optimization through lightweight structs, the plugin is suitable for a wide range of platforms, from mobile titles to complex extraction shooters for PC and console.
+ </p>
 </section>

@@ -1,30 +1,171 @@
-<section id="l1-cmd" class="tutorial-section">
-    <h1>Command Wrapper</h1>
-    <p>The Command Wrappers represent the public operational surface of Inventory_X, designed to offer a smooth and ergonomic development experience both in C++ and in Blueprint. These wrappers act as high-level functions that hide the complexity of manually constructing requests and handling network protocols.</p>
-    <p>Here are the fundamental details of the Command Wrappers divided by the two levels of the system.</p>
-    <h2>Design Philosophy</h2>
-    <p>Ergonomics and Safety: Instead of requiring the user to manually configure complex data structures such as FInventoryOperationRequest, the system exposes typed functions (e.g., TryMoveItem) with clear and readable parameters.</p>
-    <p>Path Unification: The Blueprint APIs call exactly the same C++ code used internally by the plugin. There is no “separate backend” for Blueprints, ensuring that the validation rules are identical in every context.</p>
-    <p>Transparent Networking and Prediction: When a wrapper is invoked, the system automatically detects the Actor’s role (Authority, Autonomous Proxy, or Simulated Proxy). If necessary, it forwards the request to the server via RPC and instantly activates Client Prediction to eliminate latency perceived by the player.</p>
-    <p>Layered Verdicts: The functions do not return a simple boolean, but result structures that describe the outcome of the operation, the transaction state (e.g., Pending or Confirmed), and the handles of the objects involved.</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <h2>LAYER 1 Wrappers (Single Inventory Logic)</h2>
-    <p>These functions, exposed by UInventoryComponent, manage internal mutations within the same inventory:</p>
-    <p>TryAddItem: Creates a new object starting from a definition in a specific position.</p>
-    <p>TryAutoAddItem: A convenience function that automatically finds the first free space suitable for the object.</p>
-    <p>TryRemoveItem: Destroys a record from the inventory, cleaning up the related data.</p>
-    <p>TryMoveItem: Moves an object between containers or different cells within the same component.</p>
-    <p>TrySwapItems: Swaps the position of two existing objects.</p>
-    <p>TryRotateItem: Rotates an object by 90 degrees if geometry and rules allow it.</p>
-    <p>TrySplitStack / TryMergeStack: Manages splitting a group of objects or merging two compatible stacks.</p>
-    <p>TryEquipItem / TryUnequipItem: Manages the transition between grid containers and typed equipment slots.</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <h2>LAYER 2 Wrappers (Cross-Inventory Interaction)</h2>
-    <p>These functions, exposed by UInventoryInteractionComponent, coordinate atomic transactions between two distinct inventories (e.g., Player and Chest):</p>
-    <p>TryTransferItem: Moves an entire object (or subtree) from one endpoint to the other.</p>
-    <p>TrySplitStack (Cross): Splits a stack in one inventory and creates the result in the other.</p>
-    <p>TryMergeStack (Cross): Merges a stack belonging to one endpoint into a target stack located in the other.</p>
-    <p>TrySwapItems (Cross): Swaps two objects located in different inventories, guaranteeing the atomicity of the action (both move or neither does).</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <p>Note for multiplayer integration: While Layer 1 operations provide immediate feedback via prediction, Layer 2 operations follow a barrier-driven model: the action is considered confirmed only when the client has observed the updated revisions of both involved inventories.</p>
+<section class="tutorial-section" id="l1-cmd">
+ <h1>
+  Command Wrapper
+ </h1>
+ <p class="doc-lead">
+  The Command Wrappers represent the public operational surface of Inventory_X, designed to offer a smooth and ergonomic development experience both in C++ and in Blueprint. These wrappers act as high-level functions that hide the complexity of manually constructing requests and handling network protocols.
+ </p>
+ <p>
+  Here are the fundamental details of the Command Wrappers divided by the two levels of the system.
+ </p>
+ <h2>
+  Design Philosophy
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Ergonomics and Safety:
+  </span>
+  <span class="doc-keyline-desc">
+   Instead of requiring the user to manually configure complex data structures such as FInventoryOperationRequest, the system exposes typed functions (e.g., TryMoveItem) with clear and readable parameters.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Path Unification:
+  </span>
+  <span class="doc-keyline-desc">
+   The Blueprint APIs call exactly the same C++ code used internally by the plugin. There is no “separate backend” for Blueprints, ensuring that the validation rules are identical in every context.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Transparent Networking and Prediction:
+  </span>
+  <span class="doc-keyline-desc">
+   When a wrapper is invoked, the system automatically detects the Actor’s role (Authority, Autonomous Proxy, or Simulated Proxy). If necessary, it forwards the request to the server via RPC and instantly activates Client Prediction to eliminate latency perceived by the player.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Layered Verdicts:
+  </span>
+  <span class="doc-keyline-desc">
+   The functions do not return a simple boolean, but result structures that describe the outcome of the operation, the transaction state (e.g., Pending or Confirmed), and the handles of the objects involved.
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <h2 class="doc-layer-heading">
+  LAYER 1 Wrappers (Single Inventory Logic)
+ </h2>
+ <p class="doc-list-intro">
+  These functions, exposed by UInventoryComponent, manage internal mutations within the same inventory:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryAddItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Creates a new object starting from a definition in a specific position.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryAutoAddItem:
+  </span>
+  <span class="doc-keyline-desc">
+   A convenience function that automatically finds the first free space suitable for the object.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryRemoveItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Destroys a record from the inventory, cleaning up the related data.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryMoveItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Moves an object between containers or different cells within the same component.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TrySwapItems:
+  </span>
+  <span class="doc-keyline-desc">
+   Swaps the position of two existing objects.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryRotateItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Rotates an object by 90 degrees if geometry and rules allow it.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TrySplitStack / TryMergeStack:
+  </span>
+  <span class="doc-keyline-desc">
+   Manages splitting a group of objects or merging two compatible stacks.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryEquipItem / TryUnequipItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Manages the transition between grid containers and typed equipment slots.
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <h2 class="doc-layer-heading">
+  LAYER 2 Wrappers (Cross-Inventory Interaction)
+ </h2>
+ <p class="doc-list-intro">
+  These functions, exposed by UInventoryInteractionComponent, coordinate atomic transactions between two distinct inventories (e.g., Player and Chest):
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryTransferItem:
+  </span>
+  <span class="doc-keyline-desc">
+   Moves an entire object (or subtree) from one endpoint to the other.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TrySplitStack (Cross):
+  </span>
+  <span class="doc-keyline-desc">
+   Splits a stack in one inventory and creates the result in the other.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TryMergeStack (Cross):
+  </span>
+  <span class="doc-keyline-desc">
+   Merges a stack belonging to one endpoint into a target stack located in the other.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   TrySwapItems (Cross):
+  </span>
+  <span class="doc-keyline-desc">
+   Swaps two objects located in different inventories, guaranteeing the atomicity of the action (both move or neither does).
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Note for multiplayer integration:
+  </span>
+  <span class="doc-keyline-desc">
+   While Layer 1 operations provide immediate feedback via prediction, Layer 2 operations follow a barrier-driven model: the action is considered confirmed only when the client has observed the updated revisions of both involved inventories.
+  </span>
+ </p>
 </section>

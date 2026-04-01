@@ -1,29 +1,153 @@
-<section id="l1-container-def" class="tutorial-section">
-    <h1>Container Definition</h1>
-    <p>The UInventoryContainerDefinition is the asset (UDataAsset) responsible for defining the structure, geometry, and access rules of a container. Thanks to its reusable nature, a single definition can be used to instantiate both the Root Containers of an Actor (such as the main backpack or the player's equipment slots) and the Child Containers dynamically created by specific items (such as a bag inside a backpack or the accessory slots of a weapon).</p>
-    <h2>Container Types</h2>
-    <p>The system adopts a unified model that supports two mutually exclusive container types:</p>
-    <p>Grid-Based (NxM Grid): Defines a flat geometric space where items are placed using coordinates and rotation (e.g., a 10x6 grid).</p>
-    <p>Slot-Based (Typed Slots): Defines a set of specific slots (e.g., Head slot, Torso slot, Weapon slot), each governed by its own rule profile.</p>
-    <h2>Main Asset Properties</h2>
-    <p>Key configurations within the asset include:</p>
-    <p>Structural Configuration:</p>
-    <p>ContainerTypeTag: Tag that identifies the nature of the container (e.g., InventoryX.Container.Type.Grid).</p>
-    <p>ContainerDimensions: Grid dimensions (Width and Height) expressed as FIntPoint.</p>
-    <p>SlotProfiles: List of references to UInventorySlotProfileDefinition for slot-based containers.</p>
-    <p>bAllowNestedContainers: Flag that enables or disables the ability to place containers inside other containers (Nesting).</p>
-    <p>bAllowRotation: Determines whether the container allows NxM items to be rotated.</p>
-    <p>Acceptance Filters (Tag-Driven):</p>
-    <p>AcceptedItemQuery: An FGameplayTagQuery that defines which items are allowed.</p>
-    <p>DeniedItemQuery: A query used to exclude specific categories of items. Note: Denial always takes priority over acceptance.</p>
-    <p>Access Policy:</p>
-    <p>AccessPolicyTags: Tags that define interaction permissions (e.g., InventoryX.Permission.ReadOnly for view-only containers or InventoryX.Permission.OwnerOnly to restrict access to the owner only).</p>
-    <h2>Editor Validation</h2>
-    <p>To prevent geometric or logical bugs, the asset implements automatic checks during saving:</p>
-    <p>Exclusivity: A container cannot be both grid and slot at the same time; if slot profiles are defined, the grid dimensions must be zero.</p>
-    <p>Grid Integrity: If the container is grid-based, both dimensions must be greater than 0.</p>
-    <p>Tag Consistency: The ContainerTypeTag must be present in the ContainerTags list.</p>
-    <p>Nesting Safe: If rotation is enabled but the container is slot-based, the system emits a warning since rotation has no geometric meaning for typed slots.</p>
-    <h2>Relationship with Runtime</h2>
-    <p>At runtime, the definition is used by the UInventoryComponent to generate an FInventoryContainerRecord. While the definition is immutable and shared, the runtime record maintains the instance-specific state, including dynamic tags and references to the items actually contained.</p>
+<section class="tutorial-section" id="l1-container-def">
+ <h1>
+  Container Definition
+ </h1>
+ <p class="doc-lead">
+  The UInventoryContainerDefinition is the asset (UDataAsset) responsible for defining the structure, geometry, and access rules of a container. Thanks to its reusable nature, a single definition can be used to instantiate both the Root Containers of an Actor (such as the main backpack or the player's equipment slots) and the Child Containers dynamically created by specific items (such as a bag inside a backpack or the accessory slots of a weapon).
+ </p>
+ <h2>
+  Container Types
+ </h2>
+ <p class="doc-list-intro">
+  The system adopts a unified model that supports two mutually exclusive container types:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Grid-Based (NxM Grid):
+  </span>
+  <span class="doc-keyline-desc">
+   Defines a flat geometric space where items are placed using coordinates and rotation (e.g., a 10x6 grid).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Slot-Based (Typed Slots):
+  </span>
+  <span class="doc-keyline-desc">
+   Defines a set of specific slots (e.g., Head slot, Torso slot, Weapon slot), each governed by its own rule profile.
+  </span>
+ </p>
+ <h2>
+  Main Asset Properties
+ </h2>
+ <p class="doc-list-intro">
+  Key configurations within the asset include:
+ </p>
+ <h3 class="doc-label">
+  Structural Configuration:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   ContainerTypeTag:
+  </span>
+  <span class="doc-keyline-desc">
+   Tag that identifies the nature of the container (e.g., InventoryX.Container.Type.Grid).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   ContainerDimensions:
+  </span>
+  <span class="doc-keyline-desc">
+   Grid dimensions (Width and Height) expressed as FIntPoint.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   SlotProfiles:
+  </span>
+  <span class="doc-keyline-desc">
+   List of references to UInventorySlotProfileDefinition for slot-based containers.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   bAllowNestedContainers:
+  </span>
+  <span class="doc-keyline-desc">
+   Flag that enables or disables the ability to place containers inside other containers (Nesting).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   bAllowRotation:
+  </span>
+  <span class="doc-keyline-desc">
+   Determines whether the container allows NxM items to be rotated.
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Acceptance Filters (Tag-Driven):
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   AcceptedItemQuery:
+  </span>
+  <span class="doc-keyline-desc">
+   An FGameplayTagQuery that defines which items are allowed.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   DeniedItemQuery:
+  </span>
+  <span class="doc-keyline-desc">
+   A query used to exclude specific categories of items. Note: Denial always takes priority over acceptance.
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Access Policy:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   AccessPolicyTags:
+  </span>
+  <span class="doc-keyline-desc">
+   Tags that define interaction permissions (e.g., InventoryX.Permission.ReadOnly for view-only containers or InventoryX.Permission.OwnerOnly to restrict access to the owner only).
+  </span>
+ </p>
+ <h2>
+  Editor Validation
+ </h2>
+ <p class="doc-list-intro">
+  To prevent geometric or logical bugs, the asset implements automatic checks during saving:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Exclusivity:
+  </span>
+  <span class="doc-keyline-desc">
+   A container cannot be both grid and slot at the same time; if slot profiles are defined, the grid dimensions must be zero.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Grid Integrity:
+  </span>
+  <span class="doc-keyline-desc">
+   If the container is grid-based, both dimensions must be greater than 0.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Tag Consistency:
+  </span>
+  <span class="doc-keyline-desc">
+   The ContainerTypeTag must be present in the ContainerTags list.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Nesting Safe:
+  </span>
+  <span class="doc-keyline-desc">
+   If rotation is enabled but the container is slot-based, the system emits a warning since rotation has no geometric meaning for typed slots.
+  </span>
+ </p>
+ <h2>
+  Relationship with Runtime
+ </h2>
+ <p>
+  At runtime, the definition is used by the UInventoryComponent to generate an FInventoryContainerRecord. While the definition is immutable and shared, the runtime record maintains the instance-specific state, including dynamic tags and references to the items actually contained.
+ </p>
 </section>

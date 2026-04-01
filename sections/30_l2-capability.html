@@ -1,28 +1,140 @@
-<section id="l2-capability" class="tutorial-section">
-    <h1>Capability Model</h1>
-    <p>The Capability Model is the granular authorization system of Inventory_X’s Layer 2, designed to define with surgical precision what a player can or cannot do within a specific interaction session,.</p>
-    <p>Instead of using generic permissions, the system adopts a server-authoritative approach based on explicit and dynamic rights, ensuring maximum security in multiplayer contexts,.</p>
-    <p>Here are the fundamental pillars of this model:</p>
-    <h2>1. The Capability Snapshot (Authoritative Snapshot)</h2>
-    <p>The heart of the system is the Capability Snapshot, a “snapshot” of the actual rights granted by the server for a given epoch of the session,.</p>
-    <p>Immutability per Epoch: Once generated, the snapshot is valid only for the current SessionEpoch,. If conditions change (e.g., the player moves away or loses a permission), the server increments the epoch and generates a new snapshot, instantly invalidating operations based on old permissions,.</p>
-    <p>Protected Replication: The snapshot is replicated exclusively to the session owner (Owner-Only), preventing other clients from spying on others’ permissions,.</p>
-    <h2>2. Granularity of Actions</h2>
-    <p>The model is not limited to simple “Read Only” or “Write” access, but breaks interaction down into atomic capabilities. Among the main ones are:</p>
-    <p>Inspection: Ability to see the contents of the external inventory.</p>
-    <p>Transfer: Distinct rights for depositing (Deposit) or withdrawing (Withdraw) items,.</p>
-    <p>Advanced Manipulation: Specific permissions to split (Split), merge (Merge), or swap (Swap) items between the two inventories,.</p>
-    <p>Session Management: The ability to request a privilege increase (Upgrade) or the restoration of a suspended session,.</p>
-    <h2>3. State-Based Permission Matrix (Least Privilege)</h2>
-    <p>The system strictly applies the principle of least privilege (Least Privilege), varying the snapshot based on the session lifecycle state:</p>
-    <p>Active State (Read Only): Only inspection capabilities and the ability to request write access are granted,.</p>
-    <p>Active State (Exclusive Write): Only when the session holds the Writer Lock are mutative capabilities (move, merge, etc.) unlocked,.</p>
-    <p>Suspended State: In this security state, almost all capabilities are revoked, leaving only the right to request session Resume active,.</p>
-    <h2>4. Dynamic Derivation and Security</h2>
-    <p>The Snapshot is not static data provided by the client, but is calculated exclusively by the server by cross-referencing multiple sources of truth,:</p>
-    <p>Provider Policy: The rules defined in the external inventory Data Asset (e.g., “this locker does not allow deposits”),.</p>
-    <p>Requester Context: The trusted identity of the player (faction, game permissions, equipped items),.</p>
-    <p>World Conditions: Verification of physical distance and line of sight relative to the container,.</p>
-    <h2>5. Usage in UI and Prediction</h2>
-    <p>Although authority belongs to the server, the Capability Snapshot is used by the client for Local Prevalidation. This allows the user interface to show immediate feedback (e.g., disabling the “Withdraw” button if the capability is not present in the current snapshot) and local prediction to block actions from the start that the server would certainly reject, saving bandwidth and resources,.</p>
+<section class="tutorial-section" id="l2-capability">
+ <h1>
+  Capability Model
+ </h1>
+ <p class="doc-lead">
+  The Capability Model is the granular authorization system of Inventory_X’s Layer 2, designed to define with surgical precision what a player can or cannot do within a specific interaction session,.
+ </p>
+ <p>
+  Instead of using generic permissions, the system adopts a server-authoritative approach based on explicit and dynamic rights, ensuring maximum security in multiplayer contexts,.
+ </p>
+ <p class="doc-list-intro">
+  Here are the fundamental pillars of this model:
+ </p>
+ <h2>
+  1. The Capability Snapshot (Authoritative Snapshot)
+ </h2>
+ <p>
+  The heart of the system is the Capability Snapshot, a “snapshot” of the actual rights granted by the server for a given epoch of the session,.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Immutability per Epoch:
+  </span>
+  <span class="doc-keyline-desc">
+   Once generated, the snapshot is valid only for the current SessionEpoch,. If conditions change (e.g., the player moves away or loses a permission), the server increments the epoch and generates a new snapshot, instantly invalidating operations based on old permissions,.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Protected Replication:
+  </span>
+  <span class="doc-keyline-desc">
+   The snapshot is replicated exclusively to the session owner (Owner-Only), preventing other clients from spying on others’ permissions,.
+  </span>
+ </p>
+ <h2>
+  2. Granularity of Actions
+ </h2>
+ <p class="doc-list-intro">
+  The model is not limited to simple “Read Only” or “Write” access, but breaks interaction down into atomic capabilities. Among the main ones are:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Inspection:
+  </span>
+  <span class="doc-keyline-desc">
+   Ability to see the contents of the external inventory.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Transfer:
+  </span>
+  <span class="doc-keyline-desc">
+   Distinct rights for depositing (Deposit) or withdrawing (Withdraw) items,.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Advanced Manipulation:
+  </span>
+  <span class="doc-keyline-desc">
+   Specific permissions to split (Split), merge (Merge), or swap (Swap) items between the two inventories,.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Session Management:
+  </span>
+  <span class="doc-keyline-desc">
+   The ability to request a privilege increase (Upgrade) or the restoration of a suspended session,.
+  </span>
+ </p>
+ <h2>
+  3. State-Based Permission Matrix (Least Privilege)
+ </h2>
+ <p class="doc-list-intro">
+  The system strictly applies the principle of least privilege (Least Privilege), varying the snapshot based on the session lifecycle state:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Active State (Read Only):
+  </span>
+  <span class="doc-keyline-desc">
+   Only inspection capabilities and the ability to request write access are granted,.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Active State (Exclusive Write):
+  </span>
+  <span class="doc-keyline-desc">
+   Only when the session holds the Writer Lock are mutative capabilities (move, merge, etc.) unlocked,.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Suspended State:
+  </span>
+  <span class="doc-keyline-desc">
+   In this security state, almost all capabilities are revoked, leaving only the right to request session Resume active,.
+  </span>
+ </p>
+ <h2>
+  4. Dynamic Derivation and Security
+ </h2>
+ <p class="doc-list-intro">
+  The Snapshot is not static data provided by the client, but is calculated exclusively by the server by cross-referencing multiple sources of truth,:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Provider Policy:
+  </span>
+  <span class="doc-keyline-desc">
+   The rules defined in the external inventory Data Asset (e.g., “this locker does not allow deposits”),.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Requester Context:
+  </span>
+  <span class="doc-keyline-desc">
+   The trusted identity of the player (faction, game permissions, equipped items),.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   World Conditions:
+  </span>
+  <span class="doc-keyline-desc">
+   Verification of physical distance and line of sight relative to the container,.
+  </span>
+ </p>
+ <h2>
+  5. Usage in UI and Prediction
+ </h2>
+ <p>
+  Although authority belongs to the server, the Capability Snapshot is used by the client for Local Prevalidation. This allows the user interface to show immediate feedback (e.g., disabling the “Withdraw” button if the capability is not present in the current snapshot) and local prediction to block actions from the start that the server would certainly reject, saving bandwidth and resources,.
+ </p>
 </section>

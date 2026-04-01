@@ -1,22 +1,97 @@
-<section id="l2-policy" class="tutorial-section">
-    <h1>Policy Definitions</h1>
-    <p>The UInventoryInteractionPolicyDefinition asset constitutes the normative "brain" of interactions in Layer 2. It is a UDataAsset that allows you to define, in an entirely data-driven way, who can interact with a given chest or storage and what they are authorized to do.</p>
-    <p>While the Provider abstraction identifies "where" and "which" external inventory is, the Policy establishes the rules of engagement.</p>
-    <h2>1. Capability Management (Capability Mask)</h2>
-    <p>Unlike Layer 1, where rules are often intrinsic to the object, Layer 2 uses an explicit capability model. The Policy defines three distinct permission masks based on the session state:</p>
-    <p>GrantedReadCapabilities: Permissions granted when the session is in read-only mode (e.g., ViewExternalInventory, UpgradeToWriteLock).</p>
-    <p>GrantedWriteCapabilities: Additional permissions unlocked only when the player holds the Writer Lock (e.g., Deposit, Withdraw, Split, Merge, Swap).</p>
-    <p>GrantedSuspendedCapabilities: The very few actions allowed while the session is suspended (typically only ResumeSuspendedSession).</p>
-    <h2>2. Identity Filters (Tag Queries)</h2>
-    <p>The Policy does not trust client declarations, but evaluates two types of queries based on GameplayTags to authorize the opening of the link:</p>
-    <p>Requester Query: Checks the tags of the player attempting access (e.g., Faction, Team, or possession of a logical "key").</p>
-    <p>Primary Owner Query: Checks the tags of the player’s own inventory (e.g., to allow interaction only if the player has equipped a specific backpack or hacking kit).</p>
-    <h2>3. Reachability and Lifecycle (Range & Visibility)</h2>
-    <p>The Policy establishes the physical and logical boundaries of the interaction, preventing the system from remaining active under unsafe conditions:</p>
-    <p>Range Configuration: Defines the maximum interaction distance and whether line of sight is required (Line of Sight).</p>
-    <p>Suspension Management: Determines whether temporary loss of range or visibility should cause the immediate closure of the session or its Suspension with a "grace window" (Grace Window) for restoration.</p>
-    <h2>4. "Fail-Closed" Philosophy</h2>
-    <p>To ensure maximum security, the architecture adopts a Fail-Closed approach: if a provider does not have a Policy assigned or if the Policy is configured inconsistently, the system automatically denies any opening attempt. There are no implicit permissive fallbacks; every right must be explicitly granted by data.</p>
-    <h2>5. Editor Validation</h2>
-    <p>The asset includes internal checks to prevent absurd configurations (for example, a policy that requires a range but sets the distance to zero), reporting errors or warnings to the designer even before saving.</p>
+<section class="tutorial-section" id="l2-policy">
+ <h1>
+  Policy Definitions
+ </h1>
+ <p class="doc-lead">
+  The UInventoryInteractionPolicyDefinition asset constitutes the normative "brain" of interactions in Layer 2. It is a UDataAsset that allows you to define, in an entirely data-driven way, who can interact with a given chest or storage and what they are authorized to do.
+ </p>
+ <p>
+  While the Provider abstraction identifies "where" and "which" external inventory is, the Policy establishes the rules of engagement.
+ </p>
+ <h2>
+  1. Capability Management (Capability Mask)
+ </h2>
+ <p class="doc-list-intro">
+  Unlike Layer 1, where rules are often intrinsic to the object, Layer 2 uses an explicit capability model. The Policy defines three distinct permission masks based on the session state:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GrantedReadCapabilities:
+  </span>
+  <span class="doc-keyline-desc">
+   Permissions granted when the session is in read-only mode (e.g., ViewExternalInventory, UpgradeToWriteLock).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GrantedWriteCapabilities:
+  </span>
+  <span class="doc-keyline-desc">
+   Additional permissions unlocked only when the player holds the Writer Lock (e.g., Deposit, Withdraw, Split, Merge, Swap).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GrantedSuspendedCapabilities:
+  </span>
+  <span class="doc-keyline-desc">
+   The very few actions allowed while the session is suspended (typically only ResumeSuspendedSession).
+  </span>
+ </p>
+ <h2>
+  2. Identity Filters (Tag Queries)
+ </h2>
+ <p class="doc-list-intro">
+  The Policy does not trust client declarations, but evaluates two types of queries based on GameplayTags to authorize the opening of the link:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Requester Query:
+  </span>
+  <span class="doc-keyline-desc">
+   Checks the tags of the player attempting access (e.g., Faction, Team, or possession of a logical "key").
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Primary Owner Query:
+  </span>
+  <span class="doc-keyline-desc">
+   Checks the tags of the player’s own inventory (e.g., to allow interaction only if the player has equipped a specific backpack or hacking kit).
+  </span>
+ </p>
+ <h2>
+  3. Reachability and Lifecycle (Range & Visibility)
+ </h2>
+ <p class="doc-list-intro">
+  The Policy establishes the physical and logical boundaries of the interaction, preventing the system from remaining active under unsafe conditions:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Range Configuration:
+  </span>
+  <span class="doc-keyline-desc">
+   Defines the maximum interaction distance and whether line of sight is required (Line of Sight).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Suspension Management:
+  </span>
+  <span class="doc-keyline-desc">
+   Determines whether temporary loss of range or visibility should cause the immediate closure of the session or its Suspension with a "grace window" (Grace Window) for restoration.
+  </span>
+ </p>
+ <h2>
+  4. "Fail-Closed" Philosophy
+ </h2>
+ <p>
+  To ensure maximum security, the architecture adopts a Fail-Closed approach: if a provider does not have a Policy assigned or if the Policy is configured inconsistently, the system automatically denies any opening attempt. There are no implicit permissive fallbacks; every right must be explicitly granted by data.
+ </p>
+ <h2>
+  5. Editor Validation
+ </h2>
+ <p>
+  The asset includes internal checks to prevent absurd configurations (for example, a policy that requires a range but sets the distance to zero), reporting errors or warnings to the designer even before saving.
+ </p>
 </section>

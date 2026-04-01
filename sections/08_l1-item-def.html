@@ -1,32 +1,167 @@
-<section id="l1-item-def" class="tutorial-section">
-    <h1>Item Definition</h1>
-    <p>The UInventoryItemDefinition is the central asset (UDataAsset) of Inventory_X. It describes the stable and immutable identity of an object, defining its physical properties, stacking rules, and functional capabilities.</p>
-    <p>The system adopts a composition-based approach: instead of being a monolithic asset, the item definition points to other specialized assets to handle specific rules (stack, placement, equip), allowing the same logic to be reused for dozens of different objects.</p>
-    <h2>Main Asset Fields</h2>
-    <p>Each item definition includes the following groups of data:</p>
-    <p>Identity and Classification:</p>
-    <p>ItemTags: GameplayTags that define categories, capabilities, and families of the object (e.g. InventoryX.Item.Category.Weapon).</p>
-    <p>Geometry and Layout:</p>
-    <p>ShapeSize: Base size of the object expressed in FIntPoint coordinates (NxM).</p>
-    <p>bSupportsRotation: Indicates whether the object can be rotated by 90 degrees within a grid.</p>
-    <p>Logic and Rules (Asset References):</p>
-    <p>StackRule: Points to a UInventoryStackRuleDefinition (stacking limits, split, and merge).</p>
-    <p>PlacementRule: Points to a UInventoryPlacementRuleDefinition (geometric placement constraints).</p>
-    <p>EquipRule: Points to a UInventoryEquipRuleDefinition (compatibility with equipment slots).</p>
-    <p>Dynamic State and Nesting:</p>
-    <p>FragmentDefinitions: List of templates for runtime fragments (e.g. durability, ammunition).</p>
-    <p>ChildContainerDefinitions: List of definitions for child containers (necessary to create bags or weapons with attachments).</p>
-    <p>Cosmetic Data:</p>
-    <p>CosmeticDefinition: Asynchronous reference (TSoftObjectPtr) to a UInventoryItemCosmetic containing icons, names, and meshes.</p>
-    <h2>Network Identity: FInventoryDefinitionId</h2>
-    <p>To optimize performance and security in multiplayer, the system never sends the asset pointer or its path over the network. Each UInventoryItemDefinition exposes a GetDefinitionId() method that returns an FInventoryDefinitionId. This lightweight identifier wraps an FPrimaryAssetId and is used as a stable key to resolve the correct asset on both the server and the client through a centralized resolver.</p>
-    <h2>Editor Validation</h2>
-    <p>To prevent configuration errors, the asset implements automatic checks during saving:</p>
-    <p>Required Tags: An object must have at least one classification tag.</p>
-    <p>Valid Dimensions: The ShapeSize components must both be greater than or equal to 1.</p>
-    <p>Nesting Consistency: If child containers are defined, the object must have the tag InventoryX.Item.Capability.Container.</p>
-    <p>Unique Fragments: It is not allowed to assign two fragments of the same type to the same object.</p>
-    <h2>Design Principles</h2>
-    <p>Immutability: Once loaded, the definition is treated as read-only. Any data that changes over time lives in runtime records, not in the asset.</p>
-    <p>Clear Separation: Data required for simulation (dimensions, rules) is kept separate from aesthetic data (cosmetics), allowing the dedicated server to ignore heavy visual data.</p>
+<section class="tutorial-section" id="l1-item-def">
+ <h1>
+  Item Definition
+ </h1>
+ <p class="doc-lead">
+  The UInventoryItemDefinition is the central asset (UDataAsset) of Inventory_X. It describes the stable and immutable identity of an object, defining its physical properties, stacking rules, and functional capabilities.
+ </p>
+ <p>
+  The system adopts a composition-based approach: instead of being a monolithic asset, the item definition points to other specialized assets to handle specific rules (stack, placement, equip), allowing the same logic to be reused for dozens of different objects.
+ </p>
+ <h2>
+  Main Asset Fields
+ </h2>
+ <p class="doc-list-intro">
+  Each item definition includes the following groups of data:
+ </p>
+ <h3 class="doc-label">
+  Identity and Classification:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   ItemTags:
+  </span>
+  <span class="doc-keyline-desc">
+   GameplayTags that define categories, capabilities, and families of the object (e.g. InventoryX.Item.Category.Weapon).
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Geometry and Layout:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   ShapeSize:
+  </span>
+  <span class="doc-keyline-desc">
+   Base size of the object expressed in FIntPoint coordinates (NxM).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   bSupportsRotation:
+  </span>
+  <span class="doc-keyline-desc">
+   Indicates whether the object can be rotated by 90 degrees within a grid.
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Logic and Rules (Asset References):
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   StackRule:
+  </span>
+  <span class="doc-keyline-desc">
+   Points to a UInventoryStackRuleDefinition (stacking limits, split, and merge).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   PlacementRule:
+  </span>
+  <span class="doc-keyline-desc">
+   Points to a UInventoryPlacementRuleDefinition (geometric placement constraints).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   EquipRule:
+  </span>
+  <span class="doc-keyline-desc">
+   Points to a UInventoryEquipRuleDefinition (compatibility with equipment slots).
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Dynamic State and Nesting:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FragmentDefinitions:
+  </span>
+  <span class="doc-keyline-desc">
+   List of templates for runtime fragments (e.g. durability, ammunition).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   ChildContainerDefinitions:
+  </span>
+  <span class="doc-keyline-desc">
+   List of definitions for child containers (necessary to create bags or weapons with attachments).
+  </span>
+ </p>
+ <h3 class="doc-label">
+  Cosmetic Data:
+ </h3>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   CosmeticDefinition:
+  </span>
+  <span class="doc-keyline-desc">
+   Asynchronous reference (TSoftObjectPtr) to a UInventoryItemCosmetic containing icons, names, and meshes.
+  </span>
+ </p>
+ <h2>
+  Network Identity: FInventoryDefinitionId
+ </h2>
+ <p>
+  To optimize performance and security in multiplayer, the system never sends the asset pointer or its path over the network. Each UInventoryItemDefinition exposes a GetDefinitionId() method that returns an FInventoryDefinitionId. This lightweight identifier wraps an FPrimaryAssetId and is used as a stable key to resolve the correct asset on both the server and the client through a centralized resolver.
+ </p>
+ <h2>
+  Editor Validation
+ </h2>
+ <p class="doc-list-intro">
+  To prevent configuration errors, the asset implements automatic checks during saving:
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Required Tags:
+  </span>
+  <span class="doc-keyline-desc">
+   An object must have at least one classification tag.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Valid Dimensions:
+  </span>
+  <span class="doc-keyline-desc">
+   The ShapeSize components must both be greater than or equal to 1.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Nesting Consistency:
+  </span>
+  <span class="doc-keyline-desc">
+   If child containers are defined, the object must have the tag InventoryX.Item.Capability.Container.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Unique Fragments:
+  </span>
+  <span class="doc-keyline-desc">
+   It is not allowed to assign two fragments of the same type to the same object.
+  </span>
+ </p>
+ <h2>
+  Design Principles
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Immutability:
+  </span>
+  <span class="doc-keyline-desc">
+   Once loaded, the definition is treated as read-only. Any data that changes over time lives in runtime records, not in the asset.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Clear Separation:
+  </span>
+  <span class="doc-keyline-desc">
+   Data required for simulation (dimensions, rules) is kept separate from aesthetic data (cosmetics), allowing the dedicated server to ignore heavy visual data.
+  </span>
+ </p>
 </section>

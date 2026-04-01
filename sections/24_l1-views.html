@@ -1,36 +1,194 @@
-<section id="l1-views" class="tutorial-section">
-    <h1>View Structs and Query</h1>
-    <p>The View Structs and the Query APIs represent the official read surface of Inventory_X. To ensure system stability and ease of use in Blueprints, the plugin never exposes internal records or direct pointers to registry memory, instead providing read-only snapshots.</p>
-    <h2>View Structs Philosophy</h2>
-    <p>Stability and Safety: Views are stable data structures that are not affected by any memory reallocations of internal arrays. They do not maintain persistent references to state, avoiding crashes from invalid pointers.</p>
-    <p>Instant Snapshot: Each view is a snapshot copy of the data updated at the moment of the request or upon receiving a network update.</p>
-    <p>Blueprint-Friendly: Data types are optimized for Blueprint exposure, allowing designers to access complex information (such as NxM placement) in an ergonomic way.</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <h2>LAYER 1 — Single Component Inspection</h2>
-    <p>Layer 1 queries allow inspection of the state of a single UInventoryComponent.</p>
-    <h2>Main View Structs</h2>
-    <p>FInventoryItemView: Contains the item identity (definition), quantity, dynamic tags, and the complete placement model (FInventoryPlacementInfo), which clearly distinguishes between grid positions or equipment slots.</p>
-    <p>FInventoryContainerView: Represents a space (backpack, chest, etc.), providing dimensions, the list of contained items, and statistics such as the number of free or occupied cells.</p>
-    <p>FInventoryFragmentView: Allows access to dynamic data such as durability or loaded ammunition. In Blueprint it is recommended to prefer typed helpers (e.g. TryGetDurabilityFragment) rather than direct manipulation of the structures.</p>
-    <h2>Common component Query APIs</h2>
-    <p>GetRootContainerViews: The main function for the local owner UI; returns in a single call all root containers (e.g. head slot, torso, main backpack).</p>
-    <p>QueryItemsByTag / QueryContainersByTag: Allow targeted searches by filtering elements based on GameplayTags or complex queries.</p>
-    <p>PreviewAddItemPlacement: This is the recommended high-level query for the UI. Unlike the pure geometric query, this passes through the Rules Engine and returns the true expected local outcome (e.g. if the action is denied due to permissions or acceptance filters).</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <h2>LAYER 2 — Cross-Inventory Interaction Inspection</h2>
-    <p>In interactions between two actors (e.g. Player <-> Chest), the queries of the UInventoryInteractionComponent are used.</p>
-    <h2>Session View Structs</h2>
-    <p>FInventoryInteractionSessionView: Provides the global state of the session, including the mode (ReadOnly/Write), lock state, any suspension reasons, and the set of authorized capabilities (Capability Snapshot).</p>
-    <p>FInventoryInteractionEndpointView: Describes the two participants (Primary and Secondary) and allows retrieval of references to the Layer 1 components involved.</p>
-    <p>FInventoryInteractionPendingOperationView: Shows operations still awaiting server confirmation or barrier synchronization, allowing the UI to display “predicted” feedback or loading icons.</p>
-    <h2>Key Query APIs</h2>
-    <p>GetActiveSessionView: Returns the complete view of the current session.</p>
-    <p>GetPrimary/SecondaryInventoryComponent: Provide access to the two endpoints, allowing the UI to populate the two interface panels by calling the normal Layer 1 queries on each of them.</p>
-    <p>PreviewInteractionOperation: Locally validates a cross-inventory action (e.g. moving an item into the chest) to know in advance whether the request would be accepted.</p>
-    <p>--------------------------------------------------------------------------------</p>
-    <h2>UI Best Practice: Event-Driven Architecture</h2>
-    <p>To ensure maximum performance, the system discourages polling (calling queries every frame). Widgets must be designed to react exclusively to the component’s Delegates.</p>
-    <p>Subscription: At BeginPlay, widgets bind to relevant events (e.g. OnInventoryChanged, OnInteractionSessionSuspended).</p>
-    <p>Update: When an event fires, the widget invokes the Query APIs to obtain updated View Structs.</p>
-    <p>Rendering: The UI redraws based exclusively on the received snapshot.</p>
+<section class="tutorial-section" id="l1-views">
+ <h1>
+  View Structs and Query
+ </h1>
+ <p class="doc-lead">
+  The View Structs and the Query APIs represent the official read surface of Inventory_X. To ensure system stability and ease of use in Blueprints, the plugin never exposes internal records or direct pointers to registry memory, instead providing read-only snapshots.
+ </p>
+ <h2>
+  View Structs Philosophy
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Stability and Safety:
+  </span>
+  <span class="doc-keyline-desc">
+   Views are stable data structures that are not affected by any memory reallocations of internal arrays. They do not maintain persistent references to state, avoiding crashes from invalid pointers.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Instant Snapshot:
+  </span>
+  <span class="doc-keyline-desc">
+   Each view is a snapshot copy of the data updated at the moment of the request or upon receiving a network update.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Blueprint-Friendly:
+  </span>
+  <span class="doc-keyline-desc">
+   Data types are optimized for Blueprint exposure, allowing designers to access complex information (such as NxM placement) in an ergonomic way.
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <h2 class="doc-layer-heading">
+  LAYER 1 — Single Component Inspection
+ </h2>
+ <p>
+  Layer 1 queries allow inspection of the state of a single UInventoryComponent.
+ </p>
+ <h2>
+  Main View Structs
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryItemView:
+  </span>
+  <span class="doc-keyline-desc">
+   Contains the item identity (definition), quantity, dynamic tags, and the complete placement model (FInventoryPlacementInfo), which clearly distinguishes between grid positions or equipment slots.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryContainerView:
+  </span>
+  <span class="doc-keyline-desc">
+   Represents a space (backpack, chest, etc.), providing dimensions, the list of contained items, and statistics such as the number of free or occupied cells.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryFragmentView:
+  </span>
+  <span class="doc-keyline-desc">
+   Allows access to dynamic data such as durability or loaded ammunition. In Blueprint it is recommended to prefer typed helpers (e.g. TryGetDurabilityFragment) rather than direct manipulation of the structures.
+  </span>
+ </p>
+ <h2>
+  Common component Query APIs
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GetRootContainerViews:
+  </span>
+  <span class="doc-keyline-desc">
+   The main function for the local owner UI; returns in a single call all root containers (e.g. head slot, torso, main backpack).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   QueryItemsByTag / QueryContainersByTag:
+  </span>
+  <span class="doc-keyline-desc">
+   Allow targeted searches by filtering elements based on GameplayTags or complex queries.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   PreviewAddItemPlacement:
+  </span>
+  <span class="doc-keyline-desc">
+   This is the recommended high-level query for the UI. Unlike the pure geometric query, this passes through the Rules Engine and returns the true expected local outcome (e.g. if the action is denied due to permissions or acceptance filters).
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <h2 class="doc-layer-heading">
+  LAYER 2 — Cross-Inventory Interaction Inspection
+ </h2>
+ <p>
+  In interactions between two actors (e.g. Player <-> Chest), the queries of the UInventoryInteractionComponent are used.
+ </p>
+ <h2>
+  Session View Structs
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryInteractionSessionView:
+  </span>
+  <span class="doc-keyline-desc">
+   Provides the global state of the session, including the mode (ReadOnly/Write), lock state, any suspension reasons, and the set of authorized capabilities (Capability Snapshot).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryInteractionEndpointView:
+  </span>
+  <span class="doc-keyline-desc">
+   Describes the two participants (Primary and Secondary) and allows retrieval of references to the Layer 1 components involved.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   FInventoryInteractionPendingOperationView:
+  </span>
+  <span class="doc-keyline-desc">
+   Shows operations still awaiting server confirmation or barrier synchronization, allowing the UI to display “predicted” feedback or loading icons.
+  </span>
+ </p>
+ <h2>
+  Key Query APIs
+ </h2>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GetActiveSessionView:
+  </span>
+  <span class="doc-keyline-desc">
+   Returns the complete view of the current session.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   GetPrimary/SecondaryInventoryComponent:
+  </span>
+  <span class="doc-keyline-desc">
+   Provide access to the two endpoints, allowing the UI to populate the two interface panels by calling the normal Layer 1 queries on each of them.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   PreviewInteractionOperation:
+  </span>
+  <span class="doc-keyline-desc">
+   Locally validates a cross-inventory action (e.g. moving an item into the chest) to know in advance whether the request would be accepted.
+  </span>
+ </p>
+ <p class="doc-divider">
+  --------------------------------------------------------------------------------
+ </p>
+ <h2>
+  UI Best Practice: Event-Driven Architecture
+ </h2>
+ <p>
+  To ensure maximum performance, the system discourages polling (calling queries every frame). Widgets must be designed to react exclusively to the component’s Delegates.
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Subscription:
+  </span>
+  <span class="doc-keyline-desc">
+   At BeginPlay, widgets bind to relevant events (e.g. OnInventoryChanged, OnInteractionSessionSuspended).
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Update:
+  </span>
+  <span class="doc-keyline-desc">
+   When an event fires, the widget invokes the Query APIs to obtain updated View Structs.
+  </span>
+ </p>
+ <p class="doc-keyline">
+  <span class="doc-keyline-term">
+   Rendering:
+  </span>
+  <span class="doc-keyline-desc">
+   The UI redraws based exclusively on the received snapshot.
+  </span>
+ </p>
 </section>

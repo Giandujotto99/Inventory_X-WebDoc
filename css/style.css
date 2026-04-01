@@ -39,6 +39,13 @@
     --sidebar-width: 280px;
     --header-height: 64px;
     --content-max-width: 900px;
+    --docs-measure: 72ch;
+    --docs-wide-measure: 84ch;
+    --docs-radius: 12px;
+    --docs-text: #c3c8d6;
+    --docs-text-soft: #9fa7ba;
+    --docs-surface: rgba(255, 255, 255, 0.025);
+    --docs-surface-strong: rgba(240, 194, 70, 0.08);
 
     /* Borders */
     --border-radius: 4px;
@@ -372,7 +379,7 @@ a:hover {
 .main-content {
     flex: 1;
     margin-left: var(--sidebar-width);
-    padding: 48px;
+    padding: 52px 56px 72px;
     min-height: calc(100vh - var(--header-height));
 }
 
@@ -384,11 +391,20 @@ a:hover {
 /* Tab System Visibility */
 .tutorial-section {
     display: none;
+    position: relative;
 }
 
 .tutorial-section.active {
     display: block;
     animation: fadeIn 0.4s ease forwards;
+}
+
+.tutorial-section > *:first-child {
+    margin-top: 0;
+}
+
+.tutorial-section > *:last-child {
+    margin-bottom: 0;
 }
 
 @keyframes fadeIn {
@@ -463,26 +479,31 @@ a:hover {
     color: var(--text-primary);
     margin-top: 48px;
     margin-bottom: 16px;
+    text-wrap: balance;
+    scroll-margin-top: calc(var(--header-height) + 24px);
 }
 
 .content h1 {
-    font-size: 2rem;
+    font-size: 2.15rem;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
 }
 
 .content h2 {
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     color: var(--gold-primary);
+    margin-top: 56px;
+    margin-bottom: 18px;
 }
 
 .content h2::before {
     content: '// ';
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 .content h3 {
-    font-size: 1.25rem;
+    font-size: 1.18rem;
 }
 
 .content h4 {
@@ -491,29 +512,116 @@ a:hover {
 }
 
 .content p {
-    margin-bottom: 16px;
-    color: var(--text-secondary);
+    margin-bottom: 18px;
+    color: var(--docs-text);
+    max-width: var(--docs-measure);
+    line-height: 1.82;
+    text-wrap: pretty;
 }
 
 .content ul,
 .content ol {
-    margin-bottom: 16px;
-    padding-left: 24px;
+    margin: 0 0 24px;
+    padding-left: 1.25rem;
+    max-width: var(--docs-wide-measure);
 }
 
 .content li {
-    margin-bottom: 8px;
-    color: var(--text-secondary);
+    margin-bottom: 10px;
+    color: var(--docs-text);
+    line-height: 1.78;
 }
 
 .content strong {
-    color: var(--text-primary);
+    color: #f7f2e6;
     font-weight: 600;
 }
 
 .content em {
     color: var(--gold-primary);
     font-style: normal;
+}
+
+/* ===============================
+   DOCUMENTATION FORMATTING
+=============================== */
+.content .doc-lead {
+    max-width: 68ch;
+    margin-bottom: 28px;
+    color: #d7dbe7;
+    font-size: 1.1rem;
+    line-height: 1.9;
+}
+
+.content .doc-list-intro {
+    margin-bottom: 12px;
+    color: #d0d5e1;
+}
+
+.content h3.doc-label {
+    margin-top: 28px;
+    margin-bottom: 10px;
+    color: var(--docs-text-soft);
+    font-size: 0.92rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.content p.doc-keyline {
+    max-width: var(--docs-wide-measure);
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(240, 194, 70, 0.14);
+    border-radius: var(--docs-radius);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(240, 194, 70, 0.035) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.content .doc-keyline-term {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--gold-primary);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.content .doc-keyline-desc {
+    display: block;
+    color: var(--docs-text);
+}
+
+.content p.doc-divider {
+    max-width: var(--docs-wide-measure);
+    margin: 34px 0 28px;
+    border-top: 1px solid rgba(240, 194, 70, 0.16);
+    color: transparent;
+    line-height: 0;
+    overflow: hidden;
+    user-select: none;
+}
+
+.content h2.doc-layer-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border: 1px solid rgba(240, 194, 70, 0.28);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(240, 194, 70, 0.12) 0%, rgba(255, 255, 255, 0.025) 100%);
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.content h2.doc-layer-heading::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-primary);
+    opacity: 0.9;
 }
 
 /* ===============================
@@ -546,6 +654,17 @@ a:hover {
     color: var(--text-primary);
 }
 
+.content .code-block {
+    max-width: var(--docs-wide-measure);
+    margin: 24px 0;
+}
+
+.content .code-block pre {
+    margin: 0;
+    border-radius: var(--docs-radius);
+    background: #11141b;
+}
+
 .code-header {
     display: flex;
     align-items: center;
@@ -553,14 +672,14 @@ a:hover {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-bottom: none;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border-radius: var(--docs-radius) var(--docs-radius) 0 0;
     padding: 8px 16px;
     margin-top: 24px;
 }
 
 .code-header+pre {
     margin-top: 0;
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    border-radius: 0 0 var(--docs-radius) var(--docs-radius);
 }
 
 .code-lang {
@@ -592,12 +711,15 @@ a:hover {
    INFO BOXES
 =============================== */
 .info-box {
-    border-radius: var(--border-radius);
+    max-width: var(--docs-wide-measure);
+    border-radius: var(--docs-radius);
     padding: 16px 20px;
     margin: 24px 0;
-    border-left: 3px solid;
-    display: flex;
-    gap: 12px;
+    border-left: 4px solid;
+    display: grid;
+    gap: 8px;
+    background: var(--docs-surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .info-box-icon {
@@ -607,20 +729,25 @@ a:hover {
 }
 
 .info-box-content {
-    flex: 1;
+    display: grid;
+    gap: 8px;
 }
 
-.info-box-title {
+.info-box-title,
+.info-title {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    font-size: 0.92rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .info-box p {
     margin: 0;
-    font-size: 0.9rem;
+    max-width: none;
+    font-size: 0.98rem;
+    color: var(--docs-text);
+    line-height: 1.78;
 }
 
 .info-box.tip {
@@ -629,7 +756,8 @@ a:hover {
 }
 
 .info-box.tip .info-box-icon,
-.info-box.tip .info-box-title {
+.info-box.tip .info-box-title,
+.info-box.tip .info-title {
     color: var(--success);
 }
 
@@ -639,7 +767,8 @@ a:hover {
 }
 
 .info-box.warning .info-box-icon,
-.info-box.warning .info-box-title {
+.info-box.warning .info-box-title,
+.info-box.warning .info-title {
     color: var(--warning);
 }
 
@@ -649,7 +778,8 @@ a:hover {
 }
 
 .info-box.danger .info-box-icon,
-.info-box.danger .info-box-title {
+.info-box.danger .info-box-title,
+.info-box.danger .info-title {
     color: var(--error);
 }
 
@@ -659,7 +789,8 @@ a:hover {
 }
 
 .info-box.info .info-box-icon,
-.info-box.info .info-box-title {
+.info-box.info .info-box-title,
+.info-box.info .info-title {
     color: var(--info);
 }
 
@@ -669,12 +800,16 @@ a:hover {
 .table-wrapper {
     overflow-x: auto;
     margin: 24px 0;
+    border: 1px solid rgba(240, 194, 70, 0.12);
+    border-radius: var(--docs-radius);
+    background: var(--docs-surface);
 }
 
 .content table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
+    min-width: 640px;
 }
 
 .content th {
@@ -691,7 +826,7 @@ a:hover {
 .content td {
     padding: 12px 16px;
     border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    color: var(--docs-text);
 }
 
 .content tr:hover td {
@@ -911,12 +1046,17 @@ a:hover {
 .steps {
     counter-reset: step;
     margin: 32px 0;
+    max-width: var(--docs-wide-measure);
 }
 
 .step {
     position: relative;
-    padding-left: 64px;
-    margin-bottom: 32px;
+    padding-left: 72px;
+    margin-bottom: 28px;
+}
+
+.step-number {
+    display: none;
 }
 
 .step::before {
@@ -924,10 +1064,10 @@ a:hover {
     content: counter(step);
     position: absolute;
     left: 0;
-    top: 0;
+    top: 12px;
     width: 40px;
     height: 40px;
-    background: var(--gold-glow);
+    background: #16181f;
     border: 2px solid var(--gold-primary);
     border-radius: 50%;
     display: flex;
@@ -943,9 +1083,9 @@ a:hover {
     content: '';
     position: absolute;
     left: 19px;
-    top: 48px;
+    top: 60px;
     width: 2px;
-    height: calc(100% - 8px);
+    height: calc(100% - 20px);
     background: var(--border-color);
 }
 
@@ -962,7 +1102,30 @@ a:hover {
 }
 
 .step-content {
-    color: var(--text-secondary);
+    color: var(--docs-text);
+    padding: 18px 20px 18px 22px;
+    border: 1px solid rgba(240, 194, 70, 0.12);
+    border-radius: var(--docs-radius);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(240, 194, 70, 0.035) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.step-content > h3:first-child,
+.step-content > .step-title:first-child {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.step-content > *:last-child {
+    margin-bottom: 0;
+}
+
+.step-content p,
+.step-content ul,
+.step-content ol,
+.step-content .info-box,
+.step-content .code-block {
+    max-width: none;
 }
 
 /* ===============================
@@ -1407,6 +1570,57 @@ a:hover {
 
     .main-content {
         padding: 32px 20px;
+    }
+
+    .content h1 {
+        font-size: 1.85rem;
+    }
+
+    .content h2 {
+        font-size: 1.25rem;
+    }
+
+    .content .doc-lead {
+        font-size: 1.02rem;
+        line-height: 1.82;
+    }
+
+    .content h2.doc-layer-heading {
+        display: flex;
+        max-width: 100%;
+        line-height: 1.5;
+    }
+
+    .content p.doc-keyline {
+        padding: 13px 14px;
+    }
+
+    .content p.doc-divider {
+        margin: 30px 0 24px;
+    }
+
+    .step {
+        padding-left: 58px;
+    }
+
+    .step::before {
+        top: 10px;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .step::after {
+        left: 17px;
+        top: 52px;
+    }
+
+    .step-content {
+        padding: 16px 16px 16px 18px;
+    }
+
+    .table-wrapper {
+        margin: 24px -4px;
     }
 
     .page-nav {

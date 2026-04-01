@@ -1,94 +1,214 @@
-<section id="cf-layer1-2" class="tutorial-section">
-    <h1>Layer 1 and Layer 2 - When To Use What</h1>
-    <p>To understand which module to integrate into your workflow, it is essential to distinguish between managing the
+<section class="tutorial-section" id="cf-layer1-2">
+ <h1>
+  Layer 1 and Layer 2 - When To Use What
+ </h1>
+ <p class="doc-lead">
+  To understand which module to integrate into your workflow, it is essential to distinguish between managing the
         data of a single inventory and secure coordination between two different actors. Inventory_X is designed in a
         modular way: Layer 1 is the technological core that is always necessary, while Layer 2 is an optional enterprise
-        extension for complex interactions.</p>
-    <p>Here is a guide to choosing the correct level of abstraction based on your needs:</p>
-
-    <h2>When to use LAYER 1 (Core Inventory System)</h2>
-    <p>Layer 1 should be used for everything related to the internal logic and structure of an inventory belonging to a
-        single Actor (such as the Player Character, an NPC, or a container in the world).</p>
-    <p>Choose the Layer 1 APIs if you need to manage:</p>
-    <ul>
-        <li><strong>Internal structure:</strong> Define whether an inventory uses simple slots, a rotatable NxM grid, or
-            is composed of typed equipment slots (Head, Torso, etc.).</li>
-        <li><strong>Nested Objects (Nesting):</strong> Manage the logic of “objects inside other objects,” such as a bag
-            containing ammunition or a weapon module inserted into a rifle.</li>
-        <li><strong>Local Operations:</strong> Add, remove, move, or split items within the same component.</li>
-        <li><strong>Single Player or NPC:</strong> Manage a character’s equipment or the contents of a chest when there
-            is no simultaneous interaction between multiple players that requires locking systems.</li>
-        <li><strong>Base Backend:</strong> Layer 1 provides the Flat Registry, Delta Replication, and the fundamental
-            Prediction to eliminate latency on the single component.</li>
-    </ul>
-
-    <h2>When to use LAYER 2 (Cross-Inventory Interaction)</h2>
-    <p>Layer 2 should be used exclusively when an operation involves two distinct inventories (Endpoints) and requires
-        enterprise-grade security and atomicity guarantees.</p>
-    <p>Choose the Layer 2 APIs if you need to manage:</p>
-    <ul>
-        <li><strong>Player-World Interaction:</strong> Typical scenarios such as Player <-> Chest, access to personal
-                Stashes, looting bodies or lockers.</li>
-        <li><strong>Locking System (Multi-view / Single-writer):</strong> If you want multiple players to be able to
+        extension for complex interactions.
+ </p>
+ <p class="doc-list-intro">
+  Here is a guide to choosing the correct level of abstraction based on your needs:
+ </p>
+ <h2>
+  When to use LAYER 1 (Core Inventory System)
+ </h2>
+ <p>
+  Layer 1 should be used for everything related to the internal logic and structure of an inventory belonging to a
+        single Actor (such as the Player Character, an NPC, or a container in the world).
+ </p>
+ <p class="doc-list-intro">
+  Choose the Layer 1 APIs if you need to manage:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Internal structure:
+   </strong>
+   Define whether an inventory uses simple slots, a rotatable NxM grid, or
+            is composed of typed equipment slots (Head, Torso, etc.).
+  </li>
+  <li>
+   <strong>
+    Nested Objects (Nesting):
+   </strong>
+   Manage the logic of “objects inside other objects,” such as a bag
+            containing ammunition or a weapon module inserted into a rifle.
+  </li>
+  <li>
+   <strong>
+    Local Operations:
+   </strong>
+   Add, remove, move, or split items within the same component.
+  </li>
+  <li>
+   <strong>
+    Single Player or NPC:
+   </strong>
+   Manage a character’s equipment or the contents of a chest when there
+            is no simultaneous interaction between multiple players that requires locking systems.
+  </li>
+  <li>
+   <strong>
+    Base Backend:
+   </strong>
+   Layer 1 provides the Flat Registry, Delta Replication, and the fundamental
+            Prediction to eliminate latency on the single component.
+  </li>
+ </ul>
+ <h2>
+  When to use LAYER 2 (Cross-Inventory Interaction)
+ </h2>
+ <p>
+  Layer 2 should be used exclusively when an operation involves two distinct inventories (Endpoints) and requires
+        enterprise-grade security and atomicity guarantees.
+ </p>
+ <p class="doc-list-intro">
+  Choose the Layer 2 APIs if you need to manage:
+ </p>
+ <ul>
+  <li>
+   <strong>
+    Player-World Interaction:
+   </strong>
+   Typical scenarios such as Player <-> Chest, access to personal
+                Stashes, looting bodies or lockers.
+  </li>
+  <li>
+   <strong>
+    Locking System (Multi-view / Single-writer):
+   </strong>
+   If you want multiple players to be able to
             look simultaneously inside the same chest, but only one at a time can move items to avoid conflicts or
-            duplication.</li>
-        <li><strong>Atomic Cross-Component Transactions:</strong> Move an entire “sub-tree” of objects (e.g., a full
+            duplication.
+  </li>
+  <li>
+   <strong>
+    Atomic Cross-Component Transactions:
+   </strong>
+   Move an entire “sub-tree” of objects (e.g., a full
             bag) from one inventory to another with the guarantee that the action happens fully on both sides or does
-            not happen at all (Rollback Journal).</li>
-        <li><strong>Security and Capability:</strong> Define granular permissions (e.g., “this player can only view but
-            not withdraw”) based on a server-authorized Session.</li>
-        <li><strong>Proximity Gating:</strong> When you want the connection between player and chest to be automatically
-            suspended if the player moves too far away (Suspended State).</li>
-    </ul>
-
-    <h2>Summary for Decision Making</h2>
-
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Scenario</th>
-                <th>Recommended Layer</th>
-                <th>Why?</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Moving an item within the backpack</td>
-                <td>Layer 1</td>
-                <td>It is an internal mutation within the same component</td>
-            </tr>
-            <tr>
-                <td>Equipping a weapon</td>
-                <td>Layer 1</td>
-                <td>It concerns the slot logic of a single character</td>
-            </tr>
-            <tr>
-                <td>Taking gold from a chest</td>
-                <td>Layer 2</td>
-                <td>It involves two owners and requires a session protocol</td>
-            </tr>
-            <tr>
-                <td>Placing a bag into a chest</td>
-                <td>Layer 2</td>
-                <td>Requires a <strong>Subtree Transfer</strong> between two distinct endpoints</td>
-            </tr>
-            <tr>
-                <td>Adding ammo to an NPC</td>
-                <td>Layer 1</td>
-                <td>Local management of the NPC's records</td>
-            </tr>
-            <tr>
-                <td>Opening a loot box with other players</td>
-                <td>Layer 2</td>
-                <td>Handles concurrency via the <strong>Writer Lock</strong></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="info-box tip">
-        <div class="info-title">💡 Summary</div>
-        <p>In short: Layer 1 manages the inventory “itself,” while Layer 2 manages the “secure bridge” between two
+            not happen at all (Rollback Journal).
+  </li>
+  <li>
+   <strong>
+    Security and Capability:
+   </strong>
+   Define granular permissions (e.g., “this player can only view but
+            not withdraw”) based on a server-authorized Session.
+  </li>
+  <li>
+   <strong>
+    Proximity Gating:
+   </strong>
+   When you want the connection between player and chest to be automatically
+            suspended if the player moves too far away (Suspended State).
+  </li>
+ </ul>
+ <h2>
+  Summary for Decision Making
+ </h2>
+ <div class="table-wrapper">
+  <table class="data-table">
+   <thead>
+    <tr>
+     <th>
+      Scenario
+     </th>
+     <th>
+      Recommended Layer
+     </th>
+     <th>
+      Why?
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      Moving an item within the backpack
+     </td>
+     <td>
+      Layer 1
+     </td>
+     <td>
+      It is an internal mutation within the same component
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Equipping a weapon
+     </td>
+     <td>
+      Layer 1
+     </td>
+     <td>
+      It concerns the slot logic of a single character
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Taking gold from a chest
+     </td>
+     <td>
+      Layer 2
+     </td>
+     <td>
+      It involves two owners and requires a session protocol
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Placing a bag into a chest
+     </td>
+     <td>
+      Layer 2
+     </td>
+     <td>
+      Requires a
+      <strong>
+       Subtree Transfer
+      </strong>
+      between two distinct endpoints
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Adding ammo to an NPC
+     </td>
+     <td>
+      Layer 1
+     </td>
+     <td>
+      Local management of the NPC's records
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Opening a loot box with other players
+     </td>
+     <td>
+      Layer 2
+     </td>
+     <td>
+      Handles concurrency via the
+      <strong>
+       Writer Lock
+      </strong>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+ </div>
+ <div class="info-box tip">
+  <div class="info-title">
+   💡 Summary
+  </div>
+  <p>
+   In short: Layer 1 manages the inventory “itself,” while Layer 2 manages the “secure bridge” between two
             inventories. Layer 2 always depends on the foundations of Layer 1, but Layer 1 can be used on its own for
-            projects that do not require complex cross-inventory interactions.</p>
-    </div>
+            projects that do not require complex cross-inventory interactions.
+  </p>
+ </div>
 </section>
