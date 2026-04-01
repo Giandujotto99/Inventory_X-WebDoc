@@ -1,0 +1,22 @@
+<section id="l1-layout" class="tutorial-section">
+    <h1>Layout Engine (NxM Grid)</h1>
+    <p>The Layout Engine is the logical layer of Inventory_X responsible for the geometric and spatial management of grid-based containers. This engine responds to purely mathematical and spatial queries, ensuring that item placement respects grid boundaries and does not cause unauthorized overlaps.</p>
+    <h2>Main Features</h2>
+    <p>The engine is designed to support the typical mechanics of extraction shooters and modern RPGs:</p>
+    <p>Geometria NxM: Native support for rectangular objects of any size (e.g., a 4x2 rifle or a 2x2 medical kit).</p>
+    <p>Logical Rotation: Ability to rotate objects by 90 degrees. The engine instantly recalculates the object's "footprint" to validate the new orientation.</p>
+    <p>Collision Detection: Checks whether the cells required by an object are already occupied by other handles, preventing logical overlap.</p>
+    <p>Bounds Check: Ensures that no part of an object extends beyond the WxH dimensions of the container.</p>
+    <h2>Placement Algorithms</h2>
+    <p>The engine provides advanced tools to facilitate inventory management for both the developer and the player:</p>
+    <p>CanPlaceItem: A query that determines whether an item can be placed at a specific Top-Left coordinate with a given rotation.</p>
+    <p>FindFirstFit (Automatic Search): An algorithm that scans the grid row by row to find the first available space capable of hosting an item. It can optionally attempt both rotations to maximize the chances of success.</p>
+    <h2>The Occupancy Map</h2>
+    <p>To ensure high performance (O(1) for cell access), the Layout Engine uses an Occupancy Map.</p>
+    <p>Transient Cache: This structure is not replicated over the network; instead, it is reconstructed locally on the client from the item records.</p>
+    <p>Cell-Handle Mapping: Associates each individual cell with the handle of the object occupying it, allowing instant lookups for UI visual feedback (e.g., mouse hover).</p>
+    <h2>Placement Routing: Grid vs Slot</h2>
+    <p>A fundamental architectural principle of Inventory_X is the clear separation between container types. The Layout Engine exclusively manages the path where Placement.Kind == Grid.</p>
+    <p>Grid Containers: Actively use the occupancy map and geometric calculations.</p>
+    <p>Slot-Based Containers (Equip): Completely bypass the Layout Engine. Their placement is governed by the slot index (SlotIndex) and the compatibility rules of the Rules Engine, eliminating the ambiguity of having to map physical slots to fictitious coordinates.</p>
+</section>

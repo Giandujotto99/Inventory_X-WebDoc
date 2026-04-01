@@ -1,0 +1,23 @@
+<section id="l2-owner-replica" class="tutorial-section">
+    <h1>Replica Owner-Only</h1>
+    <p>In v1 of Layer 2, network management follows a Session Isolation principle. While inventory data (the physical objects) are replicated to all interested players via Layer 1, the data related to the interaction session follow an Owner-Only Replica protocol.</p>
+    <p>Here is how session state synchronization is handled to ensure security and bandwidth savings:</p>
+    <h2>1. Data Privacy and Security</h2>
+    <p>The session state (which includes active permissions, lock level, and metadata of the opened chest) is transmitted exclusively to the session owner (Autonomous Proxy).</p>
+    <p>Isolation: Other players (Simulated Proxies) who observe the same container in the world do not receive this data. They see content changes through standard Layer 1 replication, but they have no visibility into the capabilities or details of another player’s session.</p>
+    <p>Leak Prevention: This approach prevents a client from “spying” on another player’s permissions or operational state, ensuring that sensitive session information remains confined between the server and the concerned player.</p>
+    <h2>2. Lightweight Replication Model</h2>
+    <p>Unlike Layer 1, which uses flat lists to manage hundreds of objects, Layer 2 manages at most one active session per player.</p>
+    <p>Single Struct: The system does not use heavy data structures for replication, but a single optimized state structure.</p>
+    <p>Immediate Notification (RepNotify): Every time the server updates the session state (for example switching from read-only to write), the client receives an immediate notification that triggers the UI update logic.</p>
+    <h2>3. Server-Side Synchronization</h2>
+    <p>The central world coordinator (World Subsystem) is solely responsible for synchronization.</p>
+    <p>Every time a state change occurs (opening, closing, suspension, or permission change), the server updates the player’s replication record and forces a network update.</p>
+    <p>In case of a lock conflict (another player takes control of the chest), the server automatically updates the sessions of all listening viewers, informing them that control has now passed to another user, allowing the UI to disable edit buttons in real time.</p>
+    <h2>4. Reconnection Handling (Initial Sync)</h2>
+    <p>The system is designed to be robust even in case of reconnection.</p>
+    <p>If a player reconnects while they still have a session open on the server, they automatically receive the latest valid session state through owner-only replication.</p>
+    <p>Thanks to the reference to the chest actor saved in the replicated state, the client is able to autonomously reconstruct the link with the external inventory as soon as the world data are loaded locally.</p>
+    <h2>5. Observers and Transparency</h2>
+    <p>For those who do not have an active session (simple passersby), Layer 2 is completely invisible from the network traffic perspective. These clients continue to receive only the visual updates from Layer 1, ensuring that the interaction system does not minimally impact overall server performance for those who are not using it.</p>
+</section>

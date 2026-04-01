@@ -1,0 +1,18 @@
+<section id="l2-vision" class="tutorial-section">
+    <h1>Vision and Use Cases</h1>
+    <p>Layer 2 of Inventory_X is the layer designed to manage the exchange of items between two distinct inventories (for example, between the player and a chest or a corpse in the game world).</p>
+    <p>While Layer 1 handles the internal logic of a single component, Layer 2 introduces the rules to coordinate actions involving two different owners.</p>
+    <h2>Vision and Purpose: Player <-> World Interaction</h2>
+    <p>The main goal is to provide a solid architecture to manage any type of external inventory (chests, storage, backpacks on the ground) in a secure and synchronized way between players. The pillars of this system are:</p>
+    <p>Session of Interaction: Every time a player interacts with a container in the world, the server creates an authorized "session" to manage that specific link.</p>
+    <p>Capability-Based Model: Instead of generic permissions, the system uses specific capabilities granted by the server, such as "can view", "can take", or "can deposit".</p>
+    <p>Multi-View / Single-Writer Access: Many players can look at the same container at the same time, but only one at a time can obtain the "write permission" (lock) to move or modify the items inside it.</p>
+    <p>Atomic Transfers: Operations between two inventories follow the "all or nothing" rule: an item cannot disappear from one inventory without correctly appearing in the other, preventing data loss or duplication.</p>
+    <h2>Practical Use Cases</h2>
+    <p>The system is built to handle the typical flows of modern games:</p>
+    <p>Deposit and Withdrawal: Classic management through drag-and-drop between the player panel and the external container panel.</p>
+    <p>Stack Operations Between Endpoints: Ability to split or merge stacks of items while they are being moved from one inventory to another.</p>
+    <p>Nested Item Movement: Full support for transferring bags or backpacks that themselves contain other items; the entire hierarchy is preserved during the transfer between the two components.</p>
+    <p>Multiplayer Synchronization: Ensures that if a player (who has write permission) moves an item into a chest, all other players who are looking at it see the change instantly through Layer 1.</p>
+    <p>Different Inventory Providers: Support for interactions with different entities (bodies, vendors, stash) through a single interface that regulates security and interaction distance.</p>
+</section>

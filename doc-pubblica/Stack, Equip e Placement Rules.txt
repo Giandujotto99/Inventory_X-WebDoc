@@ -1,0 +1,45 @@
+Stack, Equip e Placement Rules
+
+To ensure maximum flexibility and reusability, Inventory_X does not encode behavioral rules directly into the object, but instead uses specialized definition assets. This modular approach allows the same stacking or equipment logic to be shared across dozens of different items without duplicating data.
+
+Here are the three pillars of the Layer 1 data-driven rules:
+
+1. Stacking Rules (UInventoryStackRuleDefinition)
+
+This definition governs an object's ability to group with others of the same type. It is essential for managing consumable resources such as ammunition, bandages, or raw materials.
+
+Key Properties:
+
+MaxStackSize: The maximum quantity of units allowed in a single slot (must be ≥ 1).
+
+bAllowSplit: Determines whether the player can manually split a stack into two.
+
+bRequireMatchingFragmentsForMerge: If enabled, the system allows merging two stacks only if their dynamic fragments (e.g., durability or modifiers) are identical.
+
+Validation: If MaxStackSize is set to 1, the system emits a warning in the editor if bAllowSplit is enabled, since it makes no sense to split a single item.
+
+2. Equip Rules (UInventoryEquipRuleDefinition)
+
+These rules define how an object interacts with typed equipment slots (such as Head, Torso, or Primary Weapon).
+
+Key Properties:
+
+CompatibleSlotQuery: An FGameplayTagQuery that specifies exactly which types of slots the item can be placed into (e.g., must match the tag InventoryX.Slot.Equip.Head).
+
+bExclusiveSlot: If enabled, the object requires exclusive use of the slot, preventing other items from being equipped at the same time in the same location.
+
+Logic: The validation system (Rules Engine) automatically rejects any equip attempt if the object does not have a valid Equip Rule or if the destination slot does not satisfy the compatibility query.
+
+3. Placement Rules (UInventoryPlacementRuleDefinition)
+
+These rules establish the geometric and logical constraints for placing items within NxM grids.
+
+Key Properties:
+
+bCanBeRotated: Defines whether the object can be rotated by 90 degrees to better fit the available space.
+
+Required/Denied Container Query: Allows placement to be restricted to specific types of containers (e.g., an item that can only be placed in a “Refrigerated Crate”).
+
+bRequireEmptyCells: Although v1 of the plugin always requires free cells for placement, this flag prepares the system for future logic involving allowed overlapping.
+
+Interaction with the Layout: These rules work in tandem with the Layout Engine to calculate logical collisions and grid boundary violations (out-of-bounds).

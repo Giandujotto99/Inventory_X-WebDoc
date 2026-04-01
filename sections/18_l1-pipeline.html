@@ -1,0 +1,16 @@
+<section id="l1-pipeline" class="tutorial-section">
+    <h1>Operation Pipeline</h1>
+    <p>The Operation Engine is the only authorized entry point for modifying the state of the inventory. To ensure data integrity, especially in multiplayer, every action follows a strict operational Pipeline that transforms a request into an atomic mutation.</p>
+    <h2>The Life Cycle of an Operation</h2>
+    <p>Every single action (such as TryAddItem, TryMoveItem or TrySwapItems) goes through four fundamental phases:</p>
+    <p>Validate (Verification): The request is passed to the Rules Engine for the final verdict. If the rules are not respected, the operation dies here and a failure event is emitted.</p>
+    <p>Simulate (Simulation): If valid, the system calculates a Change Set. This is a declarative list of mutations (e.g. "Remove X from source", "Create Y in destination") calculated without yet touching the real data. If the simulation detects unexpected conflicts, the entire operation is canceled.</p>
+    <p>Commit (Application): In this phase, the system atomically applies all the mutations of the Change Set. The Commit is the only moment in which internal registries, lookup caches and grid occupancy maps are updated in a coordinated way.</p>
+    <p>Notify (Notification): Only after the commit has occurred are the aggregated events emitted (e.g. OnItemAdded, OnInventoryChanged). This prevents the UI or other systems from seeing "partial" or inconsistent states during execution.</p>
+    <h2>Atomicity and Batch Operations</h2>
+    <p>The pipeline guarantees atomicity: a complex operation such as Swap (exchange of two items) or transferring a full bag occurs according to the principle "all or nothing". It can never happen that an item is removed from the first slot but not inserted into the second. The system also supports Batch Operations, which allow grouping up to 32 requests into a single atomic transaction, ideal for massive operations such as emptying a chest or loading a full loadout.</p>
+    <h2>Multiplayer Flow</h2>
+    <p>In a networked context, the pipeline splits to support gameplay fluidity:</p>
+    <p>On the Client (Autonomous Proxy): The system performs local validation and immediately applies a Prediction (optimistic simulation) to eliminate perceived latency.</p>
+    <p>On the Server: It performs authoritative validation and the real commit, then replicates the final result to the client for definitive confirmation or possible correction.</p>
+</section>

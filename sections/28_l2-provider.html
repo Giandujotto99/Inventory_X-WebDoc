@@ -1,0 +1,26 @@
+<section id="l2-provider" class="tutorial-section">
+    <h1>Provider Abstraction</h1>
+    <p>The Provider Abstraction is the Layer 2 mechanism that allows Inventory_X to interact with any entity in the world (chests, corpses, lockers, vehicles) without needing to know the specific class of the object.<br>
+Instead of relying on hardcoded logic, the system uses an interface and an adapter component to canonicalize every external inventory.<br>
+1. The Provider Interface (IInventoryExternalInventoryProvider)<br>
+This interface represents the minimum contract that Layer 2 expects from an external inventory source. Any Actor that implements it must be able to provide the system with:<br>
+The reference to the real UInventoryComponent that hosts the items.<br>
+An Interaction Anchor (a component or a physical point) to calculate distance and visibility.<br>
+The associated Interaction Policy asset to regulate permissions.<br>
+Any classification Tags and a readable name for debugging.<br>
+2. Adapter Component (UInventoryExternalInventoryProviderComponent)<br>
+To facilitate integration, the plugin provides a ready-to-use component that implements the interface as a convenience adapter.<br>
+This allows transforming an existing Actor into a provider simply by adding the component and configuring the references via the Editor, without having to write C++ code or implement interfaces in Blueprints.<br>
+The component supports intelligent fallbacks to minimize configuration:<br>
+If the interaction anchor is not set, it uses the Actor’s root.<br>
+If the inventory is not explicitly linked and the Actor has exactly one UInventoryComponent, the system selects it automatically.<br>
+3. Resolution Rules (Precedence)<br>
+When a player attempts to open a session toward an Actor, the internal Resolver applies a fixed and unambiguous precedence logic:<br>
+It checks if the Actor itself implements the interface.<br>
+If not, it searches among the Actor’s components for one that implements the interface.<br>
+If it finds exactly one valid component, it uses it as the provider.<br>
+If it finds nothing or finds multiple valid components (ambiguous situation), the resolution fails safely to avoid logical errors.<br>
+4. Canonical Identity<br>
+A cornerstone of the architecture is that the session’s "Secondary Endpoint" is not the physical Actor, but the UInventoryComponent resolved through the provider.<br>
+This ensures that the Writer Lock and Revisions are applied to the real data and not to simple visual containers.</p>
+</section>

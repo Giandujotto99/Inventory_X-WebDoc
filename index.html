@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Inventory_X - Advanced Inventory System for Unreal Engine 5. Prediction-aware, network-replicated, and fully extensible inventory management plugin.">
+    <title>Inventory_X - Advanced Inventory System for Unreal Engine 5</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/Inventory_X Logo-025k.png">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="images/Inventory_X Logo-025k.png" alt="Inventory_X Logo" class="logo-img">
+                <span class="logo-text">INVENTORY<span>_X</span></span>
+            </a>
+            <nav class="header-nav">
+                <a href="docs.html">Tutorials</a>
+                <a href="reference.html">Documentation</a>
+                <a href="https://discord.gg/SWAaXK86bg" target="_blank">Discord</a>
+                <span class="version-badge">v1.0</span>
+            </nav>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content stagger">
+            <img src="images/Inventory_X Logo-05k.png" alt="Inventory_X" class="hero-logo">
+            <h1 class="hero-title">INVENTORY<span>_X</span></h1>
+            <p class="hero-subtitle">Advanced Inventory System for Unreal Engine 5</p>
+            <div class="hero-cta">
+                <a href="reference.html" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    View Documentation
+                </a>
+                <a href="tutorials-v1.0.html" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Overview -->
+    <section class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">Core Systems</h2>
+            <p class="section-subtitle">Everything you need to build complex inventory mechanics without reinventing the
+                wheel</p>
+        </div>
+        <div class="features-grid stagger">
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Slot-Based Containers</h3>
+                <p class="feature-item-desc">[Placeholder] Define containers with configurable slots, weight limits,
+                    and filter rules. Support for grid-based and list-based layouts.</p>
+            </a>
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Item Definitions</h3>
+                <p class="feature-item-desc">[Placeholder] Data-driven item system with fragments, stackability,
+                    metadata, and runtime extensibility. Define items via Data Assets.</p>
+            </a>
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Transaction System</h3>
+                <p class="feature-item-desc">[Placeholder] Atomic operations for add, remove, move, split, and merge.
+                    All mutations go through a validated transaction pipeline.</p>
+            </a>
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Prediction-Aware</h3>
+                <p class="feature-item-desc">[Placeholder] Client-side prediction with server reconciliation.
+                    Responsive UI with authoritative server validation and rollback support.</p>
+            </a>
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Query & Filter</h3>
+                <p class="feature-item-desc">[Placeholder] Powerful query API to search, filter, and sort inventory
+                    contents. Tag-based filtering, metadata queries, and custom predicates.</p>
+            </a>
+            <a href="tutorials-v1.0.html" class="feature-item">
+                <div class="feature-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="feature-item-title">Network Ready</h3>
+                <p class="feature-item-desc">[Placeholder] Optimized replication with delta compression. Fast Array
+                    serialization, late joiner support — works out of the box.</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Why Inventory_X Section -->
+    <section class="features-section" style="background: var(--bg-primary);">
+        <div class="section-header">
+            <h2 class="section-title">Why Inventory_X?</h2>
+            <p class="section-subtitle">Stop building infrastructure. Start building your game.</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number gold">6+</div>
+                <div class="stat-label">Core Systems</div>
+                <div class="stat-desc">Containers, Items, Transactions, more</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number gold">100%</div>
+                <div class="stat-label">Blueprint Compatible</div>
+                <div class="stat-desc">Full API exposed to designers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number gold">0</div>
+                <div class="stat-label">Network Config Needed</div>
+                <div class="stat-desc">Replication works out of the box</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number gold">∞</div>
+                <div class="stat-label">Extensibility</div>
+                <div class="stat-desc">Custom fragments, rules, UI bindings</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Section -->
+    <section class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">⚡ Performance</h2>
+            <p class="section-subtitle">[Placeholder] Optimized for scale — benchmarked and proven</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number green">120</div>
+                <div class="stat-label">FPS Maintained</div>
+                <div class="stat-desc">[Placeholder] With hundreds of items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number cyan">1000+</div>
+                <div class="stat-label">Items Per Container</div>
+                <div class="stat-desc">[Placeholder] Efficient slot management</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number warning">&lt;1ms</div>
+                <div class="stat-label">Transaction Cost</div>
+                <div class="stat-desc">[Placeholder] Atomic operations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number purple">0</div>
+                <div class="stat-label">GC Allocations</div>
+                <div class="stat-desc">[Placeholder] Pool-based architecture</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to get started?</h2>
+        <p>Dive into the documentation and start building your inventory systems in minutes.</p>
+        <div class="cta-buttons">
+            <a href="tutorials-v1.0.html" class="btn btn-primary">Start Tutorial</a>
+            <a href="https://discord.gg/SWAaXK86bg" target="_blank" class="btn btn-secondary">Join Discord</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-logo">INVENTORY<span>_X</span></div>
+        <div class="footer-info">v1.0 — Plugin for Unreal Engine 5.x by Gabriele Rogani - XForge</div>
+        <div class="footer-links">
+            <a href="https://discord.gg/SWAaXK86bg" target="_blank">Discord</a>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

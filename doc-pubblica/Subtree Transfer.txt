@@ -1,0 +1,17 @@
+Subtree Transfer
+
+The Subtree Transfer is the Layer 2 mechanism of Inventory_X designed to handle the movement of complex objects (nested items) that contain other objects, such as backpacks, bags, or weapon modules, between two distinct inventory components.
+
+Here are the fundamental details of this process:
+
+Model "Export-Import-Destroy": Since Layer 1 handles are valid only within their own component, the system cannot simply "move" them between different endpoints. The transfer is therefore treated as an atomic operation in three phases: a complete representation of the subtree is exported (Export), the hierarchy is recreated in the target with new handles (Import), and finally the original structure in the source is deleted (Destroy).
+
+Subtree Snapshot: During the export phase, the system captures an FInventoryInteractionSubtreeSnapshot. This snapshot includes the root object records, its dynamic fragments, the child containers recursively, and all the objects contained within them, preserving the entire hierarchy and its related metadata.
+
+Integrity and Atomicity: The entire transaction is coordinated by a Transaction Coordinator that uses an authoritative Rollback Journal. If the import into the destination component fails (for example due to lack of space or rule violations), the journal performs compensating actions to immediately restore the original object to its starting position, preventing data loss or duplication.
+
+Nesting Validation: Before starting the transfer, the Layer 2 Nesting Validator verifies that the resulting depth of the subtree in the new container does not exceed the global maximum limit (MaxNestingDepth, set to 3), ensuring performance stability and rule consistency between the two endpoints.
+
+Handle Management on the Network: During import, the server assigns global and deterministic creation ordinals to each new object and container created. These ordinals allow the client, during prediction reconciliation, to accurately remap its temporary handles to the authoritative ones assigned by the server, ensuring operational continuity of the UI without visual "jumps".
+
+Trusted Bridge Seams: Real mutation operations occur exclusively through the Layer1Bridge, which exposes trusted "seams" for subtree import and export. This approach protects Layer 1 private registries and ensures that each component remains the sole owner of its internal consistency.

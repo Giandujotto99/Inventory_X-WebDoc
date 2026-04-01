@@ -1,0 +1,23 @@
+<section id="l2-session-prediction" class="tutorial-section">
+    <h1>Session Prediction</h1>
+    <p>Session Prediction is the Layer 2 layer designed to eliminate perceived latency during operations involving two distinct inventories (for example, between the player and a chest).</p>
+    <p>Unlike single-component simulation, this architecture simultaneously coordinates changes on both endpoints of the session.</p>
+    <h2>Unified Endpoint Coordination</h2>
+    <p>The system does not simply add two independent predictions together, but uses a dedicated Session Prediction Manager that acts as the single arbiter of local consistency.</p>
+    <p>Simultaneous Overlay: When the player moves an item, the system instantly applies a visual overlay to both the source inventory and the destination inventory.</p>
+    <p>Shared Transactional Model: The client uses the same planning engine as the server to build the local “transaction plan,” drastically reducing the risk of semantic divergence.</p>
+    <h2>Identity Management (Scoped Remap)</h2>
+    <p>To handle complex operations, such as moving backpacks or splitting stacks that create new entities, the system implements a Scoped Remap:</p>
+    <p>The remap tracks and corrects references not only for individual items, but also for child containers created dynamically during the simulation.</p>
+    <p>This ensures that subsequent operations (e.g., putting an item into a bag that was just moved) remain valid even if the server assigns final identifiers different from those predicted by the client.</p>
+    <h2>Barrier-Driven Reconciliation</h2>
+    <p>The final confirmation of an action does not depend on the simple arrival of the server response (Ack), but on the fulfillment of a Review Barrier:</p>
+    <p>The operation is considered complete only when the client has received and applied the network updates for both inventories involved.</p>
+    <p>This prevents inconsistent states where an item appears removed from one UI panel but has not yet appeared in the other due to replication delays in one of the two components.</p>
+    <h2>Session Security and Integrity</h2>
+    <p>The prediction model is designed to fail safely in the presence of instability:</p>
+    <p>Automatic Invalidation: Any change in the logical boundary of the session (such as switching to the Suspended state or a SessionEpoch change) causes the immediate clearing of the local prediction queue.</p>
+    <p>Local Prevalidation: The client performs a preliminary check based on its actual capabilities (e.g., “can withdraw,” “can deposit”); if the action is not authorized locally, the request is not even sent to the server, saving bandwidth.</p>
+    <h2>Efficiency and Timeouts</h2>
+    <p>To maintain high performance, the system avoids continuous monitoring processes (per-frame ticks). Timeout management for pending operations is handled by discrete timers that intervene only when necessary to force realignment with the server’s authoritative state in case of network issues.</p>
+</section>

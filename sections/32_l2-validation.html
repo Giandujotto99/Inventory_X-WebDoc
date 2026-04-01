@@ -1,0 +1,35 @@
+<section id="l2-validation" class="tutorial-section">
+    <h1>Cross-Endpoint Validation</h1>
+    <p>Cross-Endpoint Validation (Phase 5) represents the logical layer of Layer 2 responsible for verifying the semantic validity of a mutation between two distinct inventories. While the security system (Phase 4) authorizes the action based on identity and permissions, the Rules Engine determines whether the operation makes sense on the geometric, stacking, equipment, and nesting levels.</p>
+    <h2>The Validation Context</h2>
+    <p>The system operates within an FInventoryInteractionRuleContext, a unified read-only context that aggregates session data and Layer 1 contexts for both endpoints.</p>
+    <p>Bridge to Layer 1: Through the Layer1Bridge, the system derives local authority contexts for the Primary and Secondary, allowing the reuse of mature single-inventory rules without duplicating them.</p>
+    <p>Determinism: Every operation follows a fixed validation order and interrupts the chain at the first failure (early return principle).</p>
+    <h2>1. Scoped Handles Verification</h2>
+    <p>This is the first validation gate. The system ensures that every reference to objects or containers is consistent with the actual session endpoints:</p>
+    <p>Verifies that the handles actually belong to the declared role (Primary or Secondary).</p>
+    <p>Checks that the handles are resolvable in their respective destination components.</p>
+    <p>Validates the request structure (e.g., a TransferItem must have opposite source and destination endpoints).</p>
+    <h2>2. Distributed Reuse of Layer 1</h2>
+    <p>Layer 2 delegates “local” checks directly to Layer 1, then maps the outcome to the specific inventory involved:</p>
+    <p>Local Access: Verifies whether the individual containers involved have local restrictions (e.g., a container in the chest marked as ReadOnly at Layer 1 level).</p>
+    <p>Acceptance (Queries): Checks whether the destination container accepts the item through tag queries.</p>
+    <p>Geometry and Rotation: For grid placements, it queries the geometric engine of the target component to verify free space and collisions.</p>
+    <h2>3. Cross-Endpoint Semantic Rules</h2>
+    <p>Some checks require specific logic that crosses the boundary between the two components:</p>
+    <h2>Cross-Stacking (Merge and Split)</h2>
+    <p>Merge: Unlike Layer 1, merging between two different components requires a deterministic comparison of fragments (durability, ammunition, etc.), ordering them by FragmentTypeTag to ensure structural equivalence.</p>
+    <p>Enterprise Restrictions: In v1, stacking operations (split/merge) are prohibited if the objects have child containers, to avoid ambiguities in the data state.</p>
+    <p>Full Transfer: TransferItem must always involve the entire source stack; partial movements must explicitly go through SplitStack.</p>
+    <h2>Cross-Nesting (Depth)</h2>
+    <p>The system validates the resulting depth of the subtree being moved. The formula ensures that the union of the source hierarchy with the destination hierarchy does not exceed the global MaxNestingDepth limit (set to 3).</p>
+    <h2>4. The Complex Case: SwapItems</h2>
+    <p>The exchange of two items between different inventories is handled as two symmetrical “legs” but validated in deterministic order:</p>
+    <p>The Source -> Target Location link is validated (using the position occupied by the second item as the landing zone).</p>
+    <p>The Target -> Source Location link is validated.</p>
+    <p>Geometric Exclusion: During grid checking, the system “ignores” the item that is about to leave the destination cell, preventing false “cell occupied” errors during swap simulation.</p>
+    <h2>Layered Outcome</h2>
+    <p>The Rules Engine does not return a simple boolean, but a result that clearly distinguishes the origin of the error:</p>
+    <p>Layer 2 Failure: Orchestration errors (e.g., InvalidScopedHandle, InvalidEndpoint).</p>
+    <p>Primary/Secondary Failure: Local Layer 1 errors (e.g., CellOccupied or OutOfBounds) correctly mapped to the responsible endpoint.</p>
+</section>

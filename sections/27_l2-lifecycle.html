@@ -1,0 +1,32 @@
+<section id="l2-lifecycle" class="tutorial-section">
+    <h1>Session Lifecycle</h1>
+    <p>The Session Lifecycle is the mechanism that governs the existence and validity of the link between the player and an external inventory (such as a chest or a storage). Unlike Layer 1, where access is immediate, in Layer 2 every interaction must pass through a series of logical states authorized by the server to ensure security and synchronization.</p>
+    <p>Here are the fundamental details of the enterprise lifecycle:</p>
+    <h2>1. Session States</h2>
+    <p>The system models the lifecycle through explicit states that define what is allowed at a given moment:</p>
+    <p>Opening: Transition phase in which the server validates the request, resolves the provider, and decides the initial mode.</p>
+    <p>ActiveReadOnly: The session is active. The player can see the content but does not hold the writer lock to modify it.</p>
+    <p>ActiveWriteExclusive: The session has full control. Only this player can perform mutations (moves, split, merge) on the external inventory.</p>
+    <p>Suspended: A transitional “protection” state. The session remains alive, but active operations are blocked while waiting for conditions to be restored (e.g., returning within range).</p>
+    <p>Closing / Closed: The session is terminated, locks are released, and resources are deallocated.</p>
+    <h2>2. The Concept of SessionEpoch (Logical Generation)</h2>
+    <p>To prevent conflicts or the use of obsolete requests, each session is marked by a SessionEpoch. This counter increases every time the session’s “operational boundary” changes significantly:</p>
+    <p>Transition from Read-Only to Write (Upgrade) or vice versa.</p>
+    <p>Suspension and subsequent restore (Resume).</p>
+    <p>Substantial change in permissions (Capability Snapshot).</p>
+    <p>Any operation built by the client during a previous epoch is automatically invalidated if it reaches the server when the epoch has already changed, ensuring total transaction integrity.</p>
+    <h2>3. Writer Lock Dynamics</h2>
+    <p>The system follows a Multi-View / Single-Writer model. While many players can be in ActiveReadOnly on the same chest, the server grants the ActiveWriteExclusive state to only one user at a time.</p>
+    <p>Upgrade/Downgrade: A player can request to switch to write mode. If the lock is occupied, the server can deny the upgrade or offer a read-only fallback.</p>
+    <p>No Forced Stealing: In the current version, a user cannot “steal” the lock from another. The release must be voluntary, due to timeout, or due to disconnection of the current owner.</p>
+    <h2>4. Suspension and Resume (Grace Window)</h2>
+    <p>The Suspended state is an advanced feature that manages recoverable interruptions. If a player leaves the range or loses line of sight, the server does not immediately close the session but suspends it.</p>
+    <p>During suspension, the writer lock is released to allow others to interact.</p>
+    <p>The player can request Resume as soon as conditions become valid again, obtaining a new epoch and resuming interaction without having to reopen the entire UI panel.</p>
+    <h2>5. Session Termination</h2>
+    <p>The session is invalidated and permanently closed in the presence of critical events:</p>
+    <p>Player disconnection or Pawn destruction.</p>
+    <p>Removal or destruction of the external inventory from the world.</p>
+    <p>Expiration of the “grace window” during a suspension.</p>
+    <p>Explicit closure of the interface by the user.</p>
+</section>

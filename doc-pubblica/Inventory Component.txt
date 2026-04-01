@@ -1,0 +1,55 @@
+Inventory Component
+
+The UInventoryComponent is the operational core of Layer 1 of Inventory_X. It is a UActorComponent that acts as the runtime owner for the entire inventory state associated with an Actor (such as a player or a container in the world).
+
+Here are the fundamental details about the role and functioning of this component:
+
+1. Responsibilities and Role
+
+The component is designed to be the single point of access and management for runtime data. It is responsible for:
+
+Management of Root Containers: Defines and owns the main inventory spaces (e.g., the main backpack or equipment slots).
+
+Data Ownership: Owns the flat registries (Registry) of items, containers, and fragments.
+
+Network Synchronization: Manages authoritative replication of the state from the server to clients and coordinates local prediction.
+
+Engine Coordination: Integrates the Rules Engine for validation, the Layout Engine for grid geometry, and the Operation Engine for transaction execution.
+
+2. Internal Data Structure (Flat Registry)
+
+To optimize performance and networking, the component does not model items as heavy UObject instances, but instead uses three flat registries composed of USTRUCT structures:
+
+Item Registry: Stores the records of all items (FInventoryItemRecord).
+
+Container Registry: Manages both root containers (Root) and nested ones (Child) created by items.
+
+Fragment Registry: Contains optional dynamic data associated with items, such as durability or ammunition.
+
+The component also maintains a transient, non-replicated Lookup Cache, which is rebuilt from the registries to ensure fast O(1) queries on hierarchical relationships (e.g., “which items are in this container?”).
+
+3. Internal Mutation API
+
+The component exposes a series of protected functions (prefix Internal_) that the Operation Engine uses to apply changes to the state after validation:
+
+Internal_CreateItem: Creates an item, its fragments, and any child containers in a single atomic operation.
+
+Internal_DestroyItem: Removes an item by recursively cleaning up all fragments and nested containers.
+
+Internal_MoveItem: Moves an item between containers or different cells, automatically updating the occupation logic.
+
+Internal_SetItemQuantity/Rotation: Modifies specific properties of an existing record.
+
+4. Networking and Authority
+
+In a multiplayer context, the UInventoryComponent adopts a Server-Authoritative model:
+
+Delta Replication: Uses FFastArraySerializer to send clients only the records that have actually changed, drastically reducing network traffic.
+
+Revision Counter: Each component maintains a replicated authoritative revision (ReplicatedAuthoritativeRevision) that clients use as a barrier to confirm correct receipt of data from the server.
+
+Client Prediction: On clients that own the Actor (Autonomous Proxy), the component locally simulates operations to cancel perceived latency, automatically handling rollback in case of server rejection.
+
+5. Initialization and Setup
+
+The component is designed to be configured in a Data-Driven way. Typically, during the BeginPlay event (server only), the root containers are defined through the UInventoryContainerDefinition asset and the initial items are populated.

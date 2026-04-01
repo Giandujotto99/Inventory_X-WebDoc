@@ -1,0 +1,39 @@
+Async Session API
+
+The Asynchronous Session Interface represents the advanced ergonomics layer of Layer 2, designed to simplify lifecycle management of interactions in Blueprints. Since control operations (open, upgrade, resume) are inherently asynchronous in multiplayer contexts, the plugin provides dedicated nodes that automate waiting for the server’s response.
+
+Here are the details of the asynchronous programming model:
+
+1. Simplified Blueprint Workflow
+
+Unlike standard methods that return an immediate result (often of type "Pending" on a remote client), Async Actions remain active until the network protocol is completed. This allows UI developers to directly connect the "Success" or "Failure" execution branches without having to manually handle delegates or replication notifications.
+
+2. Session Opening (Open Interaction)
+
+The node for asynchronous opening manages the entire discovery and authorization process toward an external inventory.
+
+Pipeline Automation: The system handles resolving the provider, validating the local identity, and waiting for the server to confirm the opening and replicate the initial permissions.
+
+Failure Handling: If the server denies access (for example due to excessive distance or lack of permissions), the action completes immediately on the failure branch, providing the specific error code.
+
+3. Advanced Control (Session Control)
+
+There is a unified asynchronous interface for all lock state and ownership transitions:
+
+Upgrade and Downgrade: Allows requesting write permission (Writer Lock) and waiting for the outcome of contention with other players.
+
+Resume: Handles the safe restoration of a previously suspended session, confirming that security conditions (such as range) are satisfied again.
+
+Close: Ensures that the session has been correctly terminated on the server and that all local resources have been cleaned up before proceeding with subsequent UI logic.
+
+4. Transparency Between Authority and Client
+
+The interface is designed to behave identically regardless of network role.
+
+In Single Player or on an Authoritative Server, the action completes instantly in the same frame, since there is no transport latency.
+
+On a Remote Client, the action listens for network signals and resolves only when the local authoritative state is perfectly synchronized with the server’s verdict.
+
+5. Integrated Security and Timeout
+
+To prevent a Blueprint node from remaining blocked indefinitely due to connection issues, asynchronous actions are protected by the protocol’s timeout system. If the server does not respond within the predefined limits, the asynchronous action is forcibly interrupted, triggering the error path to allow the UI to inform the user.

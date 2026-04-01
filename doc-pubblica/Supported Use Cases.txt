@@ -1,0 +1,55 @@
+Supported Use Cases
+
+Inventory_X has been designed to be an agnostic framework, capable of powering inventory logic for a wide range of genres, from classic RPGs to more complex survival shooters. Thanks to its flexible architecture, it is possible to configure different systems using the same set of fundamental tools.
+
+Below are the main usage scenarios natively supported by the plugin:
+
+1. Simple Slot Inventory
+
+Ideal for Minecraft-style titles or light survival games, where each item occupies a single space (1x1).
+
+Key features: Support for item stacks, splitting and merging quantities, and simple drag-and-drop operations between slots.
+
+2. Advanced Grid Inventory (NxM)
+
+Perfect for Extraction Shooters or tactical RPGs where space management is an integral part of gameplay.
+
+Complex geometry: Support for items with variable sizes (e.g., a 4x2 rifle or a 2x2 medical kit).
+
+Logical rotation: Ability to rotate items by 90 degrees to optimize occupied space.
+
+Fit algorithms: Built-in functions for automatically searching for the first available space (First-Fit) within a grid.
+
+3. Typed Equipment Slots
+
+Modular management of slots dedicated to body parts or specific categories (e.g., Head, Torso, Primary Weapon, Holster).
+
+Compatibility rules: Definition via tags of which items can be inserted into a specific slot (e.g., only items with the tag InventoryX.Item.Category.Helmet in the head slot).
+
+Exclusive restrictions: Rules to prevent equipping items that are incompatible with each other.
+
+4. Nested Containers (Nesting)
+
+Support for complex systems of “items inside other items,” typical of military simulators or realistic survival games.
+
+Examples: A backpack containing several tactical pouches, or an ammo crate containing magazines.
+
+Hierarchy preservation: When a “container” item is moved or transferred, all of its recursive contents are preserved and moved with it.
+
+Cycle protection: Automatic systems that prevent impossible scenarios, such as placing a bag inside itself.
+
+5. Cross-Inventory Interactions (Layer 2)
+
+Secure management of transactions between inventories belonging to different actors in the game world.
+
+World interaction: Management of chests, area stashes, looting bodies, or lockers.
+
+Locking system: Multi-viewer/single-writer model that allows many players to observe the same container simultaneously, but ensures that only one at a time can modify its contents, preventing duplication or data conflicts.
+
+6. Authoritative Multiplayer Architecture
+
+All the above use cases are ready for multiplayer with high-level performance.
+
+Client Prediction: Every action (move, rotate, equip) appears instantaneous to the local player, while the server silently validates the action in the background.
+
+Automatic Reconciliation: In case of discrepancies between client and server, the system automatically corrects the player’s view without interrupting the gameplay experience.

@@ -1,0 +1,27 @@
+<section id="l1-delegates" class="tutorial-section">
+    <h1>Delegates and Events</h1>
+    <p>The Delegate and Event system of Inventory_X is the core architecture that allows the UI and game systems to react in a responsive and performant way to state changes. Instead of constantly querying the component (polling), consumers bind to specific delegates that notify atomic mutations and network confirmations.</p>
+    <p>All delegates are defined as UPROPERTY(BlueprintAssignable) within the UInventoryComponent, ensuring maximum compatibility with Blueprints.</p>
+    <h2>1. Authoritative Events (Post-Commit)</h2>
+    <p>These events are emitted by the Operation Engine only after a mutation has been validated and successfully applied to the registries (Commit). They guarantee that the observer always sees a consistent state and never a "partial" one.</p>
+    <p>OnInventoryChanged: Global event emitted at the end of every transaction (single or batch) that modified the inventory.</p>
+    <p>OnContainerChanged: Notifies a specific change in a container.</p>
+    <p>OnContainerCreated / OnContainerDestroyed: Fundamental for the Nesting system. They are emitted when child containers are instantiated or removed (e.g., opening a bag or destroying a weapon with attachments).</p>
+    <p>OnItemAdded / OnItemRemoved / OnItemUpdated: Notify the entry, removal, or modification (quantity, rotation) of an item.</p>
+    <p>OnFragmentChanged: Emitted when the dynamic data of a fragment (e.g., durability or ammunition) is updated.</p>
+    <p>OnOperationFailed / OnOperationCompleted: Provide direct feedback on the outcome of a request, including the Operation ID and the error code.</p>
+    <h2>2. Prediction-Aware Events</h2>
+    <p>These events are specific to the client owner (Autonomous Proxy) and are used to manage interface smoothness during network latency.</p>
+    <p>OnPredictedOperationApplied: Confirms that a local simulation has been successfully applied. The UI can use this event to immediately show the item in the new position.</p>
+    <p>OnOperationConfirmed: The server has validated the action and the client state is now aligned with the authoritative truth.</p>
+    <p>OnOperationRejected: The server rejected the action. The system automatically starts the rollback and the UI must use this event to cancel the optimistic visual feedback.</p>
+    <p>OnOperationCorrected: The operation is valid, but the final result slightly differs from the prediction (e.g., a different item ID). The UI must update to reflect the real server data.</p>
+    <p>OnPredictedOperationInvalidated: Emitted during the replay of the prediction queue if a pending action becomes invalid due to the failure of a previous action it depended on (cascading invalidation).</p>
+    <h2>3. Delivery and Ordering Contract</h2>
+    <p>To avoid synchronization bugs, the plugin follows strict rules in signal emission:</p>
+    <p>No Spam: In batch operations, a single aggregated OnInventoryChanged event is emitted instead of multiple individual notifications.</p>
+    <p>Deterministic Order: Events follow a logical sequence: Created -> Added -> Updated -> Removed -> Destroyed -> Changed -> InventoryChanged.</p>
+    <p>Prediction Isolation: Prediction events are structurally separated from authoritative ones. This prevents a simple local "prediction" from being mistakenly interpreted as a definitive confirmation from the server.</p>
+    <h2>Best Practice for the UI</h2>
+    <p>Widgets must be designed to be entirely event-driven. At BeginPlay, a widget should bind to the component delegates and invoke the Query APIs (to obtain updated View Structs) only when a notification is triggered, drastically reducing the performance impact compared to using Tick.</p>
+</section>

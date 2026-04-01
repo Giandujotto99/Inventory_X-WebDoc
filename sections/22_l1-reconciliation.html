@@ -1,0 +1,24 @@
+<section id="l1-reconciliation" class="tutorial-section">
+    <h1>Reconciliation and Handle Remapping</h1>
+    <p>The Reconciliation and Identity Management (Handle Remapping) section describes the synchronization engine of Inventory_X. This system is responsible for maintaining consistency between the player's optimistic view and the server's authoritative truth, ensuring that the user interface remains smooth even in the presence of network latency or authoritative corrections.</p>
+    <h2>The Reconciliation Protocol</h2>
+    <p>When the client receives new data from the server, it does not simply overwrite local memory. To avoid visual “jumps” or inconsistent states, the system initiates a Proprietary Reconciliation Protocol structured into fundamental logical phases:</p>
+    <p>View Suspension: The visual representation of the inventory is temporarily isolated to allow the underlying data to be updated.</p>
+    <p>Authoritative State Restoration: The effects of local simulations still awaiting confirmation are undone, returning the inventory to the last known “truth” sent by the server.</p>
+    <p>Registry Alignment: The system applies the newly received data, rebuilding support structures (such as grid occupancy maps and search caches) based exclusively on the real state.</p>
+    <p>Identity Resolution: If the server has confirmed actions that created new objects, the system harmonizes the temporary references used by the client with the server’s definitive ones.</p>
+    <p>Operation Re-execution (Replay): All player actions not yet confirmed by the server are simulated again on top of the new authoritative state.</p>
+    <p>Cascading Validation: During re-execution, the system verifies that each action is still valid; if a previous action was rejected by the server, subsequent actions that depended on it are automatically canceled to maintain data integrity.</p>
+    <h2>Dynamic Identity Resolution (Handle Remapping)</h2>
+    <p>One of the most complex aspects of client-side prediction is handling new objects (e.g., splitting a stack or adding an item). Since the client generates an immediate local identifier to avoid waiting for the server, there may be a discrepancy with the identifier assigned by the server.</p>
+    <p>Inventory_X solves this problem through an Identity Remapping Table:</p>
+    <p>Transparent Correlation: The system maintains a link between the temporary identity (Predicted) and the definitive one (Authoritative).</p>
+    <p>Invisible Update: During the Replay phase, the system silently “rewrites” pending operations by replacing old references with new ones.</p>
+    <p>Operational Continuity: Thanks to this mechanism, the player can continue interacting with a newly created object (e.g., moving it to another bag) even before the server officially confirms its existence.</p>
+    <h2>Synchronization Outcomes</h2>
+    <p>Each action simulated by the player concludes with one of these outcomes, communicated to the UI through dedicated events:</p>
+    <p>Confirmed: The client simulation was identical to the server result.</p>
+    <p>Rejected: The server denied the action (e.g., due to lack of permissions); the system performs a full rollback and notifies the error.</p>
+    <p>Corrected: The action is valid, but the final result differs slightly from the simulation (e.g., the object was placed in a different slot than expected); the UI updates smoothly to reflect the correct position.</p>
+    <p>Invalidated: The action was canceled because it depended on a previous operation that failed.</p>
+</section>

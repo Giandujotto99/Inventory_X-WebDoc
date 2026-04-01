@@ -1,0 +1,115 @@
+View Structs and Query
+
+The View Structs and the Query APIs represent the official read surface of Inventory_X. To ensure system stability and ease of use in Blueprints, the plugin never exposes internal records or direct pointers to registry memory, instead providing read-only snapshots.
+
+View Structs Philosophy
+
+
+
+
+
+Stability and Safety: Views are stable data structures that are not affected by any memory reallocations of internal arrays. They do not maintain persistent references to state, avoiding crashes from invalid pointers.
+
+
+
+Instant Snapshot: Each view is a snapshot copy of the data updated at the moment of the request or upon receiving a network update.
+
+
+
+Blueprint-Friendly: Data types are optimized for Blueprint exposure, allowing designers to access complex information (such as NxM placement) in an ergonomic way.
+
+ -------------------------------------------------------------------------------- 
+
+LAYER 1 — Single Component Inspection
+
+Layer 1 queries allow inspection of the state of a single UInventoryComponent.
+
+Main View Structs
+
+
+
+
+
+FInventoryItemView: Contains the item identity (definition), quantity, dynamic tags, and the complete placement model (FInventoryPlacementInfo), which clearly distinguishes between grid positions or equipment slots.
+
+
+
+FInventoryContainerView: Represents a space (backpack, chest, etc.), providing dimensions, the list of contained items, and statistics such as the number of free or occupied cells.
+
+
+
+FInventoryFragmentView: Allows access to dynamic data such as durability or loaded ammunition. In Blueprint it is recommended to prefer typed helpers (e.g. TryGetDurabilityFragment) rather than direct manipulation of the structures.
+
+Common component Query APIs
+
+
+
+
+
+GetRootContainerViews: The main function for the local owner UI; returns in a single call all root containers (e.g. head slot, torso, main backpack).
+
+
+
+QueryItemsByTag / QueryContainersByTag: Allow targeted searches by filtering elements based on GameplayTags or complex queries.
+
+
+
+PreviewAddItemPlacement: This is the recommended high-level query for the UI. Unlike the pure geometric query, this passes through the Rules Engine and returns the true expected local outcome (e.g. if the action is denied due to permissions or acceptance filters).
+
+-------------------------------------------------------------------------------- 
+
+LAYER 2 — Cross-Inventory Interaction Inspection
+
+In interactions between two actors (e.g. Player <-> Chest), the queries of the UInventoryInteractionComponent are used.
+
+Session View Structs
+
+
+
+
+
+FInventoryInteractionSessionView: Provides the global state of the session, including the mode (ReadOnly/Write), lock state, any suspension reasons, and the set of authorized capabilities (Capability Snapshot).
+
+
+
+FInventoryInteractionEndpointView: Describes the two participants (Primary and Secondary) and allows retrieval of references to the Layer 1 components involved.
+
+
+
+FInventoryInteractionPendingOperationView: Shows operations still awaiting server confirmation or barrier synchronization, allowing the UI to display “predicted” feedback or loading icons.
+
+Key Query APIs
+
+
+
+
+
+GetActiveSessionView: Returns the complete view of the current session.
+
+
+
+GetPrimary/SecondaryInventoryComponent: Provide access to the two endpoints, allowing the UI to populate the two interface panels by calling the normal Layer 1 queries on each of them.
+
+
+
+PreviewInteractionOperation: Locally validates a cross-inventory action (e.g. moving an item into the chest) to know in advance whether the request would be accepted.
+
+ -------------------------------------------------------------------------------- 
+
+UI Best Practice: Event-Driven Architecture
+
+To ensure maximum performance, the system discourages polling (calling queries every frame). Widgets must be designed to react exclusively to the component’s Delegates.
+
+
+
+
+
+Subscription: At BeginPlay, widgets bind to relevant events (e.g. OnInventoryChanged, OnInteractionSessionSuspended).
+
+
+
+Update: When an event fires, the widget invokes the Query APIs to obtain updated View Structs.
+
+
+
+Rendering: The UI redraws based exclusively on the received snapshot.

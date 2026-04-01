@@ -1,0 +1,37 @@
+Locking System
+
+The Layer 2 Locking System is the architecture responsible for managing concurrency when multiple players interact simultaneously with the same external inventory (such as a shared chest or a team storage). To guarantee full data integrity and prevent conflicts, the system is based on the fundamental Multi-View / Single-Writer principle.
+
+In short: many can see, but only one can write, and the server acts as the sole arbiter of this right.
+
+Lock States
+
+Each interaction session tracks the relationship between the player and the external inventory through precise logical states:
+
+Exclusive Write (HeldByThisSession): The player owns the lock and can perform mutating operations such as transfers, stack splitting, or swaps.
+
+Held by Others (HeldByOtherSession): Another player is currently modifying the inventory; the contents remain visible, but modification actions are disabled.
+
+Free (Unlocked): No player owns the write right; it is possible to request promotion to begin interacting with the items.
+
+Ownership and Promotion Dynamics
+
+The transition between access modes is governed by a server-authoritative protocol:
+
+Promotion Request (Upgrade): A read-only observer can request ownership of the lock. The server grants the switch to write mode only if the lock is currently free and if the chest’s security policy allows it.
+
+Voluntary Release (Downgrade): A player can choose to switch to read-only mode, freeing the lock for others without having to close their interface.
+
+Forced Takeover Prohibited: The system prevents “stealing” the lock. A player cannot take the write right from another active user; release must be voluntary, due to inactivity timeout, or due to disconnection of the current owner.
+
+Integrity and Logical Generations
+
+To prevent operations built in a context that is no longer valid from being executed incorrectly, every lock state change (Upgrade or Downgrade) triggers a Session Epoch Bump (SessionEpoch). This mechanism acts as a safety barrier: any pending or “queued” operation built during the previous epoch is instantly invalidated, ensuring that every change is validated against the real and updated ownership state of the session.
+
+Synchronization and Events
+
+The system is designed to be entirely event-driven. When the write right is acquired or released, the server automatically notifies not only the directly involved user, but also all other sessions observing the same inventory. This allows the various players’ UI to update in real time (for example enabling the “Withdraw” button as soon as a teammate closes the chest) without having to constantly poll the server.
+
+Automatic Release and Security
+
+In critical situations, such as when a player moves too far away from the container or their session is suspended due to loss of visibility, the server intervenes by automatically revoking the lock. This “grace window” ensures that an inventory never remains indefinitely locked due to an inactive or out-of-range player.

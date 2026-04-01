@@ -1,0 +1,43 @@
+Requirements and Compatibility
+
+To ensure optimal performance and maximum reliability in multiplayer transactions, Inventory_X is designed to integrate with the latest versions of Unreal Engine, leveraging the latest developments of the CoreUObject framework and the networking system.
+
+Supported Unreal Engine Versions
+
+The plugin officially supports the following engine versions:
+
+Unreal Engine 5.1 up to Unreal Engine 5.7 (and later).
+
+[!NOTE] For projects using Unreal Engine 5.7, the plugin includes specific optimizations that remove the dependency on the external StructUtils module, as its functionalities have been integrated natively into CoreUObject.
+
+Languages and Scripting
+
+Inventory_X is written entirely in C++ to ensure maximum performance and architectural stability, but it is designed to be Blueprint-friendly.
+
+C++: Required for advanced extensions, new fragment types, or custom validation logic.
+
+Blueprint: All core functionalities, including command wrappers and state queries, are exposed for use via Blueprint nodes.
+
+Module Dependencies
+
+The core of the plugin (Layer 1) is designed to be extremely lightweight and UI-agnostic. It does not require the installation of heavy UI frameworks or specific third-party plug-ins. Minimum dependencies include:
+
+Core / CoreUObject: Fundamental object and data management.
+
+GameplayTags: Primary system for item classification and rules.
+
+NetCore: Support for network communication and delta replication.
+
+Network and Server Architecture
+
+The system is tested and supported for the following configurations:
+
+Single Player: Full local management.
+
+Listen Server: The host acts as both server and client with zero latency.
+
+Dedicated Server: Architecture optimized for enterprise dedicated servers with secure lock and session management.
+
+Hardware Requirements and Platforms
+
+Thanks to the use of “flat” data structures (Registry Flat) and memory optimization through lightweight structs, the plugin is suitable for a wide range of platforms, from mobile titles to complex extraction shooters for PC and console.

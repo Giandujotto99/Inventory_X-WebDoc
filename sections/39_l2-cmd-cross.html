@@ -1,0 +1,20 @@
+<section id="l2-cmd-cross" class="tutorial-section">
+    <h1>Command Wrapper Cross-Inventory</h1>
+    <p>The Cross-Inventory Command Wrappers represent the public operational surface of Layer 2, designed to allow the movement and manipulation of items between two distinct inventories (for example, between the player and a chest).</p>
+    <p>These wrappers are high-level functions exposed by the UInventoryInteractionComponent that allow complex operations to be executed without having to manually configure the underlying technical requests.</p>
+    <h2>Usage Philosophy</h2>
+    <p>Simplification: Instead of building complex data structures, the developer uses dedicated functions (e.g., TryTransferItem) with clear and readable parameters.</p>
+    <p>Network Transparency: The wrappers automatically detect whether the action occurs locally or must be forwarded to the server via RPC, instantly activating predictive simulation (Prediction) for the player.</p>
+    <p>Logic Unification: The Blueprint APIs call exactly the same C++ code used by the system, ensuring that validation rules are identical in every context.</p>
+    <h2>Core Operations</h2>
+    <p>The system supports four main types of interaction between endpoints (Primary and Secondary):</p>
+    <p>TryTransferItem: Moves an entire item (or a full stack) from one inventory to another. Automatically handles both grid placement and equipment slots.</p>
+    <p>TrySplitStack: Splits a stack located in one inventory and creates the resulting new stack in the other inventory, allowing partial withdrawals or deposits.</p>
+    <p>TryMergeStack: Merges a stack from one endpoint into a target stack already existing in the other inventory, adding quantities if the rules allow it.</p>
+    <p>TrySwapItems: Swaps the position of two items located in different inventories. The action is atomic: either both items are successfully moved to their respective new destinations, or neither moves, preventing data loss.</p>
+    <h2>Outcome Management and Feedback</h2>
+    <p>Unlike simple Layer 1 operations, these functions return a result that takes into account the asynchronous nature of multiplayer:</p>
+    <p>Immediate Response: The wrapper immediately returns a status (e.g., Pending if the action has been sent to the server, or Rejected if it is clearly invalid locally).</p>
+    <p>Scoped Identity: Each command uses “Scoped Handles” to precisely identify which of the two inventories the involved items belong to, avoiding ambiguity during the transaction.</p>
+    <p>Completion via Delegate: Once the server confirms the action and the network has synchronized, the system notifies success or any correction through dedicated events.</p>
+</section>

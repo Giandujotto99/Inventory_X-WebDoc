@@ -1,0 +1,37 @@
+Container e Item Handle
+
+In Inventory_X, references to objects and containers at runtime never occur via direct pointers to memory. Since the records are stored in "flat" arrays that can reallocate their own memory (Registry Flat), the use of raw pointers would be unstable and dangerous.
+
+The system solves this problem through the architecture of stable Handles.
+
+Structure of a Handle
+
+Each handle (whether it is an Item, a Container, or a Fragment) is a lightweight structure (USTRUCT) composed of two fundamental elements:
+
+Id: A numeric identifier (int32) that points to the specific slot in the registry.
+
+Generation: A version counter (uint32) that guarantees the temporal uniqueness of the reference.
+
+The Generation Mechanism
+
+The core of handle stability lies in the Generation Counter. When an object is destroyed, its Id is added to a list of "free Ids" to be reused in the future. However, every time an Id is reassigned to a new object, the system increments the value of its Generation.
+
+This ensures that an old handle held by the UI or another system instantly becomes invalid (stale), since its generation will no longer match the current one stored in the component registry.
+
+Strict Type Safety
+
+To prevent logical errors during development, handles are strongly typed via the DECLARE_INVENTORY_HANDLE macro. This means that:
+
+FInventoryItemHandle and FInventoryContainerHandle are distinct types.
+
+It is not possible to implicitly compare a handle of an item with that of a container, nor pass one where the other is expected; the code would not compile, guaranteeing maximum architectural safety.
+
+Integration and Networking
+
+Handles are designed to be the primary communication vehicle between the various plugin systems:
+
+Blueprint: They are exposed as selectable variable types, allowing designers to store references to objects without risking crashes.
+
+Networking: They implement custom serialization (NetSerialize) to minimize network traffic, sending only the bits necessary to identify the record on the client.
+
+Read-Only: To ensure data integrity, the component provides resolution methods that temporarily transform a handle into a pointer to the record, valid only for the duration of the current operation.

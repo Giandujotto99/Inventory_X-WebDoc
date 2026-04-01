@@ -1,0 +1,35 @@
+Introduction to the Plugin
+
+Inventory_X is an advanced solution for Unreal Engine 5.7 dedicated to the creation of complex, highly performant, and multiplayer-ready inventory systems.
+
+Unlike other plugins that impose a graphical interface or a rigid gameplay flow, Inventory_X adopts a backend-first and UI-agnostic philosophy. This means that the plugin handles secure data management, validation rules, and network synchronization, leaving developers complete freedom to design the desired user interface (UI) and user experience (UX).
+
+Vision and Philosophy
+
+At the heart of Inventory_X is a Server-Authoritative system with Client Prediction. Every change to the inventory state is validated and confirmed by the server, but the client immediately simulates the operation locally to ensure an instant response to user input (eliminating perceived latency). If the server rejects an action, the system automatically handles reconciliation and data realignment.
+
+Key Features
+
+Inventory_X has been designed to support the most modern and diverse use cases in the video game industry:
+
+NxM Grid Systems: Native support for items of different sizes that occupy multiple cells, with 90-degree rotation and automatic space search algorithms (First-Fit).
+
+Nested Inventories (Nesting): Recursive management of containers inside other items, such as bags inside backpacks, tactical pouches, or weapon modules, with automatic protection against infinite loops.
+
+Typed Equipment Slots: Management of specific slots (e.g., Head, Torso, Primary Weapon) with compatibility rules based on tags.
+
+Data-Driven and Tag-Driven: The entire system behavior is driven by UDataAsset and GameplayTags, allowing designers to define access, stacking, and placement rules without touching a single line of code.
+
+Enterprise Multiplayer: Architecture ready for dedicated servers, with optimizations to minimize network traffic through differential replication (delta replication).
+
+Layered Architecture (Layering)
+
+The plugin is divided into logical modules that can be scaled based on the project’s needs:
+
+Layer 1 (Core): Manages the fundamental logic of a single inventory (registries, layout, intra-component rules, and basic networking).
+
+Layer 2 (Interaction): An optional “Enterprise” module to manage interaction between different inventories (e.g., Player <-> Chest), introducing concepts such as secure sessions and locking systems to prevent conflicts between multiple players.
+
+Project Goals
+
+Inventory_X aims to offer a solid foundation for both small indie projects and large productions in the style of extraction shooters or complex RPGs, ensuring that inventory logic never becomes a performance bottleneck or a source of vulnerabilities in multiplayer.

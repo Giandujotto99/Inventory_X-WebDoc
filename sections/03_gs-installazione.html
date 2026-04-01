@@ -1,0 +1,80 @@
+<section id="gs-installazione" class="tutorial-section">
+    <h1>Installation and Setup</h1>
+    <p>The integration of Inventory_X is designed to be straightforward, whether you use a project based entirely on Blueprint or one based on C++. The plugin is structured into separate modules to ensure that the core remains lightweight and free of unnecessary dependencies.</p>
+    
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Plugin Placement</h3>
+                <p>To get started, copy the plugin folder into your project's Plugins directory:</p>
+                <div class="code-block">
+                    <pre><code>YourProject/Plugins/Inventory_X/</code></pre>
+                </div>
+                <p>Make sure that the Inventory_X.uplugin file is configured correctly. By default, the plugin is set as a Runtime module with a Default loading phase.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Module Configuration (C++ Only)</h3>
+                <p>If your project uses C++, add the required modules to the YourProject.Build.cs file.</p>
+                <ul>
+                    <li><strong>Layer 1 (Required):</strong> Add Inventory_X to your PublicDependencyModuleNames.</li>
+                    <li><strong>Layer 2 (Optional):</strong> If you need enterprise cross-inventory interactions, add Inventory_XLayer2.</li>
+                    <li><strong>Client Module (Optional):</strong> For using asynchronous cosmetic loading helpers, add Inventory_XClient.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Adding the Component</h3>
+                <p>The heart of the system is the UInventoryComponent. To enable inventory logic on an Actor (such as your Character or Pawn):</p>
+                <ul>
+                    <li>Open the desired Actor in the Unreal Editor.</li>
+                    <li>Click on Add Component and search for Inventory Component.</li>
+                    <li>The component is marked as BlueprintSpawnableComponent, allowing you to easily add it to any Actor.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Multiplayer Configuration</h3>
+                <p>Inventory_X is natively multiplayer-ready. To ensure proper network functionality:</p>
+                <ul>
+                    <li>The component is automatically set to replicate in the constructor (SetIsReplicatedByDefault(true)).</li>
+                    <li>Make sure that the Actor that owns the component is also set to replicate.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h3>Inventory Initialization</h3>
+                <p>Once the component has been added, you need to configure the Root Containers (the main inventory spaces, such as the grid or equipment slots). This operation must occur only on the Server.</p>
+                <ul>
+                    <li><strong>Via Blueprint:</strong> Use the BeginPlay event in the Actor and, after a HasAuthority check, use the Add Root Container node. You will need to provide a valid UInventoryContainerDefinition to define the size and rules of the grid or slots.</li>
+                    <li><strong>Initial Population:</strong> You can use the TryAddItem or TryEquipItem nodes to generate the player’s starting items at the moment of first spawn.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">6</div>
+            <div class="step-content">
+                <h3>Gameplay Tags Configuration</h3>
+                <p>The plugin uses Gameplay Tags for almost all of its logic. Upon installation, the system automatically registers the root namespaces (e.g., InventoryX.*).</p>
+                <div class="info-box tip">
+                    <div class="info-title">💡 Suggestion</div>
+                    <p>We recommend defining your specific tags (item categories, slot types) through Data Assets or the project tag tables to fully leverage the data-driven rules engine.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

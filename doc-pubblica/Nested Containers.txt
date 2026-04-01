@@ -1,0 +1,31 @@
+Nested Containers
+
+The Nested Containers (Nesting) system is one of the most advanced features of Inventory_X, designed to manage complex hierarchies of objects in a performant and secure way. This system allows a single object (Item) to host one or more internal containers, enabling scenarios such as backpacks containing pouches, ammo crates, or weapons with accessory slots.
+
+Fundamental Concepts
+
+An object that has child containers acts as their logical Parent. The relationship is defined entirely in the data:
+
+Definition: "Container" objects specify which and how many containers to instantiate through the ChildContainerDefinitions field in their UInventoryItemDefinition.
+
+Instantiation: When the main object is created, the system automatically generates the corresponding child containers based on the definition, assigning them stable handles and linking them recursively to the parent object.
+
+Behavior and Persistence
+
+The hierarchy of nested containers is treated as a single entity during gameplay operations:
+
+Subtree Transfer: When a parent object is moved (for example dragged from a crate to a backpack), the entire "subtree" of containers and the objects contained within them moves with it, preserving the integrity of the contents.
+
+Recursive Lifecycle: Destroying a parent object results in the automatic and recursive removal of all its child containers and the objects they contained, ensuring that no "orphaned" data remains in memory.
+
+Safety Mechanisms (Guard Rails)
+
+To ensure system stability and prevent logical paradoxes or memory crashes, the plugin implements two fundamental checks applied both by the server and local prediction:
+
+Cycle Prevention: The system absolutely prevents inserting a container inside itself or inside one of its descendants. A validation algorithm walks up the parent chain to ensure the operation does not create an infinite loop.
+
+Depth Limit (MaxNestingDepth): To optimize performance and UI readability, version v1 imposes a maximum nesting limit of 3 levels. Any attempt to exceed this depth is blocked with the error code MaxNestingDepthExceeded.
+
+Visualization and UI
+
+Inventory_X provides the necessary tools for the UI to react to hierarchy changes in real time. The OnContainerCreated and OnContainerDestroyed events are emitted when an object with child containers enters or exits the inventory, allowing the UI to dynamically open or close secondary panels or nested widgets.

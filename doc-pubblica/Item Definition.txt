@@ -1,0 +1,59 @@
+Item Definition
+
+The UInventoryItemDefinition is the central asset (UDataAsset) of Inventory_X. It describes the stable and immutable identity of an object, defining its physical properties, stacking rules, and functional capabilities.
+
+The system adopts a composition-based approach: instead of being a monolithic asset, the item definition points to other specialized assets to handle specific rules (stack, placement, equip), allowing the same logic to be reused for dozens of different objects.
+
+Main Asset Fields
+
+Each item definition includes the following groups of data:
+
+Identity and Classification:
+
+ItemTags: GameplayTags that define categories, capabilities, and families of the object (e.g. InventoryX.Item.Category.Weapon).
+
+Geometry and Layout:
+
+ShapeSize: Base size of the object expressed in FIntPoint coordinates (NxM).
+
+bSupportsRotation: Indicates whether the object can be rotated by 90 degrees within a grid.
+
+Logic and Rules (Asset References):
+
+StackRule: Points to a UInventoryStackRuleDefinition (stacking limits, split, and merge).
+
+PlacementRule: Points to a UInventoryPlacementRuleDefinition (geometric placement constraints).
+
+EquipRule: Points to a UInventoryEquipRuleDefinition (compatibility with equipment slots).
+
+Dynamic State and Nesting:
+
+FragmentDefinitions: List of templates for runtime fragments (e.g. durability, ammunition).
+
+ChildContainerDefinitions: List of definitions for child containers (necessary to create bags or weapons with attachments).
+
+Cosmetic Data:
+
+CosmeticDefinition: Asynchronous reference (TSoftObjectPtr) to a UInventoryItemCosmetic containing icons, names, and meshes.
+
+Network Identity: FInventoryDefinitionId
+
+To optimize performance and security in multiplayer, the system never sends the asset pointer or its path over the network. Each UInventoryItemDefinition exposes a GetDefinitionId() method that returns an FInventoryDefinitionId. This lightweight identifier wraps an FPrimaryAssetId and is used as a stable key to resolve the correct asset on both the server and the client through a centralized resolver.
+
+Editor Validation
+
+To prevent configuration errors, the asset implements automatic checks during saving:
+
+Required Tags: An object must have at least one classification tag.
+
+Valid Dimensions: The ShapeSize components must both be greater than or equal to 1.
+
+Nesting Consistency: If child containers are defined, the object must have the tag InventoryX.Item.Capability.Container.
+
+Unique Fragments: It is not allowed to assign two fragments of the same type to the same object.
+
+Design Principles
+
+Immutability: Once loaded, the definition is treated as read-only. Any data that changes over time lives in runtime records, not in the asset.
+
+Clear Separation: Data required for simulation (dimensions, rules) is kept separate from aesthetic data (cosmetics), allowing the dedicated server to ignore heavy visual data.
