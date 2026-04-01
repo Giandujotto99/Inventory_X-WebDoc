@@ -41,6 +41,11 @@
             <img src="images/Inventory_X Logo-05k.png" alt="Inventory_X" class="hero-logo">
             <h1 class="hero-title">INVENTORY<span>_X</span></h1>
             <p class="hero-subtitle">Advanced Inventory System for Unreal Engine 5</p>
+            <div class="video-wrapper small">
+                <video controls>
+                    <source src="https://github.com/Giandujotto99/Inventory_X-WebDoc/releases/download/media/Inventory_X__A_Deep_Dive.mp4" type="video/mp4">
+                </video>
+            </div>
             <div class="hero-cta">
                 <a href="reference.html" class="btn btn-primary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -76,9 +81,8 @@
                         <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                 </div>
-                <h3 class="feature-item-title">Slot-Based Containers</h3>
-                <p class="feature-item-desc">[Placeholder] Define containers with configurable slots, weight limits,
-                    and filter rules. Support for grid-based and list-based layouts.</p>
+                <h3 class="feature-item-title">Grid &amp; Slot Containers</h3>
+                <p class="feature-item-desc">Define Grid-Based (NxM Grid) and Slot-Based (Typed Slots) containers with tag-driven filters, access policies, rotation, and nesting support.</p>
             </a>
             <a href="tutorials-v1.0.html" class="feature-item">
                 <div class="feature-item-icon">
@@ -89,8 +93,7 @@
                     </svg>
                 </div>
                 <h3 class="feature-item-title">Item Definitions</h3>
-                <p class="feature-item-desc">[Placeholder] Data-driven item system with fragments, stackability,
-                    metadata, and runtime extensibility. Define items via Data Assets.</p>
+                <p class="feature-item-desc">Reusable UDataAsset definitions drive item identity, stacking, placement, equip rules, fragments, and cosmetics.</p>
             </a>
             <a href="tutorials-v1.0.html" class="feature-item">
                 <div class="feature-item-icon">
@@ -100,9 +103,8 @@
                         <line x1="8" y1="12" x2="16" y2="12"></line>
                     </svg>
                 </div>
-                <h3 class="feature-item-title">Transaction System</h3>
-                <p class="feature-item-desc">[Placeholder] Atomic operations for add, remove, move, split, and merge.
-                    All mutations go through a validated transaction pipeline.</p>
+                <h3 class="feature-item-title">Operation Pipeline</h3>
+                <p class="feature-item-desc">Every mutation flows through Validate, Simulate, Commit, and Notify, with atomic handling for swap, split, merge, and batch operations.</p>
             </a>
             <a href="tutorials-v1.0.html" class="feature-item">
                 <div class="feature-item-icon">
@@ -111,8 +113,7 @@
                     </svg>
                 </div>
                 <h3 class="feature-item-title">Prediction-Aware</h3>
-                <p class="feature-item-desc">[Placeholder] Client-side prediction with server reconciliation.
-                    Responsive UI with authoritative server validation and rollback support.</p>
+                <p class="feature-item-desc">Server-Authoritative execution with Client Prediction, reconciliation, and authoritative correction when local simulation diverges.</p>
             </a>
             <a href="tutorials-v1.0.html" class="feature-item">
                 <div class="feature-item-icon">
@@ -122,9 +123,8 @@
                         <line x1="6" y1="20" x2="6" y2="14"></line>
                     </svg>
                 </div>
-                <h3 class="feature-item-title">Query & Filter</h3>
-                <p class="feature-item-desc">[Placeholder] Powerful query API to search, filter, and sort inventory
-                    contents. Tag-based filtering, metadata queries, and custom predicates.</p>
+                <h3 class="feature-item-title">Query &amp; Views</h3>
+                <p class="feature-item-desc">Read-only View Structs and Query APIs expose stable snapshots for UI, Blueprint, tag searches, and placement previews.</p>
             </a>
             <a href="tutorials-v1.0.html" class="feature-item">
                 <div class="feature-item-icon">
@@ -136,9 +136,8 @@
                         </path>
                     </svg>
                 </div>
-                <h3 class="feature-item-title">Network Ready</h3>
-                <p class="feature-item-desc">[Placeholder] Optimized replication with delta compression. Fast Array
-                    serialization, late joiner support — works out of the box.</p>
+                <h3 class="feature-item-title">Delta Replication</h3>
+                <p class="feature-item-desc">Flat registries and differential replication synchronize only changed data, reducing bandwidth and keeping multiplayer inventories scalable.</p>
             </a>
         </div>
     </section>
@@ -173,32 +172,32 @@
         </div>
     </section>
 
-    <!-- Performance Section -->
+    <!-- Architecture Highlights -->
     <section class="features-section">
         <div class="section-header">
-            <h2 class="section-title">⚡ Performance</h2>
-            <p class="section-subtitle">[Placeholder] Optimized for scale — benchmarked and proven</p>
+            <h2 class="section-title">Architecture Highlights</h2>
+            <p class="section-subtitle">Key facts pulled directly from the current v1.0 documentation</p>
         </div>
         <div class="stats-grid">
             <div class="stat-item">
-                <div class="stat-number green">120</div>
-                <div class="stat-label">FPS Maintained</div>
-                <div class="stat-desc">[Placeholder] With hundreds of items</div>
+                <div class="stat-number green">2</div>
+                <div class="stat-label">Operational Layers</div>
+                <div class="stat-desc">Layer 1 handles a single inventory; Layer 2 adds secure cross-inventory sessions.</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number cyan">1000+</div>
-                <div class="stat-label">Items Per Container</div>
-                <div class="stat-desc">[Placeholder] Efficient slot management</div>
+                <div class="stat-number cyan">3</div>
+                <div class="stat-label">Flat Registries</div>
+                <div class="stat-desc">Runtime state is split into item, container, and fragment registries.</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number warning">&lt;1ms</div>
-                <div class="stat-label">Transaction Cost</div>
-                <div class="stat-desc">[Placeholder] Atomic operations</div>
+                <div class="stat-number warning">4</div>
+                <div class="stat-label">Pipeline Phases</div>
+                <div class="stat-desc">Validate, Simulate, Commit, and Notify define every inventory mutation.</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number purple">0</div>
-                <div class="stat-label">GC Allocations</div>
-                <div class="stat-desc">[Placeholder] Pool-based architecture</div>
+                <div class="stat-number purple">90°</div>
+                <div class="stat-label">Grid Rotation</div>
+                <div class="stat-desc">NxM items can rotate and use automatic First-Fit space search.</div>
             </div>
         </div>
     </section>
