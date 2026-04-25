@@ -1,0 +1,49 @@
+<section class="tutorial-section" id="bp-l1-13-final">
+    <h1>Layer 1 - Complete System Checklist</h1>
+    <p class="doc-lead">This page closes the Layer 1 path. Use it as a checklist before moving to Layer 2.</p>
+
+    <h2>Features You Should Have</h2>
+    <table class="data-table">
+        <thead><tr><th>Area</th><th>Completed when...</th></tr></thead>
+        <tbody>
+            <tr><td>Setup</td><td>Asset Manager, tags, folders, and tutorial map are configured.</td></tr>
+            <tr><td>Definitions</td><td>You have items, containers, slots, rules, fragments, and cosmetics created inside the project.</td></tr>
+            <tr><td>Player inventory</td><td>The character creates root containers server-side and replicates them to clients.</td></tr>
+            <tr><td>UI</td><td>The UI reads only from views and refreshes on <code>OnInventoryChanged</code>.</td></tr>
+            <tr><td>Operations</td><td>Add, move, swap, rotate, and remove work with result feedback.</td></tr>
+            <tr><td>Stacks</td><td>Split and merge respect max stack size and fragments.</td></tr>
+            <tr><td>Equipment</td><td>Equip and unequip respect slot profile and equip rule.</td></tr>
+            <tr><td>Fragments</td><td>Tooltips and UI read ammo, durability, and condition.</td></tr>
+            <tr><td>Nesting</td><td>Items with child containers open a nested panel.</td></tr>
+            <tr><td>Drop/Pickup</td><td>Items can leave the inventory and re-enter from the world.</td></tr>
+            <tr><td>Prediction</td><td>The UI handles pending, confirmed, rejected, and corrected operations.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Standard Debug Flow</h2>
+    <p>When something does not work, always check in the same order:</p>
+    <ol>
+        <li>Is the Data Asset configured correctly?</li>
+        <li>Does the tag query match the runtime tags?</li>
+        <li>Is the container grid-based or slot-based as expected?</li>
+        <li>Are you calling the node on the correct network role?</li>
+        <li>Is the result code telling you the real reason?</li>
+        <li>Is the UI reading updated views or old variables?</li>
+    </ol>
+
+    <h2>Frequent Errors</h2>
+    <table class="data-table">
+        <thead><tr><th>Symptom</th><th>Check</th></tr></thead>
+        <tbody>
+            <tr><td>Item definition null</td><td>Asset Manager for <code>InventoryItemDefinition</code> is configured incorrectly.</td></tr>
+            <tr><td>AddRootContainer returns invalid</td><td>Called on client instead of Authority.</td></tr>
+            <tr><td>Drag UI moves the widget but not the item</td><td>You are editing the UI without calling <code>TryMoveItem</code>.</td></tr>
+            <tr><td>Equip always rejected</td><td>Compatible Slot Query or Accepted Item Query does not match.</td></tr>
+            <tr><td>Drop fails</td><td><code>ItemToDrop</code> is missing or the character does not implement <code>InventoryDropTransformProvider</code>.</td></tr>
+            <tr><td>Multiplayer desync</td><td>The UI keeps duplicated state instead of reading views again.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Ready For Layer 2</h2>
+    <p>Move to Layer 2 once the player inventory is stable. Layer 2 does not replace Layer 1: it uses it to coordinate interactions between two inventory components, such as player and chest.</p>
+</section>

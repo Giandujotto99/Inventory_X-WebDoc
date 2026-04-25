@@ -1,0 +1,97 @@
+<section class="tutorial-section" id="bp-l1-05-ui-base">
+    <h1>Layer 1 - Building A Basic Inventory UI</h1>
+    <p class="doc-lead">Inventory_X does not impose a UI. In this tutorial, you create a Blueprint UI that reads component views and displays grids, equipment slots, icons, quantity, and tooltips.</p>
+
+    <h2>Widgets To Create</h2>
+    <table class="data-table">
+        <thead><tr><th>Widget</th><th>Responsibility</th></tr></thead>
+        <tbody>
+            <tr><td><code>WBP_InventoryRoot</code></td><td>Main widget. Receives the player inventory reference and coordinates refresh.</td></tr>
+            <tr><td><code>WBP_ContainerGrid</code></td><td>Draws a grid-based container from <code>FInventoryContainerView</code>.</td></tr>
+            <tr><td><code>WBP_InventoryCell</code></td><td>Single grid cell. Stores X/Y coordinates and container handle.</td></tr>
+            <tr><td><code>WBP_ItemIcon</code></td><td>Represents an item. Stores <code>FInventoryItemView</code> and displays icon, quantity, and size.</td></tr>
+            <tr><td><code>WBP_EquipmentPanel</code></td><td>Draws a slot-based container.</td></tr>
+            <tr><td><code>WBP_ItemTooltip</code></td><td>Displays display name, description, fragments, and debug info.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Root Widget</h2>
+    <p>In <code>WBP_InventoryRoot</code>, create these variables:</p>
+    <ul>
+        <li><code>InventoryComponent</code>: type <code>InventoryComponent Object Reference</code>, Expose on Spawn.</li>
+        <li><code>BackpackGridWidget</code>: reference to the grid widget.</li>
+        <li><code>EquipmentWidget</code>: reference to the equipment widget.</li>
+    </ul>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Refresh Flow</span></div>
+        <pre><code>Function RefreshInventory
+  Is Valid InventoryComponent?
+  GetRootContainerViews
+  ForEach ContainerView:
+    Branch bIsGridBased -&gt; BackpackGridWidget.SetContainerView(ContainerView)
+    Branch bIsSlotBased -&gt; EquipmentWidget.SetContainerView(ContainerView)</code></pre>
+    </div>
+
+    <h2>Opening The UI</h2>
+    <p>In the player character or player controller, create an input to open and close the UI.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Blueprint Flow</span></div>
+        <pre><code>Input ToggleInventory
+  If InventoryWidget is not valid:
+    Create Widget WBP_InventoryRoot
+      InventoryComponent = Character.Inventory
+    Add To Viewport
+    Bind Inventory.OnInventoryChanged -&gt; InventoryWidget.RefreshInventory
+    RefreshInventory
+  Else:
+    Remove From Parent
+    Clear reference</code></pre>
+    </div>
+
+    <h2>Drawing A Grid</h2>
+    <p><code>WBP_ContainerGrid</code> should receive an <code>FInventoryContainerView</code>. Use <code>Dimensions.X</code> and <code>Dimensions.Y</code> to create cells.</p>
+    <ol>
+        <li>Clear the cell panel.</li>
+        <li>Loop Y from <code>0</code> to <code>Dimensions.Y - 1</code>.</li>
+        <li>Loop X from <code>0</code> to <code>Dimensions.X - 1</code>.</li>
+        <li>Create <code>WBP_InventoryCell</code> and save coordinates plus container handle.</li>
+        <li>After creating the cells, loop through the container <code>Items</code> and create a <code>WBP_ItemIcon</code> for each item.</li>
+    </ol>
+
+    <h2>Loading Cosmetics</h2>
+    <p>To get display names and icons, use the <code>Inventory_XClient</code> module.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Item Icon</span></div>
+        <pre><code>WBP_ItemIcon.SetItemView(ItemView)
+  Get ItemDefinition from ItemView
+  AsyncLoadItemCosmetic
+    OnLoaded:
+      Set Display Name
+      Async Load Icon texture if assigned
+      Set Brush From Texture
+  Show Quantity if ItemView.Quantity &gt; 1</code></pre>
+    </div>
+
+    <div class="info-box tip">
+        <div class="info-title">Why use AsyncLoadItemCosmetic</div>
+        <p><code>LoadItemCosmetic</code> blocks until the asset is loaded. It is fine for debugging, but in production UI prefer <code>AsyncLoadItemCosmetic</code>.</p>
+    </div>
+
+    <h2>Tooltip</h2>
+    <p>When the mouse hovers over <code>WBP_ItemIcon</code>, create <code>WBP_ItemTooltip</code> and pass the <code>ItemView</code>. In the tooltip, show:</p>
+    <ul>
+        <li>Display name and description from the cosmetic.</li>
+        <li>Quantity.</li>
+        <li>Effective size.</li>
+        <li>Runtime tags.</li>
+        <li>Available fragments, using <code>GetItemFragments</code> or the <code>TryGet...</code> nodes.</li>
+    </ul>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Opening the UI shows backpack and equipment.</li>
+        <li>The items added in the previous tutorial are visible.</li>
+        <li>Stack quantities are correct.</li>
+        <li>When you add or remove items, <code>OnInventoryChanged</code> refreshes the UI.</li>
+    </ul>
+</section>

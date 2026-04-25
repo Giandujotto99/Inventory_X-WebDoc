@@ -1,0 +1,69 @@
+<section class="tutorial-section" id="bp-l1-12-multiplayer-prediction">
+    <h1>Layer 1 - Multiplayer And Client Prediction</h1>
+    <p class="doc-lead">Inventory_X is server-authoritative but applies prediction on the owning client. This tutorial explains how to test it and how to build a UI that handles pending, confirmed, rejected, and corrected operations.</p>
+
+    <h2>PIE Setup</h2>
+    <ul>
+        <li>Play As Client with 2 players, or Listen Server + Client.</li>
+        <li>For advanced testing, use a Dedicated Server.</li>
+        <li>Enable latency simulation from the editor or console net emulation if available.</li>
+        <li>Make sure the character replicates and the InventoryComponent is on the correct player owner.</li>
+    </ul>
+
+    <h2>Prediction Events</h2>
+    <table class="data-table">
+        <thead><tr><th>Event</th><th>When to use it</th></tr></thead>
+        <tbody>
+            <tr><td><code>OnPredictedOperationApplied</code></td><td>The client has immediately applied a local operation.</td></tr>
+            <tr><td><code>OnOperationConfirmed</code></td><td>The server confirmed the predicted operation.</td></tr>
+            <tr><td><code>OnOperationRejected</code></td><td>The server rejected the operation.</td></tr>
+            <tr><td><code>OnOperationCorrected</code></td><td>The server corrected the predicted state.</td></tr>
+            <tr><td><code>OnPredictedOperationInvalidated</code></td><td>A prediction is no longer valid because of authoritative state.</td></tr>
+            <tr><td><code>OnAuthoritativeRevisionObserved</code></td><td>The client received a new authoritative revision.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Pending UI</h2>
+    <p>When a command wrapper returns <code>Status = Pending</code>, mark the item or cell as pending. Do not block the entire UI, but avoid sending many incompatible operations on the same item.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Pending Tracking</span></div>
+        <pre><code>Result = Inventory.TryMoveItem(...)
+If Result.Status == Pending:
+  PendingOperationIds.Add(Result.OperationId)
+  Add visual overlay to affected item
+
+OnOperationConfirmed(OperationId):
+  Remove pending overlay
+
+OnOperationRejected(OperationId, ResultCode):
+  Remove pending overlay
+  Show error feedback</code></pre>
+    </div>
+
+    <h2>Confirmation Test</h2>
+    <ol>
+        <li>Start 2 players with simulated latency.</li>
+        <li>Move an item inside the backpack.</li>
+        <li>The client should see the move immediately.</li>
+        <li>After the server ack, the pending overlay disappears.</li>
+    </ol>
+
+    <h2>Reject Test</h2>
+    <p>To generate a reject, create a case where the client tries a move that is no longer valid for the server. For example, with two windows or server debug logic, occupy the target cell before the client receives replication.</p>
+    <p>Expected result: the client receives <code>OnOperationRejected</code> or a correction, and the UI realigns with authoritative views.</p>
+
+    <h2>Rules To Follow</h2>
+    <ul>
+        <li>Never save parallel inventory state in the UI.</li>
+        <li>Do not treat <code>Pending</code> as final success.</li>
+        <li>Always use operation ids to connect UI feedback and server acknowledgments.</li>
+        <li>After reject or correction, call <code>RefreshInventory</code> and read views from the component.</li>
+    </ul>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Owning client operations feel immediate.</li>
+        <li>Other clients only see the state replicated by the server.</li>
+        <li>The UI recovers correctly after reject or correction.</li>
+    </ul>
+</section>

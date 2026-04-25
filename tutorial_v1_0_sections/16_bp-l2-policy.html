@@ -1,0 +1,67 @@
+<section class="tutorial-section" id="bp-l2-03-policy">
+    <h1>Layer 2 - Complete Interaction Policy</h1>
+    <p class="doc-lead">The policy decides who can open a session, whether they can write, which operations they can perform, how close they must be, and what happens if they lose range or line of sight.</p>
+
+    <h2>Create The Policy</h2>
+    <p>Create an <code>InventoryInteractionPolicyDefinition</code> Data Asset named <code>DA_Policy_WorldChest_Default</code> in <code>Definitions/Rules</code> or in a dedicated <code>Definitions/InteractionPolicies</code> folder.</p>
+
+    <h2>Access</h2>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Tutorial value</th><th>Meaning</th></tr></thead>
+        <tbody>
+            <tr><td><code>bAllowReadOnlySessions</code></td><td>true</td><td>Allows opening the chest in read-only mode.</td></tr>
+            <tr><td><code>bAllowWriteSessions</code></td><td>true</td><td>Allows modifying the chest.</td></tr>
+            <tr><td><code>bAllowReadOnlyFallbackWhenWriteUnavailable</code></td><td>true</td><td>If another player has write lock, you can enter read-only.</td></tr>
+            <tr><td><code>bAllowWriteLockUpgrade</code></td><td>true</td><td>Allows upgrading from read-only to write-exclusive.</td></tr>
+            <tr><td><code>bAllowResumeFromSuspended</code></td><td>true</td><td>Allows resuming after suspension.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Capabilities</h2>
+    <p>For the tutorial, set:</p>
+    <ul>
+        <li><code>GrantedReadCapabilities</code>: <code>ViewExternalInventory</code>.</li>
+        <li><code>GrantedWriteCapabilities</code>: View, Deposit, Withdraw, SplitAcrossEndpoints, MergeAcrossEndpoints, SwapAcrossEndpoints, MoveWithinExternalInventory, SplitWithinExternalInventory, MergeWithinExternalInventory, SwapWithinExternalInventory, RotateWithinExternalInventory.</li>
+        <li><code>GrantedSuspendedCapabilities</code>: only <code>ViewExternalInventory</code> and <code>ResumeSuspendedSession</code>, if you want to allow UI during grace or suspended state.</li>
+    </ul>
+
+    <div class="info-box tip">
+        <div class="info-title">Mental model</div>
+        <p>Session mode decides read-only or write. Capabilities decide which concrete actions are allowed inside that session.</p>
+    </div>
+
+    <h2>Queries</h2>
+    <p>For the first chest, leave requester and primary owner queries empty. When you want restrictions, use Gameplay Tag Query to require specific tags on the player or deny forbidden tags.</p>
+
+    <h2>Reachability</h2>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Tutorial value</th></tr></thead>
+        <tbody>
+            <tr><td><code>bRequireInteractionRange</code></td><td>true</td></tr>
+            <tr><td><code>MaxInteractionDistance</code></td><td>250 or 300</td></tr>
+            <tr><td><code>bRequireLineOfSight</code></td><td>false at first, true in advanced tests</td></tr>
+            <tr><td><code>VisibilityTraceChannel</code></td><td><code>Visibility</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Lifecycle</h2>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Tutorial value</th></tr></thead>
+        <tbody>
+            <tr><td><code>bSuspendOnRangeLoss</code></td><td>true</td></tr>
+            <tr><td><code>OutOfRangeSuspendGraceSeconds</code></td><td>1.0</td></tr>
+            <tr><td><code>bSuspendOnVisibilityLoss</code></td><td>false, then true for testing</td></tr>
+            <tr><td><code>HardSessionTimeoutSeconds</code></td><td>0 for no timeout during the tutorial</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Assign The Policy To The Provider</h2>
+    <p>Open <code>BP_WorldChest</code>, select <code>ExternalProvider</code>, and assign <code>DA_Policy_WorldChest_Default</code> to <code>PolicyDefinition</code>.</p>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>The chest can open read-only and write-exclusive sessions.</li>
+        <li>If one player takes write lock, a second player can enter read-only if fallback is enabled.</li>
+        <li>Moving beyond the allowed range suspends the session according to the policy.</li>
+    </ul>
+</section>

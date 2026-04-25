@@ -1,0 +1,95 @@
+<section class="tutorial-section" id="bp-l1-06-core-operations">
+    <h1>Layer 1 - Main Inventory Operations</h1>
+    <p class="doc-lead">Now you make the UI interactive: add, move, swap, rotate, remove, and preview placement. The goal is to connect UI input to command wrappers, not manually edit widgets and arrays.</p>
+
+    <h2>Placement Info In Blueprint</h2>
+    <p>Many operations require <code>FInventoryPlacementInfo</code>. In Blueprint, use the <code>Make InventoryPlacementInfo</code> node.</p>
+    <table class="data-table">
+        <thead><tr><th>Placement</th><th>Fields</th><th>Use</th></tr></thead>
+        <tbody>
+            <tr><td>Grid</td><td><code>Kind = Grid</code>, <code>GridTopLeft = X/Y</code>, <code>Rotation</code></td><td>Backpacks, chests, bags, NxM containers.</td></tr>
+            <tr><td>Slot</td><td><code>Kind = Slot</code>, <code>SlotIndex</code></td><td>Equipment slots.</td></tr>
+            <tr><td>None</td><td><code>Kind = None</code></td><td>Used when you want the system to resolve a destination, for example in some unequip cases.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Adding Items For Debug</h2>
+    <p>Add debug buttons in the UI or temporary inputs on the character.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TryAutoAddItem</span></div>
+        <pre><code>Button Add Medkit
+  Inventory.TryAutoAddItem(DA_Item_Medkit, BackpackContainer, 1)
+  Branch WasOperationSuccessful(Result)
+    False: Print GetResultCodeDisplayName(Result.ResultCode)</code></pre>
+    </div>
+    <p>For the final UI, do not depend on <code>BackpackContainer</code> saved server-side. Find the container through <code>GetRootContainerViews</code> and choose the grid-based one or the one with the correct tag.</p>
+
+    <h2>Preview Before Drop</h2>
+    <p>When you drag an item over a cell, do not call <code>TryMoveItem</code> immediately. Use a preview first.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Hover Preview</span></div>
+        <pre><code>On Item Drag Over Cell
+  Make InventoryPlacementInfo
+    Kind = Grid
+    GridTopLeft = Cell X/Y
+    Rotation = CurrentDragRotation
+  Inventory.CanPlaceItemAtPlacement(TargetContainer, Placement, DraggedItemDefinition, true, DraggedItemHandle)
+  If bSuccess:
+    Highlight cells green
+  Else:
+    Highlight cells red and show FailReason</code></pre>
+    </div>
+
+    <h2>Move Item</h2>
+    <p>When the item is dropped on a valid cell:</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TryMoveItem</span></div>
+        <pre><code>On Drop Item On Cell
+  Placement = Make InventoryPlacementInfo(Grid, Cell X/Y, DragRotation)
+  Result = Inventory.TryMoveItem(DraggedItemHandle, TargetContainerHandle, Placement)
+  If Result.Status == Pending:
+    Mark item as pending in UI
+  If Result.ResultCode != Success:
+    Show error feedback</code></pre>
+    </div>
+
+    <h2>Swap Items</h2>
+    <p>If you drop an item over another item and you do not want to merge, use <code>TrySwapItems</code>.</p>
+    <ul>
+        <li>Source: handle of the dragged item.</li>
+        <li>Target: handle of the item under the mouse.</li>
+        <li>The system checks space, rules, and collisions.</li>
+    </ul>
+
+    <h2>Rotate Item</h2>
+    <p>During drag, you can use an input such as <code>R</code> to change the visual rotation. When you want to apply rotation to an item already in the inventory, use <code>TryRotateItem</code>.</p>
+    <div class="info-box warning">
+        <div class="info-title">Rotation requires three permissions</div>
+        <p>The item must have <code>bSupportsRotation</code>, the container must have <code>bAllowRotation</code>, and the placement rule must not deny rotation.</p>
+    </div>
+
+    <h2>Remove Item</h2>
+    <p>To delete an item without spawning it in the world, use <code>TryRemoveItem</code>. For physical world drops, you will use <code>TryDropItem</code> in the dedicated tutorial.</p>
+
+    <h2>Result Codes To Handle</h2>
+    <table class="data-table">
+        <thead><tr><th>Result Code</th><th>UI meaning</th></tr></thead>
+        <tbody>
+            <tr><td><code>Success</code></td><td>Operation accepted or completed.</td></tr>
+            <tr><td><code>ContainerFull</code></td><td>No valid space is available.</td></tr>
+            <tr><td><code>CellOccupied</code></td><td>The selected position collides with another item.</td></tr>
+            <tr><td><code>OutOfBounds</code></td><td>The item goes outside the grid bounds.</td></tr>
+            <tr><td><code>InvalidRotation</code></td><td>Rotation is not allowed.</td></tr>
+            <tr><td><code>RuleDenied</code></td><td>A rule or tag query blocked the operation.</td></tr>
+            <tr><td><code>AccessDenied</code></td><td>You are calling from an unauthorized role or on a protected container.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>You can drag an item from one cell to another.</li>
+        <li>The preview turns red if the position is invalid.</li>
+        <li>Swap works only when both destinations are valid.</li>
+        <li>The UI never modifies inventory state directly: it always calls command wrappers.</li>
+    </ul>
+</section>

@@ -1,0 +1,162 @@
+<section class="tutorial-section" id="bp-l1-02-architecture">
+    <h1>Layer 1 - Blueprint Architecture</h1>
+    <p class="doc-lead">Before creating the inventory, you need to understand what you are wiring in Blueprints. Layer 1
+        manages one inventory: containers, items, fragments, rules, layout, networking, and prediction.</p>
+
+    <h2>Main Concepts</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Concept</th>
+                <th>Practical meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>UInventoryComponent</code></td>
+                <td>The runtime component to add to a character, controller, chest, or any actor that owns an inventory.
+                </td>
+            </tr>
+            <tr>
+                <td>Container</td>
+                <td>A space that contains items, do not get confused: the container is not the inventory, an inventory
+                    can
+                    have multiple containers. It can be grid-based, like an NxM backpack, or slot-based, like equipment
+                    slots.</td>
+            </tr>
+            <tr>
+                <td>Item</td>
+                <td>A runtime instance created from an <code>InventoryItemDefinition</code>.</td>
+            </tr>
+            <tr>
+                <td>Fragment</td>
+                <td>Modular data attached to an item: ammo, durability, condition, or custom data.</td>
+            </tr>
+            <tr>
+                <td>Handle</td>
+                <td>A safe reference to an item, container, fragment, or operation. Do not save array indexes instead of
+                    handles.</td>
+            </tr>
+            <tr>
+                <td>View</td>
+                <td>A read-only snapshot for Blueprint UI and queries. Views are the correct way to read state.</td>
+            </tr>
+            <tr>
+                <td>Operation</td>
+                <td>A change request: add, move, swap, split, merge, rotate, equip, or unequip.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Definition vs Runtime</h2>
+    <p>Data Assets describe what can exist. The component contains what actually exists during gameplay.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Mental Model</span></div>
+        <pre><code>InventoryItemDefinition = item type, for example Rifle
+InventoryItemRecord     = runtime Rifle instance in the player inventory
+InventoryItemView       = Blueprint snapshot used to read that instance
+InventoryItemHandle     = stable reference to that instance</code></pre>
+    </div>
+
+    <h2>Operation Flow</h2>
+    <p>When you call a node such as <code>TryMoveItem</code>, you are not simply moving a widget. You are submitting a
+        request to the inventory system.</p>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Blueprint calls a command wrapper</h3>
+                <p>Examples: <code>TryMoveItem</code>, <code>TryAutoAddItem</code>, <code>TryEquipItem</code>.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Inventory_X creates an operation request</h3>
+                <p>The request contains operation type, item handle, container handle, placement, and quantity.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>The Rules Engine validates it</h3>
+                <p>It checks handles, permissions, grid space, stacking, equipment compatibility, nesting, and rotation.
+                </p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>The Operation Engine applies the change</h3>
+                <p>If the request is valid, it updates records, layout, fragments, and replication state.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h3>Delegates notify UI and gameplay</h3>
+                <p>Events such as <code>OnInventoryChanged</code> or <code>OnItemUpdated</code> let the UI refresh.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Authority And Prediction</h2>
+    <p>Inventory_X is server-authoritative. In multiplayer, the server decides whether an operation is valid. On the
+        owning client, however, many Layer 1 operations are simulated immediately to avoid input lag.</p>
+    <ul>
+        <li>On Authority: the operation is validated and applied immediately.</li>
+        <li>On Autonomous Proxy: the operation is predicted locally and sent to the server.</li>
+        <li>On Simulated Proxy: the operation is rejected with <code>AccessDenied</code>.</li>
+    </ul>
+
+    <div class="info-box tip">
+        <div class="info-title">Practical rule</div>
+        <p>The UI should always read from component views, not from custom parallel variables. If you keep duplicated
+            inventory state in the UI, it will eventually go out of sync.</p>
+    </div>
+
+    <h2>Blueprint API You Will Use Constantly</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Main nodes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Setup</td>
+                <td><code>AddRootContainer</code>, <code>GetRootContainers</code>, <code>SetOwnerTags</code></td>
+            </tr>
+            <tr>
+                <td>Query</td>
+                <td><code>GetRootContainerViews</code>, <code>GetContainerView</code>, <code>GetItemView</code>,
+                    <code>GetItemViewsInContainer</code>
+                </td>
+            </tr>
+            <tr>
+                <td>Preview</td>
+                <td><code>CanPlaceItemAtPlacement</code>, <code>FindFirstFitForItem</code>,
+                    <code>PreviewAddItemPlacement</code>, <code>PreviewEquipItem</code>
+                </td>
+            </tr>
+            <tr>
+                <td>Commands</td>
+                <td><code>TryAddItem</code>, <code>TryAutoAddItem</code>, <code>TryMoveItem</code>,
+                    <code>TrySwapItems</code>, <code>TrySplitStack</code>, <code>TryMergeStack</code>,
+                    <code>TryRotateItem</code>, <code>TryEquipItem</code>, <code>TryUnequipItem</code>
+                </td>
+            </tr>
+            <tr>
+                <td>Events</td>
+                <td><code>OnInventoryChanged</code>, <code>OnItemAdded</code>, <code>OnItemRemoved</code>,
+                    <code>OnOperationCompleted</code>, <code>OnOperationFailed</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <p>If you understand this page, you should be able to explain the difference between <code>DA_Item_Rifle</code>, an
+        item handle, and an item view. In the next tutorial, you will create the concrete assets.</p>
+</section>

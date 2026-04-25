@@ -1,0 +1,67 @@
+<section class="tutorial-section" id="bp-l1-04-player-inventory">
+    <h1>Layer 1 - Initializing The Player Inventory</h1>
+    <p class="doc-lead">Now you connect the assets to the Third Person Character and create the runtime root containers: backpack grid and equipment slots.</p>
+
+    <h2>Preparing The Character</h2>
+    <div class="steps">
+        <div class="step"><div class="step-number">1</div><div class="step-content"><h3>Open the Third Person Character</h3><p>Duplicate the template character into <code>/Game/Tutorials/InventoryX/Blueprints/Characters/BP_InventoryCharacter</code> or use your existing project character.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content"><h3>Add InventoryComponent</h3><p>In the Components panel, add <code>InventoryComponent</code>. Rename it to <code>Inventory</code>.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content"><h3>Enable replication on the actor</h3><p>In the character, make sure <code>Replicates = true</code>. The component replicates inventory data, but the owner actor must correctly participate in networking.</p></div></div>
+    </div>
+
+    <h2>Blueprint Variables</h2>
+    <table class="data-table">
+        <thead><tr><th>Variable</th><th>Type</th><th>Value</th></tr></thead>
+        <tbody>
+            <tr><td><code>BackpackDefinition</code></td><td><code>InventoryContainerDefinition Object Reference</code></td><td><code>DA_Container_PlayerBackpack</code></td></tr>
+            <tr><td><code>EquipmentDefinition</code></td><td><code>InventoryContainerDefinition Object Reference</code></td><td><code>DA_Container_PlayerEquipment</code></td></tr>
+            <tr><td><code>BackpackContainer</code></td><td><code>InventoryContainerHandle</code></td><td>runtime, saved after AddRootContainer</td></tr>
+            <tr><td><code>EquipmentContainer</code></td><td><code>InventoryContainerHandle</code></td><td>runtime, saved after AddRootContainer</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Server-Side BeginPlay</h2>
+    <p><code>AddRootContainer</code> only works on Authority. If you call it on the client, it returns an invalid handle.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Blueprint Flow</span></div>
+        <pre><code>Event BeginPlay
+  Branch: Has Authority
+    True:
+      Inventory - AddRootContainer(BackpackDefinition, "PlayerBackpack") -&gt; Set BackpackContainer
+      Inventory - AddRootContainer(EquipmentDefinition, "PlayerEquipment") -&gt; Set EquipmentContainer
+      Inventory - TryAutoAddItem(DA_Item_Rifle, BackpackContainer, 1)
+      Inventory - TryAutoAddItem(DA_Item_AmmoLight, BackpackContainer, 60)
+      Inventory - TryAutoAddItem(DA_Item_Medkit, BackpackContainer, 2)</code></pre>
+    </div>
+
+    <div class="info-box warning">
+        <div class="info-title">Do not rely only on local variables</div>
+        <p>In multiplayer, handles saved in Blueprint variables on the server are not automatically a reliable source for the client UI. The UI should use <code>GetRootContainerViews</code> or <code>GetRootContainers</code> on the replicated component.</p>
+    </div>
+
+    <h2>Binding Events</h2>
+    <p>In the character, create a function named <code>RefreshInventoryDebug</code>. Then bind it to component events.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Event Binding</span></div>
+        <pre><code>Event BeginPlay
+  Inventory - Bind Event to OnInventoryChanged
+  Inventory - Bind Event to OnOperationCompleted
+  Inventory - Bind Event to OnOperationFailed</code></pre>
+    </div>
+    <p>Inside <code>RefreshInventoryDebug</code>, use <code>GetRootContainerViews</code>, print how many root containers exist, and how many items each container contains.</p>
+
+    <h2>Reading Root Containers</h2>
+    <p>To test without a complete UI:</p>
+    <ol>
+        <li>Call <code>GetRootContainerViews</code> from the Inventory component.</li>
+        <li>Use a <code>ForEachLoop</code>.</li>
+        <li>For each <code>ContainerView</code>, print <code>Dimensions</code>, <code>bIsGridBased</code>, <code>bIsSlotBased</code>, and the number of <code>Items</code>.</li>
+    </ol>
+
+    <h2>PIE Verification</h2>
+    <ul>
+        <li>In single player, you should see two root containers: backpack and equipment.</li>
+        <li>The backpack should contain rifle, ammo, and medkit if there is enough space.</li>
+        <li>If <code>TryAutoAddItem</code> fails, check Asset Manager, tags, placement rule, and container dimensions.</li>
+    </ul>
+</section>

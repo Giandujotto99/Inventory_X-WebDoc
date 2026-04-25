@@ -1,0 +1,64 @@
+<section class="tutorial-section" id="bp-l2-09-prediction">
+    <h1>Layer 2 - Prediction, Fused View, And Revision Barriers</h1>
+    <p class="doc-lead">Layer 2 uses more complex prediction than Layer 1 because it coordinates two inventory components. The UI must display pending operations without losing consistency with server state.</p>
+
+    <h2>Operation Events</h2>
+    <table class="data-table">
+        <thead><tr><th>Event</th><th>Use</th></tr></thead>
+        <tbody>
+            <tr><td><code>OnInteractionOperationPredicted</code></td><td>Show an immediate pending overlay.</td></tr>
+            <tr><td><code>OnInteractionOperationConfirmed</code></td><td>Remove overlay and show confirmation feedback.</td></tr>
+            <tr><td><code>OnInteractionOperationRejected</code></td><td>Show error and refresh from authoritative view.</td></tr>
+            <tr><td><code>OnInteractionOperationCorrected</code></td><td>Show server correction and realign UI.</td></tr>
+            <tr><td><code>OnInteractionOperationInvalidated</code></td><td>Operation cancelled by session change or invalid state.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Pending Operation Views</h2>
+    <p>Use <code>GetPendingOperationViews</code> for debug UI and to show how many operations are waiting.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Pending Debug</span></div>
+        <pre><code>PendingViews = Interaction.GetPendingOperationViews()
+ForEach PendingView:
+  Print OperationId, OperationType, Resolution, bWaitingForBarrier</code></pre>
+    </div>
+
+    <h2>Revision Barrier</h2>
+    <p>A Layer 2 operation can be confirmed by the server but finalized by the UI only after the client has observed the updated revisions of the involved endpoints.</p>
+    <ul>
+        <li><code>CrossEndpoints</code>: primary and secondary must reach the required revision.</li>
+        <li><code>SecondaryOnly</code>: only the secondary endpoint is required.</li>
+    </ul>
+    <p>In most cases, you do not need to manage the barrier manually, but you should understand why an operation can remain pending for a few frames after the ack.</p>
+
+    <h2>Fused View</h2>
+    <p><code>GetSecondaryPredictedView</code> combines authoritative state and predicted overlay. Use it to draw the secondary endpoint during pending operations.</p>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+        <tbody>
+            <tr><td><code>PendingSecondaryOverlayCount</code></td><td>Number of active predicted overlays.</td></tr>
+            <tr><td><code>BaseSecondaryReplicatedRevision</code></td><td>Base authoritative revision.</td></tr>
+            <tr><td><code>RootContainers</code></td><td>Containers to draw in UI.</td></tr>
+            <tr><td><code>bHasSyntheticPredictedItems</code></td><td>There are items with temporary client-side handles.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Synthetic Handles</h2>
+    <p>When prediction creates an item on the client before the server assigns the final handle, the UI may see a synthetic handle. Do not save it permanently. Always rely on refresh and remapping handled by the system.</p>
+
+    <h2>Latency Test</h2>
+    <ol>
+        <li>Simulate high latency.</li>
+        <li>Deposit a stack from the player to the chest.</li>
+        <li>The secondary panel should update immediately through fused view.</li>
+        <li>During pending state, the status bar shows pending count.</li>
+        <li>After confirmation, synthetic and pending overlays disappear.</li>
+    </ol>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>The UI remains responsive even with latency.</li>
+        <li>Rejects and corrections do not leave ghost items.</li>
+        <li>Fused view is used only for the secondary endpoint during an active session.</li>
+    </ul>
+</section>

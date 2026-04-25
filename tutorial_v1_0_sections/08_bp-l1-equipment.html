@@ -1,0 +1,69 @@
+<section class="tutorial-section" id="bp-l1-08-equipment">
+    <h1>Layer 1 - Equipment System</h1>
+    <p class="doc-lead">Equipment in Inventory_X is a slot-based container. Items are equipped through <code>TryEquipItem</code> and removed through <code>TryUnequipItem</code>.</p>
+
+    <h2>Check The Assets</h2>
+    <ul>
+        <li><code>DA_Container_PlayerEquipment</code> must have <code>SlotProfiles</code> configured.</li>
+        <li><code>DA_Slot_PrimaryWeapon</code> must accept items with the <code>InventoryX.Item.Category.Weapon.Rifle</code> tag.</li>
+        <li><code>DA_Item_Rifle</code> must have <code>DA_RuleEquip_PrimaryWeapon</code> assigned.</li>
+        <li><code>DA_RuleEquip_PrimaryWeapon</code> must have a Compatible Slot Query compatible with <code>InventoryX.Slot.Equip.PrimaryWeapon</code>.</li>
+    </ul>
+
+    <h2>Drawing Slots</h2>
+    <p>In <code>WBP_EquipmentPanel</code>, receive a slot-based <code>ContainerView</code>. Every item inside that container has <code>Placement.Kind = Slot</code> and <code>Placement.SlotIndex</code>.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Equipment Refresh</span></div>
+        <pre><code>SetContainerView(ContainerView)
+  Clear equipment slot widgets
+  For each SlotProfile in ContainerView.ContainerDefinition.SlotProfiles:
+    Create WBP_EquipmentSlot with SlotIndex
+  For each ItemView in ContainerView.Items:
+    Find widget by ItemView.Placement.SlotIndex
+    Set ItemView on that slot</code></pre>
+    </div>
+
+    <h2>Equip From UI</h2>
+    <p>When you drop an item on the primary weapon slot:</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TryEquipItem</span></div>
+        <pre><code>On Drop Item On EquipmentSlot
+  Preview = Inventory.PreviewEquipItem(ItemHandle, EquipmentContainerHandle, SlotIndex)
+  If Preview.bWouldSucceed:
+    Result = Inventory.TryEquipItem(ItemHandle, EquipmentContainerHandle, SlotIndex)
+  Else:
+    Show Preview.DebugMessage or ResultCode</code></pre>
+    </div>
+
+    <h2>Unequip</h2>
+    <p>To remove an item from a slot, you can specify a destination or leave container and placement invalid so the system can resolve a destination automatically when possible.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TryUnequipItem</span></div>
+        <pre><code>On Unequip Button
+  Preview = Inventory.PreviewUnequipItem(ItemHandle, InvalidContainerHandle, NonePlacement)
+  If Preview.bWouldSucceed:
+    Inventory.TryUnequipItem(ItemHandle, Preview.ResolvedTargetContainer, Preview.ResolvedTargetPlacement)</code></pre>
+    </div>
+
+    <h2>Tags Applied On Equip</h2>
+    <p><code>InventoryEquipRuleDefinition</code> can apply tags to the owner when the item is equipped. This is useful for enabling abilities, animations, input, or UI state.</p>
+    <p>Example: add a tag such as <code>InventoryX.State.Equipped.PrimaryWeapon</code> to <code>TagsAppliedOnEquip</code> in the rule, then check owner tags or react to inventory events in the character.</p>
+
+    <h2>Common Errors</h2>
+    <table class="data-table">
+        <thead><tr><th>Error</th><th>Solution</th></tr></thead>
+        <tbody>
+            <tr><td><code>RuleDenied</code> during equip</td><td>Check Compatible Slot Query and the slot Accepted Item Query.</td></tr>
+            <tr><td><code>InvalidHandle</code></td><td>You are using an old item handle. Read the <code>ItemView</code> again after each refresh.</td></tr>
+            <tr><td>Item equipped but UI does not change</td><td>The UI is not refreshing on <code>OnInventoryChanged</code> or is reading the wrong container.</td></tr>
+            <tr><td>Unequip fails</td><td>No valid destination exists in the backpack or the item is too large for the available space.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Dropping the rifle on the primary weapon slot moves it into the equipment container.</li>
+        <li>The slot rejects incompatible items, such as medkits.</li>
+        <li>Unequip moves the item back into the backpack if there is enough space.</li>
+    </ul>
+</section>

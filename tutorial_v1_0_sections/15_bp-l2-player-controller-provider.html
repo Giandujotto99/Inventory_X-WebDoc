@@ -1,0 +1,69 @@
+<section class="tutorial-section" id="bp-l2-02-player-controller-provider">
+    <h1>Layer 2 - PlayerController And External Provider</h1>
+    <p class="doc-lead">Layer 2 starts with two setups: the PlayerController must have an InventoryInteractionComponent, and the chest must expose an InventoryComponent through a provider.</p>
+
+    <h2>PlayerController</h2>
+    <div class="steps">
+        <div class="step"><div class="step-number">1</div><div class="step-content"><h3>Create BP_InventoryPlayerController</h3><p>Create a PlayerController Blueprint in <code>Blueprints/Controllers</code>.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content"><h3>Add InventoryInteractionComponent</h3><p>In the Components panel, add <code>InventoryInteractionComponent</code> and name it <code>InventoryInteraction</code>.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content"><h3>Configure GameMode</h3><p>Set your GameMode to use <code>BP_InventoryPlayerController</code>.</p></div></div>
+    </div>
+
+    <div class="info-box warning">
+        <div class="info-title">Primary inventory resolution</div>
+        <p>InventoryInteractionComponent searches for the primary inventory on the PlayerController and on the Pawn. If it finds more than one InventoryComponent, set <code>ExplicitPrimaryInventoryComponent</code> to avoid ambiguity.</p>
+    </div>
+
+    <h2>Chest Actor</h2>
+    <p>Create <code>BP_WorldChest</code> in <code>Actors/WorldInventories</code>.</p>
+    <ul>
+        <li>Parent class: <code>Actor</code>.</li>
+        <li>Add a mesh or cube placeholder.</li>
+        <li>Add a <code>SceneComponent</code> named <code>InteractionAnchor</code>.</li>
+        <li>Add an <code>InventoryComponent</code> named <code>ChestInventory</code>.</li>
+        <li>Add an <code>InventoryExternalInventoryProviderComponent</code> named <code>ExternalProvider</code>.</li>
+        <li>Set actor <code>Replicates = true</code>.</li>
+    </ul>
+
+    <h2>Provider Component</h2>
+    <p>On the <code>ExternalProvider</code> component, set:</p>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody>
+            <tr><td><code>ProvidedInventoryComponent</code></td><td><code>ChestInventory</code></td></tr>
+            <tr><td><code>InteractionAnchorComponent</code></td><td><code>InteractionAnchor</code></td></tr>
+            <tr><td><code>PolicyDefinition</code></td><td>You will create it in the next tutorial. For now, leave it empty or assign it later.</td></tr>
+            <tr><td><code>ProviderTags</code></td><td><code>InventoryX.Container.Type.WorldContainer</code> or a specific chest tag.</td></tr>
+            <tr><td><code>ProviderDebugName</code></td><td><code>WorldChest</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Initializing The Chest Inventory</h2>
+    <p>In the chest <code>BeginPlay</code>, on Authority, create a root container and add some items.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">BP_WorldChest BeginPlay</span></div>
+        <pre><code>Event BeginPlay
+  Branch Has Authority
+    True:
+      ChestInventory.AddRootContainer(DA_Container_WorldChest, "ChestGrid") -&gt; ChestContainer
+      ChestInventory.TryAutoAddItem(DA_Item_AmmoLight, ChestContainer, 40)
+      ChestInventory.TryAutoAddItem(DA_Item_Medkit, ChestContainer, 1)</code></pre>
+    </div>
+
+    <h2>Container Definition For The Chest</h2>
+    <p>If you have not created it yet, add <code>DA_Container_WorldChest</code>:</p>
+    <ul>
+        <li>Class <code>InventoryContainerDefinition</code>.</li>
+        <li>Container Type Tag <code>InventoryX.Container.Type.WorldContainer</code>.</li>
+        <li>Dimensions <code>8 x 4</code>.</li>
+        <li>Allow Rotation <code>true</code>.</li>
+    </ul>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>The PlayerController has exactly one valid <code>InventoryInteractionComponent</code>.</li>
+        <li>The chest replicates.</li>
+        <li>The provider returns the correct <code>ChestInventory</code>.</li>
+        <li>The chest creates its root container only on the server.</li>
+    </ul>
+</section>

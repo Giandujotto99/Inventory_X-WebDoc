@@ -1,0 +1,59 @@
+<section class="tutorial-section" id="bp-l1-10-nesting">
+    <h1>Layer 1 - Nested Containers</h1>
+    <p class="doc-lead">An item can contain other containers. This enables backpacks, pouches, weapon cases, and objects with internal inventory space.</p>
+
+    <h2>Backpack Item Setup</h2>
+    <p>Open <code>DA_Item_Backpack</code> and check:</p>
+    <ul>
+        <li><code>ChildContainerDefinitions</code> contains <code>DA_Container_BackpackPocket</code>.</li>
+        <li>The backpack shape size is large enough, for example <code>2 x 3</code>.</li>
+        <li>The child container is grid-based, for example <code>4 x 4</code>.</li>
+        <li>The placement rule allows the backpack to be placed in the player backpack.</li>
+    </ul>
+
+    <h2>Adding The Backpack</h2>
+    <p>For testing, add the backpack to the player inventory with <code>TryAutoAddItem</code>. When the item is created, Inventory_X also creates the child containers defined by the item.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Debug Add</span></div>
+        <pre><code>Inventory.TryAutoAddItem(DA_Item_Backpack, BackpackContainer, 1)</code></pre>
+    </div>
+
+    <h2>Reading Child Containers</h2>
+    <p>When you select an item in the UI:</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Open Nested Container</span></div>
+        <pre><code>On Item Double Click
+  ItemView = selected item view
+  If ItemView.bHasChildContainers:
+    ChildViews = Inventory.GetChildContainerViews(ItemView.ItemHandle)
+    ForEach ChildView:
+      Create WBP_ContainerGrid
+      SetContainerView(ChildView)</code></pre>
+    </div>
+
+    <h2>Recommended UI</h2>
+    <p>There are two valid approaches:</p>
+    <ul>
+        <li>Open a separate panel when the player inspects the backpack.</li>
+        <li>Show child containers inline under the tooltip or in a details panel.</li>
+    </ul>
+    <p>For tutorials and debugging, the separate panel is clearer.</p>
+
+    <h2>Safety Rules</h2>
+    <p>Inventory_X validates nesting and protects against cycles and excessive depth. This means you should not try to move a container into itself through creative UI logic.</p>
+    <table class="data-table">
+        <thead><tr><th>Result</th><th>When it happens</th></tr></thead>
+        <tbody>
+            <tr><td><code>CycleDetected</code></td><td>An operation would create a container loop.</td></tr>
+            <tr><td><code>MaxNestingDepthExceeded</code></td><td>The maximum nesting depth would be exceeded.</td></tr>
+            <tr><td><code>RuleDenied</code></td><td>The container or item does not allow that nesting case.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>After adding <code>DA_Item_Backpack</code>, <code>bHasChildContainers</code> in the ItemView is true.</li>
+        <li><code>GetChildContainerViews</code> returns at least one container.</li>
+        <li>You can draw the child container using the same <code>WBP_ContainerGrid</code> already created.</li>
+    </ul>
+</section>

@@ -1,0 +1,59 @@
+<section class="tutorial-section" id="bp-l2-07-secondary-operations">
+    <h1>Layer 2 - Operations Inside The Secondary Inventory</h1>
+    <p class="doc-lead">Besides transferring items between player and chest, Layer 2 allows you to manipulate the external inventory directly, if the policy grants the required capabilities.</p>
+
+    <h2>When They Are Needed</h2>
+    <ul>
+        <li>Reorder items inside a chest without moving them to the player.</li>
+        <li>Rotate items inside the stash.</li>
+        <li>Split or merge stacks in the external container.</li>
+        <li>Manage equipment inside a special external inventory, if your game requires it.</li>
+    </ul>
+
+    <h2>Move Inside Secondary</h2>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TrySecondaryMoveItem</span></div>
+        <pre><code>SourceItem = MakeScopedItemHandle(Secondary, ItemHandle)
+SourceContainer = MakeScopedContainerHandle(Secondary, ParentContainerHandle)
+TargetContainer = MakeScopedContainerHandle(Secondary, TargetContainerHandle)
+TargetPlacement = Make InventoryPlacementInfo(Grid, Cell X/Y, Rotation)
+
+Preview = Interaction.PreviewSecondaryMoveItem(SourceItem, SourceContainer, TargetContainer, TargetPlacement)
+If Preview.bWouldSucceed:
+  Interaction.TrySecondaryMoveItem(SourceItem, SourceContainer, TargetContainer, TargetPlacement)</code></pre>
+    </div>
+
+    <h2>Split, Merge, And Swap Inside Secondary</h2>
+    <table class="data-table">
+        <thead><tr><th>Operation</th><th>Preview</th><th>Command</th><th>Capability</th></tr></thead>
+        <tbody>
+            <tr><td>Split</td><td><code>PreviewSecondarySplitStack</code></td><td><code>TrySecondarySplitStack</code></td><td><code>SplitWithinExternalInventory</code></td></tr>
+            <tr><td>Merge</td><td><code>PreviewSecondaryMergeStack</code></td><td><code>TrySecondaryMergeStack</code></td><td><code>MergeWithinExternalInventory</code></td></tr>
+            <tr><td>Swap</td><td><code>PreviewSecondarySwapItems</code></td><td><code>TrySecondarySwapItems</code></td><td><code>SwapWithinExternalInventory</code></td></tr>
+            <tr><td>Rotate</td><td><code>PreviewSecondaryRotateItem</code></td><td><code>TrySecondaryRotateItem</code></td><td><code>RotateWithinExternalInventory</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Equip And Unequip Inside Secondary</h2>
+    <p>These operations are useful only if the secondary inventory has an equipment container. Examples: armory, mannequin, vehicle loadout, vendor equip preview.</p>
+    <ul>
+        <li><code>TrySecondaryEquipItem</code>: equips an item into an equipment container on the secondary endpoint.</li>
+        <li><code>TrySecondaryUnequipItem</code>: removes an equipped item on the secondary endpoint.</li>
+    </ul>
+
+    <h2>UI</h2>
+    <p>When the user drags an item inside the secondary panel, choose the operation in this order:</p>
+    <ol>
+        <li>If the target is an empty cell: <code>TrySecondaryMoveItem</code>.</li>
+        <li>If the target is a compatible stack item: <code>TrySecondaryMergeStack</code>.</li>
+        <li>If the target is an incompatible item: <code>TrySecondarySwapItems</code>.</li>
+        <li>If the input is rotate: <code>TrySecondaryRotateItem</code>.</li>
+    </ol>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>You can reorder items in the chest without transferring them to the player.</li>
+        <li>If the policy disables a capability, the UI blocks or explains the action.</li>
+        <li>Operations update the fused view when they are predicted.</li>
+    </ul>
+</section>

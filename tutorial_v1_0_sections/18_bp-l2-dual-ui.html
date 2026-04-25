@@ -1,0 +1,84 @@
+<section class="tutorial-section" id="bp-l2-05-dual-ui">
+    <h1>Layer 2 - Two-Inventory UI</h1>
+    <p class="doc-lead">The Layer 2 UI shows the player inventory and the external inventory on the same screen. It must respect session state, lock, and capabilities.</p>
+
+    <h2>Widgets To Create</h2>
+    <table class="data-table">
+        <thead><tr><th>Widget</th><th>Responsibility</th></tr></thead>
+        <tbody>
+            <tr><td><code>WBP_InteractionRoot</code></td><td>Root UI for the Layer 2 session.</td></tr>
+            <tr><td><code>WBP_InventoryEndpointPanel</code></td><td>Displays an endpoint: primary or secondary.</td></tr>
+            <tr><td><code>WBP_SessionStatusBar</code></td><td>Shows mode, lock, state, pending operations, and result feedback.</td></tr>
+            <tr><td><code>WBP_CapabilityHint</code></td><td>Disables or explains actions not granted by the policy.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Root Variables</h2>
+    <ul>
+        <li><code>InteractionComponent</code>: <code>InventoryInteractionComponent Object Reference</code>, Expose on Spawn.</li>
+        <li><code>SessionView</code>: <code>InventoryInteractionSessionView</code>.</li>
+        <li><code>PrimaryPanel</code>: reference to <code>WBP_InventoryEndpointPanel</code>.</li>
+        <li><code>SecondaryPanel</code>: reference to <code>WBP_InventoryEndpointPanel</code>.</li>
+    </ul>
+
+    <h2>Session Refresh</h2>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">WBP_InteractionRoot.Refresh</span></div>
+        <pre><code>SessionView = InteractionComponent.GetActiveSessionView()
+StatusBar.SetSessionView(SessionView)
+
+PrimaryInventory = GetEndpointInventoryComponent(SessionView, Primary)
+SecondaryInventory = GetEndpointInventoryComponent(SessionView, Secondary)
+
+PrimaryPanel.SetInventoryComponent(PrimaryInventory, Primary)
+SecondaryPanel.SetInventoryComponent(SecondaryInventory, Secondary)</code></pre>
+    </div>
+
+    <h2>Secondary Fused View</h2>
+    <p>For the secondary endpoint, when prediction is active, use <code>GetSecondaryPredictedView</code>. This lets you display authoritative state plus predicted changes that have not been confirmed yet.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Secondary Panel</span></div>
+        <pre><code>If EndpointRole == Secondary:
+  FusedView = InteractionComponent.GetSecondaryPredictedView()
+  If FusedView.bIsValid:
+    Draw FusedView.RootContainers
+  Else:
+    Draw SecondaryInventory.GetRootContainerViews()</code></pre>
+    </div>
+
+    <h2>Capability-Based UI</h2>
+    <p>Do not show active buttons if the session does not have the required capability. Use <code>HasCapability</code> from the Layer 2 Blueprint Library.</p>
+    <table class="data-table">
+        <thead><tr><th>UI action</th><th>Required capability</th></tr></thead>
+        <tbody>
+            <tr><td>Deposit from player to chest</td><td><code>DepositIntoExternalInventory</code></td></tr>
+            <tr><td>Withdraw from chest to player</td><td><code>WithdrawFromExternalInventory</code></td></tr>
+            <tr><td>Move item inside chest</td><td><code>MoveWithinExternalInventory</code></td></tr>
+            <tr><td>Rotate item inside chest</td><td><code>RotateWithinExternalInventory</code></td></tr>
+            <tr><td>Upgrade write lock</td><td><code>UpgradeToWriteLock</code></td></tr>
+            <tr><td>Resume suspended session</td><td><code>ResumeSuspendedSession</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Refresh On Events</h2>
+    <p>Bind these events on the root widget:</p>
+    <ul>
+        <li><code>OnInteractionSessionOpened</code></li>
+        <li><code>OnInteractionSessionClosed</code></li>
+        <li><code>OnInteractionSessionSuspended</code></li>
+        <li><code>OnInteractionSessionResumed</code></li>
+        <li><code>OnInteractionLockStateChanged</code></li>
+        <li><code>OnInteractionOperationPredicted</code></li>
+        <li><code>OnInteractionOperationConfirmed</code></li>
+        <li><code>OnInteractionOperationRejected</code></li>
+        <li><code>OnInteractionOperationCorrected</code></li>
+    </ul>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Opening the chest shows two panels: player and chest.</li>
+        <li>The status bar shows read-only or write-exclusive.</li>
+        <li>If you do not have write lock, mutating controls are disabled.</li>
+        <li>The secondary panel uses fused view when there are pending operations.</li>
+    </ul>
+</section>

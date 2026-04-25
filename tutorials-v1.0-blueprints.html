@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Inventory_X v1.0 Blueprints Tutorials - Step-by-step guides for the Advanced Inventory System for Unreal Engine 5.">
-    <title>Blueprints Tutorials v1.0 - Inventory_X</title>
+        content="Inventory_X v1.0 Blueprint Tutorials - Complete project-based tutorials for Layer 1 and Layer 2 in Unreal Engine 5.">
+    <title>Blueprint Tutorials v1.0 - Inventory_X</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="images/Inventory_X Logo-025k.png">
 </head>
@@ -40,9 +40,53 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-section">
-                <div class="sidebar-title">Blueprints</div>
+                <div class="sidebar-layer-title">Blueprint Tutorials</div>
                 <ul class="sidebar-nav">
-                    <li><a href="#coming-soon" data-section="coming-soon" class="active">Coming Soon</a></li>
+                    <li><a href="#bp-l1-01-setup" data-section="bp-l1-01-setup">How To Follow This Track</a></li>
+                </ul>
+
+                <div class="sidebar-layer-title">Layer 1 - Core Inventory</div>
+                <div class="sidebar-title">Foundation</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#bp-l1-02-architecture" data-section="bp-l1-02-architecture">Architecture</a></li>
+                    <li><a href="#bp-l1-03-data-assets" data-section="bp-l1-03-data-assets">Data Assets</a></li>
+                    <li><a href="#bp-l1-04-player-inventory" data-section="bp-l1-04-player-inventory">Player Inventory</a></li>
+                </ul>
+
+                <div class="sidebar-title">User Interface</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#bp-l1-05-ui-base" data-section="bp-l1-05-ui-base">Inventory UI</a></li>
+                    <li><a href="#bp-l1-06-core-operations" data-section="bp-l1-06-core-operations">Core Operations</a></li>
+                    <li><a href="#bp-l1-07-stacks-rules" data-section="bp-l1-07-stacks-rules">Stacks and Rules</a></li>
+                    <li><a href="#bp-l1-08-equipment" data-section="bp-l1-08-equipment">Equipment</a></li>
+                </ul>
+
+                <div class="sidebar-title">Advanced Layer 1</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#bp-l1-09-fragments" data-section="bp-l1-09-fragments">Fragments</a></li>
+                    <li><a href="#bp-l1-10-nesting" data-section="bp-l1-10-nesting">Nested Containers</a></li>
+                    <li><a href="#bp-l1-11-drop-pickup" data-section="bp-l1-11-drop-pickup">Drop and Pickup</a></li>
+                    <li><a href="#bp-l1-12-multiplayer-prediction" data-section="bp-l1-12-multiplayer-prediction">Multiplayer Prediction</a></li>
+                    <li><a href="#bp-l1-13-final" data-section="bp-l1-13-final">Layer 1 Final Checklist</a></li>
+                </ul>
+
+                <div class="sidebar-layer-title">Layer 2 - Interactions</div>
+                <div class="sidebar-title">Sessions</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#bp-l2-01-overview" data-section="bp-l2-01-overview">Layer 2 Overview</a></li>
+                    <li><a href="#bp-l2-02-player-controller-provider" data-section="bp-l2-02-player-controller-provider">Controller and Provider</a></li>
+                    <li><a href="#bp-l2-03-policy" data-section="bp-l2-03-policy">Interaction Policy</a></li>
+                    <li><a href="#bp-l2-04-sessions" data-section="bp-l2-04-sessions">Open and Control Sessions</a></li>
+                </ul>
+
+                <div class="sidebar-title">Operations</div>
+                <ul class="sidebar-nav">
+                    <li><a href="#bp-l2-05-dual-ui" data-section="bp-l2-05-dual-ui">Two-Inventory UI</a></li>
+                    <li><a href="#bp-l2-06-cross-operations" data-section="bp-l2-06-cross-operations">Cross Operations</a></li>
+                    <li><a href="#bp-l2-07-secondary-operations" data-section="bp-l2-07-secondary-operations">Secondary Operations</a></li>
+                    <li><a href="#bp-l2-08-security-locks" data-section="bp-l2-08-security-locks">Security and Locks</a></li>
+                    <li><a href="#bp-l2-09-prediction" data-section="bp-l2-09-prediction">Layer 2 Prediction</a></li>
+                    <li><a href="#bp-l2-10-final" data-section="bp-l2-10-final">Layer 2 Final Checklist</a></li>
                 </ul>
             </div>
         </aside>
@@ -50,14 +94,7 @@
         <!-- Main Content -->
         <main class="main-content content">
             <div class="content-wrapper">
-                <section id="coming-soon" class="tutorial-section active">
-                    <h1>Coming Soon</h1>
-                    <p class="doc-lead">The Inventory_X v1.0 Blueprints tutorials are currently being prepared.</p>
-                    <div class="info-box info">
-                        <div class="info-title">Track Status</div>
-                        <p>In the meantime, you can review the <a href="docs-v1.0.html">v1.0 documentation</a> or return to the <a href="tutorials-v1.0.html">v1.0 track selector</a>.</p>
-                    </div>
-                </section>
+                <!-- Sections will be loaded here dynamically by JS -->
             </div>
         </main>
     </div>
@@ -72,6 +109,110 @@
     </footer>
 
     <script src="js/main.js"></script>
+
+    <!-- SPA Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const contentContainer = document.querySelector('.content-wrapper');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+            const sectionFiles = {
+                'bp-l1-01-setup': '01_bp-l1-setup.html',
+                'bp-l1-02-architecture': '02_bp-l1-architecture.html',
+                'bp-l1-03-data-assets': '03_bp-l1-data-assets.html',
+                'bp-l1-04-player-inventory': '04_bp-l1-player-inventory.html',
+                'bp-l1-05-ui-base': '05_bp-l1-ui-base.html',
+                'bp-l1-06-core-operations': '06_bp-l1-core-operations.html',
+                'bp-l1-07-stacks-rules': '07_bp-l1-stacks-rules.html',
+                'bp-l1-08-equipment': '08_bp-l1-equipment.html',
+                'bp-l1-09-fragments': '09_bp-l1-fragments.html',
+                'bp-l1-10-nesting': '10_bp-l1-nesting.html',
+                'bp-l1-11-drop-pickup': '11_bp-l1-drop-pickup.html',
+                'bp-l1-12-multiplayer-prediction': '12_bp-l1-multiplayer-prediction.html',
+                'bp-l1-13-final': '13_bp-l1-final.html',
+                'bp-l2-01-overview': '14_bp-l2-overview.html',
+                'bp-l2-02-player-controller-provider': '15_bp-l2-player-controller-provider.html',
+                'bp-l2-03-policy': '16_bp-l2-policy.html',
+                'bp-l2-04-sessions': '17_bp-l2-sessions.html',
+                'bp-l2-05-dual-ui': '18_bp-l2-dual-ui.html',
+                'bp-l2-06-cross-operations': '19_bp-l2-cross-operations.html',
+                'bp-l2-07-secondary-operations': '20_bp-l2-secondary-operations.html',
+                'bp-l2-08-security-locks': '21_bp-l2-security-locks.html',
+                'bp-l2-09-prediction': '22_bp-l2-prediction.html',
+                'bp-l2-10-final': '23_bp-l2-final.html',
+            };
+
+            async function loadSection(sectionId) {
+                const filename = sectionFiles[sectionId];
+                if (!filename) {
+                    contentContainer.innerHTML = '<section class="tutorial-section active"><h2>Section not found</h2><p>This section has not been implemented yet or the mapping is missing.</p></section>';
+                    return;
+                }
+
+                try {
+                    contentContainer.innerHTML = '<div style="padding: 4rem; text-align: center; color: var(--text-muted);"><h3>Loading tutorial...</h3></div>';
+
+                    const response = await fetch(`tutorial_v1_0_sections/${filename}`);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    let htmlContent = await response.text();
+                    htmlContent = htmlContent.replace('class="tutorial-section"', 'class="tutorial-section active"');
+
+                    contentContainer.innerHTML = htmlContent;
+
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('data-section') === sectionId) {
+                            link.classList.add('active');
+                            link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+
+                    document.querySelector('.main-content').scrollTop = 0;
+
+                } catch (error) {
+                    console.error('Error loading section:', error);
+                    contentContainer.innerHTML = `<section class="tutorial-section active"><h2>Error Loading Section</h2><p>Could not load <code>${filename}</code>. Make sure the server is running.</p><pre>${error.message}</pre></section>`;
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const sectionId = link.getAttribute('data-section');
+                    if (sectionFiles[sectionId]) {
+                        e.preventDefault();
+                        history.pushState(null, null, `#${sectionId}`);
+                        const sidebar = document.querySelector('.sidebar');
+                        if (sidebar) sidebar.classList.remove('active');
+                        loadSection(sectionId);
+                    }
+                });
+            });
+
+            const initialHash = window.location.hash.substring(1);
+            if (initialHash && sectionFiles[initialHash]) {
+                loadSection(initialHash);
+            } else {
+                loadSection('bp-l1-01-setup');
+                history.replaceState(null, null, '#bp-l1-01-setup');
+            }
+
+            window.addEventListener('popstate', () => {
+                const hash = window.location.hash.substring(1);
+                if (hash && sectionFiles[hash]) {
+                    loadSection(hash);
+                }
+            });
+
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    document.querySelector('.sidebar').classList.toggle('active');
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

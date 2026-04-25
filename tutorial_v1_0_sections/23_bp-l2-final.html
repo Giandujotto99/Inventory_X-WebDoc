@@ -1,0 +1,56 @@
+<section class="tutorial-section" id="bp-l2-10-final">
+    <h1>Layer 2 - Complete Multiplayer Chest Checklist</h1>
+    <p class="doc-lead">This checklist closes the Blueprint section. If every point is complete, the user has an autonomous foundation for inventories, stashes, loot, and multiplayer providers.</p>
+
+    <h2>Functional Checklist</h2>
+    <table class="data-table">
+        <thead><tr><th>Area</th><th>Completed when...</th></tr></thead>
+        <tbody>
+            <tr><td>PlayerController</td><td>It has exactly one valid <code>InventoryInteractionComponent</code>.</td></tr>
+            <tr><td>Primary inventory</td><td>The Layer 1 player inventory works and is resolved by the Layer 2 component.</td></tr>
+            <tr><td>Provider</td><td>The chest exposes <code>ProvidedInventoryComponent</code>, anchor, tags, and policy.</td></tr>
+            <tr><td>Policy</td><td>Read/write, fallback, capabilities, range, and lifecycle are configured.</td></tr>
+            <tr><td>Sessions</td><td>Open, close, resume, upgrade, and downgrade work.</td></tr>
+            <tr><td>Dual UI</td><td>Primary and secondary are displayed correctly.</td></tr>
+            <tr><td>Cross operations</td><td>Transfer, split, merge, and swap between endpoints are wired.</td></tr>
+            <tr><td>Secondary operations</td><td>Move, split, merge, swap, and rotate inside the chest respect capabilities.</td></tr>
+            <tr><td>Security</td><td>Two players cannot write to the same chest at the same time.</td></tr>
+            <tr><td>Prediction</td><td>Pending, fused view, confirmed, rejected, and corrected states are handled in UI.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Minimum Tests Before Shipping</h2>
+    <ol>
+        <li>Single player: open chest, deposit, withdraw, close.</li>
+        <li>Listen server: client deposits and server sees correct replication.</li>
+        <li>Dedicated server: client opens session, operates, and receives ack.</li>
+        <li>Two clients: lock and read-only fallback work.</li>
+        <li>High latency: UI remains coherent with fused view.</li>
+        <li>Range loss: session is suspended or closed according to policy.</li>
+        <li>Forced reject: UI recovers without ghost items.</li>
+    </ol>
+
+    <h2>Common Problems</h2>
+    <table class="data-table">
+        <thead><tr><th>Symptom</th><th>Check</th></tr></thead>
+        <tbody>
+            <tr><td>Open session fails</td><td>Null provider, missing policy, unresolved primary inventory, or wrong player controller.</td></tr>
+            <tr><td>Read-only session when you expected write</td><td>Write lock already taken, fallback active, or policy does not grant write.</td></tr>
+            <tr><td>Operation returns CapabilityDenied</td><td>The specific capability is missing from the read/write bitmask.</td></tr>
+            <tr><td>Operation returns WriteLockRequired</td><td>The session does not hold write lock.</td></tr>
+            <tr><td>Transfer fails with inventory result</td><td>Layer 1 error: space, placement, stack, equip, or rule.</td></tr>
+            <tr><td>Secondary UI does not update</td><td>You are not using <code>GetSecondaryPredictedView</code> or you did not bind events.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Natural Extensions</h2>
+    <ul>
+        <li>Vendor inventory with withdraw/deposit capabilities controlled by quest state.</li>
+        <li>Corpse loot read-only for some players and write for owner or party.</li>
+        <li>Vehicle cargo with wider range and line of sight disabled.</li>
+        <li>Guild stash with requester tags and primary owner tags.</li>
+        <li>Mobile UI with simplified drag and transfer buttons.</li>
+    </ul>
+
+    <p>From here, you can treat Inventory_X as a reliable backend and build your specific UX on top of it: RPG, extraction shooter, survival, tactical inventory, or persistent loot system.</p>
+</section>

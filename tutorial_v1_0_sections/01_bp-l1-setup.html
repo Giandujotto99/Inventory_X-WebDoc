@@ -1,0 +1,113 @@
+<section class="tutorial-section" id="bp-l1-01-setup">
+    <h1>Blueprint Track - Complete Setup From Scratch</h1>
+    <p class="doc-lead">This series builds a complete Blueprint inventory system starting from the Third Person Template. It does not use the plugin sample modules and does not use assets from the plugin Content folder.</p>
+
+    <div class="info-box info">
+        <div class="info-title">UI note</div>
+        <p>The plugin does not replace the need to create a UI. This tutorial track does not cover widget implementation in every small detail; instead, it explains how and where to use the Inventory_X functions. For a deeper reference, the Unreal Engine 5.7 version of Inventory_X includes 3 complete sample maps with widgets: 2 for C++ and one very detailed Blueprint sample where you can inspect all widgets and setups.</p>
+    </div>
+
+    <div class="info-box warning">
+        <div class="info-title">Track rule</div>
+        <p>All tutorial assets must live inside the project Content folder, for example under <code>/Game/Tutorials/InventoryX</code>. If plugin content is visible in the Content Browser, do not use it as the base for this track.</p>
+    </div>
+
+    <h2>Prerequisites</h2>
+    <ul>
+        <li>Unreal Engine project created from the Third Person Template.</li>
+        <li><code>Inventory_X</code> plugin already enabled.</li>
+        <li>Basic knowledge of Blueprints, Widget Blueprints, Data Assets, and Gameplay Tags.</li>
+        <li>For multiplayer chapters: at least two PIE players or a local Dedicated Server setup.</li>
+    </ul>
+
+    <h2>Folder Structure</h2>
+    <p>Create this structure inside <code>Content</code>. The folders matter more than they may seem: they prevent confusion once you start adding definitions, UI, pickups, chests, and policies.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Project Content</span></div>
+        <pre><code>/Game/Tutorials/InventoryX/Actors
+/Game/Tutorials/InventoryX/Actors/Pickups
+/Game/Tutorials/InventoryX/Actors/WorldInventories
+/Game/Tutorials/InventoryX/Blueprints
+/Game/Tutorials/InventoryX/Blueprints/Characters
+/Game/Tutorials/InventoryX/Blueprints/Controllers
+/Game/Tutorials/InventoryX/Cosmetics
+/Game/Tutorials/InventoryX/Definitions
+/Game/Tutorials/InventoryX/Definitions/Containers
+/Game/Tutorials/InventoryX/Definitions/Fragments
+/Game/Tutorials/InventoryX/Definitions/Items
+/Game/Tutorials/InventoryX/Definitions/Rules
+/Game/Tutorials/InventoryX/Definitions/Rules/Equip
+/Game/Tutorials/InventoryX/Definitions/Rules/Placement
+/Game/Tutorials/InventoryX/Definitions/Rules/Stack
+/Game/Tutorials/InventoryX/Definitions/Slots
+/Game/Tutorials/InventoryX/Maps
+/Game/Tutorials/InventoryX/UI
+/Game/Tutorials/InventoryX/UI/Widgets</code></pre>
+    </div>
+
+    <h2>Naming Convention</h2>
+    <table class="data-table">
+        <thead>
+            <tr><th>Prefix</th><th>Use</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>DA_Item_</code></td><td>Inventory Item Definition</td><td><code>DA_Item_Rifle</code></td></tr>
+            <tr><td><code>DA_Container_</code></td><td>Inventory Container Definition</td><td><code>DA_Container_PlayerBackpack</code></td></tr>
+            <tr><td><code>DA_Slot_</code></td><td>Inventory Slot Profile Definition</td><td><code>DA_Slot_PrimaryWeapon</code></td></tr>
+            <tr><td><code>DA_RuleStack_</code></td><td>Stack Rule Definition</td><td><code>DA_RuleStack_AmmoLight</code></td></tr>
+            <tr><td><code>DA_RulePlacement_</code></td><td>Placement Rule Definition</td><td><code>DA_RulePlacement_BackpackOnly</code></td></tr>
+            <tr><td><code>DA_RuleEquip_</code></td><td>Equip Rule Definition</td><td><code>DA_RuleEquip_PrimaryWeapon</code></td></tr>
+            <tr><td><code>DA_Fragment_</code></td><td>Item Fragment Definition</td><td><code>DA_Fragment_Ammo</code></td></tr>
+            <tr><td><code>DA_Cosmetic_</code></td><td>Item Cosmetic</td><td><code>DA_Cosmetic_Rifle</code></td></tr>
+            <tr><td><code>BP_</code></td><td>Blueprint Actor</td><td><code>BP_InventoryPickup</code></td></tr>
+            <tr><td><code>WBP_</code></td><td>Widget Blueprint</td><td><code>WBP_InventoryRoot</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Minimum Gameplay Tags</h2>
+    <p>Open <code>Project Settings &gt; Gameplay Tags</code> and create only the tags needed by the tutorial project. If a tag already exists because it is registered by the plugin, do not duplicate it.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Gameplay Tags</span></div>
+        <pre><code>InventoryX.Item.Category.Weapon.Rifle
+InventoryX.Item.Category.Consumable.Medkit
+InventoryX.Item.Category.Ammo.Light
+InventoryX.Item.Category.Equipment.Backpack
+
+InventoryX.Container.Type.PlayerBackpack
+InventoryX.Container.Type.Equipment
+InventoryX.Container.Type.WorldContainer
+
+InventoryX.Slot.Equip.PrimaryWeapon
+InventoryX.Slot.Equip.Head
+
+InventoryX.Fragment.Durability
+InventoryX.Fragment.Ammo
+InventoryX.Fragment.Condition</code></pre>
+    </div>
+
+    <h2>Asset Manager</h2>
+    <p>Inventory_X identifies items through <code>FInventoryDefinitionId</code>, which is based on Primary Assets. For this reason, the Asset Manager must know where to find <code>InventoryItemDefinition</code> assets.</p>
+    <div class="steps">
+        <div class="step"><div class="step-number">1</div><div class="step-content"><h3>Open Project Settings</h3><p>Go to <code>Project Settings &gt; Asset Manager</code>.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content"><h3>Add a Primary Asset Type</h3><p>Add an entry with <code>Primary Asset Type = InventoryItemDefinition</code> and <code>Asset Base Class = InventoryItemDefinition</code>.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content"><h3>Set the directory</h3><p>Add <code>/Game/Tutorials/InventoryX/Definitions/Items</code> to the directories. Leave <code>Has Blueprint Classes</code> disabled and use <code>Cook Rule = Always Cook</code>.</p></div></div>
+    </div>
+
+    <div class="info-box danger">
+        <div class="info-title">Common mistake</div>
+        <p>If you skip the Asset Manager setup, items may appear to work in the editor but fail in multiplayer or packaged builds because the server cannot resolve the DefinitionId.</p>
+    </div>
+
+    <h2>Tutorial Map</h2>
+    <p>Save a dedicated map at <code>/Game/Tutorials/InventoryX/Maps/M_InventoryX_Layer1</code>. Use this map for all Layer 1 chapters.</p>
+
+    <h2>Final Checklist</h2>
+    <ul>
+        <li>Plugin enabled.</li>
+        <li>No sample asset used.</li>
+        <li>Project folders created.</li>
+        <li>Minimum Gameplay Tags created.</li>
+        <li>Asset Manager configured for <code>InventoryItemDefinition</code>.</li>
+        <li>Tutorial map saved.</li>
+    </ul>
+</section>

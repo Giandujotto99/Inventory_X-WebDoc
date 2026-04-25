@@ -1,0 +1,70 @@
+<section class="tutorial-section" id="bp-l2-01-overview">
+    <h1>Layer 2 - Overview</h1>
+    <p class="doc-lead">Layer 2 is used when a player interacts with an external inventory: chest, stash, vendor, corpse loot, vehicle cargo, or any actor that exposes an InventoryComponent.</p>
+
+    <h2>When To Use Layer 1 And Layer 2</h2>
+    <table class="data-table">
+        <thead><tr><th>Scenario</th><th>Correct layer</th></tr></thead>
+        <tbody>
+            <tr><td>Move items inside the player backpack</td><td>Layer 1</td></tr>
+            <tr><td>Equip a player item</td><td>Layer 1</td></tr>
+            <tr><td>Open a chest and transfer items</td><td>Layer 2</td></tr>
+            <tr><td>Two players inspect the same stash</td><td>Layer 2</td></tr>
+            <tr><td>Permissions, locks, range, and line of sight on an external provider</td><td>Layer 2</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Primary And Secondary</h2>
+    <p>Layer 2 always works with two endpoints:</p>
+    <ul>
+        <li><strong>Primary endpoint</strong>: the inventory of the player currently interacting.</li>
+        <li><strong>Secondary endpoint</strong>: the external inventory exposed by the provider, for example a chest.</li>
+    </ul>
+
+    <h2>Components Involved</h2>
+    <table class="data-table">
+        <thead><tr><th>Component</th><th>Location</th><th>Purpose</th></tr></thead>
+        <tbody>
+            <tr><td><code>InventoryInteractionComponent</code></td><td>PlayerController</td><td>Manages session, cross-inventory commands, prediction, and acknowledgments.</td></tr>
+            <tr><td><code>InventoryComponent</code></td><td>Player, Pawn, or Controller</td><td>Primary inventory.</td></tr>
+            <tr><td><code>InventoryComponent</code></td><td>Chest or external actor</td><td>Secondary inventory.</td></tr>
+            <tr><td><code>InventoryExternalInventoryProviderComponent</code></td><td>Chest or external actor</td><td>Exposes inventory, policy, tags, and interaction anchor.</td></tr>
+            <tr><td><code>InventoryInteractionPolicyDefinition</code></td><td>Data Asset</td><td>Defines permissions, capabilities, range, line of sight, and lifecycle.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Session</h2>
+    <p>Before transferring items, you must open a session. The session contains:</p>
+    <ul>
+        <li><code>SessionId</code> and <code>SessionEpoch</code>.</li>
+        <li>State: opening, active read-only, active write-exclusive, suspended, closing.</li>
+        <li>Lock state.</li>
+        <li>Capabilities granted by the policy.</li>
+        <li>References to primary and secondary endpoints.</li>
+    </ul>
+
+    <h2>Scoped Handles</h2>
+    <p>In Layer 1, an item handle identifies an item inside a single InventoryComponent. In Layer 2, you also need to specify which endpoint the handle belongs to.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Scoped Handle</span></div>
+        <pre><code>FInventoryScopedItemHandle
+  EndpointRole = Primary or Secondary
+  ItemHandle = item handle inside that InventoryComponent
+
+FInventoryScopedContainerHandle
+  EndpointRole = Primary or Secondary
+  ContainerHandle = container handle inside that InventoryComponent</code></pre>
+    </div>
+
+    <h2>Layer 2 Tutorial Goal</h2>
+    <p>You will build a complete multiplayer chest with:</p>
+    <ul>
+        <li>External provider with policy.</li>
+        <li>Read-only and write-exclusive sessions.</li>
+        <li>Two-panel UI.</li>
+        <li>Transfer, split, merge, and swap between player and chest.</li>
+        <li>Operations inside the secondary inventory.</li>
+        <li>Locks and two-player tests.</li>
+        <li>Prediction and fused view.</li>
+    </ul>
+</section>

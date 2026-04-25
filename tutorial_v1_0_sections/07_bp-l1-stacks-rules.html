@@ -1,0 +1,84 @@
+<section class="tutorial-section" id="bp-l1-07-stacks-rules">
+    <h1>Layer 1 - Stacks, Split, Merge, And Rules</h1>
+    <p class="doc-lead">Stacks are not just numbers in the UI. They are runtime items with quantity, merge rules, split limits, and server-side validation.</p>
+
+    <h2>Stack Rule</h2>
+    <p>Open <code>DA_RuleStack_AmmoLight</code> and <code>DA_RuleStack_Medkit</code>. Check these fields:</p>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Effect</th></tr></thead>
+        <tbody>
+            <tr><td><code>MaxStackSize</code></td><td>Maximum quantity in a single runtime item.</td></tr>
+            <tr><td><code>bRequireMatchingFragmentsForMerge</code></td><td>If true, two stacks can merge only if their fragment data is compatible.</td></tr>
+            <tr><td><code>bAllowSplit</code></td><td>Allows or denies creating a new stack through split.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Adding Quantity</h2>
+    <p>When you call <code>TryAutoAddItem</code> with a quantity greater than 1, the system creates an item with that quantity if it does not exceed the max stack size.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Ammo Debug</span></div>
+        <pre><code>Inventory.TryAutoAddItem(DA_Item_AmmoLight, BackpackContainer, 60)
+Inventory.TryAutoAddItem(DA_Item_Medkit, BackpackContainer, 2)</code></pre>
+    </div>
+    <p>If you request an invalid quantity or one above the limit, the result code can be <code>InvalidQuantity</code>.</p>
+
+    <h2>Split Stack</h2>
+    <p>To split a stack, you need the source item, quantity to separate, target container, and target placement.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TrySplitStack</span></div>
+        <pre><code>On Split Stack Dialog Confirm
+  SourceItem = selected item handle
+  SplitQuantity = value from numeric input
+  TargetContainer = backpack container handle
+  TargetPlacement = grid placement selected by user
+  Result = Inventory.TrySplitStack(SourceItem, SplitQuantity, TargetContainer, TargetPlacement)</code></pre>
+    </div>
+
+    <h2>Split UI</h2>
+    <ol>
+        <li>Right-click a stackable item.</li>
+        <li>Open a small <code>WBP_SplitStackPopup</code> widget.</li>
+        <li>Show a range from <code>1</code> to <code>Quantity - 1</code>.</li>
+        <li>When the user confirms, enter placement mode and then call <code>TrySplitStack</code>.</li>
+    </ol>
+
+    <h2>Merge Stack</h2>
+    <p>When you drop a stack over another item of the same type, try merge first. If merge is not valid, you can try swap or move.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Drop On Item</span></div>
+        <pre><code>On Drop SourceItem over TargetItem
+  If SourceItem.DefinitionId == TargetItem.DefinitionId:
+    Result = Inventory.TryMergeStack(SourceItemHandle, TargetItemHandle)
+    If Result.ResultCode == Success:
+      return
+  Result = Inventory.TrySwapItems(SourceItemHandle, TargetItemHandle)</code></pre>
+    </div>
+
+    <h2>Placement Rules</h2>
+    <p>Placement rules are tag queries applied to the container. For example, <code>DA_RulePlacement_BackpackOnly</code> prevents placing an item in a container that does not match <code>InventoryX.Container.Type.PlayerBackpack</code>.</p>
+    <p>To test the rule:</p>
+    <ol>
+        <li>Try adding <code>DA_Item_Rifle</code> directly into the equipment container with <code>TryAddItem</code>.</li>
+        <li>The rule should deny the operation or the slot layout should reject a grid placement.</li>
+        <li>Equipping should use <code>TryEquipItem</code>, not <code>TryMoveItem</code> toward an arbitrary slot.</li>
+    </ol>
+
+    <h2>Common Errors</h2>
+    <table class="data-table">
+        <thead><tr><th>Problem</th><th>Likely cause</th></tr></thead>
+        <tbody>
+            <tr><td>Merge rejected</td><td>Different definition, full stack, or incompatible fragments.</td></tr>
+            <tr><td>Split rejected</td><td>Quantity lower than 1, equal to the total quantity, or <code>bAllowSplit</code> disabled.</td></tr>
+            <tr><td>Stack does not show quantity</td><td>The UI is reading the Data Asset instead of <code>ItemView.Quantity</code>.</td></tr>
+            <tr><td>Auto add fails</td><td>Container full, item too large, or placement rule does not match the container.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Ammo and medkit show quantity in the UI.</li>
+        <li>You can split a stack into a free cell.</li>
+        <li>You can merge two compatible stacks.</li>
+        <li>The UI shows a readable message when a rule denies the operation.</li>
+    </ul>
+</section>

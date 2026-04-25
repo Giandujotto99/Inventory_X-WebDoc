@@ -1,0 +1,61 @@
+<section class="tutorial-section" id="bp-l2-08-security-locks">
+    <h1>Layer 2 - Security, Locks, And Real Multiplayer Cases</h1>
+    <p class="doc-lead">This part prevents exploits, race conditions, and conflicts when multiple players interact with the same external inventory.</p>
+
+    <h2>Two-Player Test</h2>
+    <ol>
+        <li>Start PIE with 2 clients.</li>
+        <li>Both clients look at the same <code>BP_WorldChest</code>.</li>
+        <li>Client 1 opens a write-exclusive session.</li>
+        <li>Client 2 tries to open a write-exclusive session.</li>
+        <li>If fallback is enabled, Client 2 enters read-only. If fallback is disabled, Client 2 receives a reject.</li>
+    </ol>
+
+    <h2>Lock State</h2>
+    <table class="data-table">
+        <thead><tr><th>Lock State</th><th>UI meaning</th></tr></thead>
+        <tbody>
+            <tr><td><code>None</code></td><td>No valid session or uninitialized state.</td></tr>
+            <tr><td><code>Unlocked</code></td><td>The session does not hold an exclusive lock.</td></tr>
+            <tr><td><code>HeldByThisSession</code></td><td>This player can execute mutating operations if the capability is granted.</td></tr>
+            <tr><td><code>HeldByOtherSession</code></td><td>Another player has the lock. Show read-only state or a disabled request upgrade button.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Capability Denied</h2>
+    <p>If an action is not granted by the policy, the result can be <code>CapabilityDenied</code>. The UI should prevent the click, but you still need to handle the reject.</p>
+
+    <h2>Range And Visibility</h2>
+    <p>With <code>bRequireInteractionRange</code> enabled, the provider checks the distance between requester and anchor. If the player moves away, the session can be suspended.</p>
+    <ul>
+        <li><code>OutOfRange</code>: access denied or session invalid because of distance.</li>
+        <li><code>SessionSuspended</code>: the session exists but cannot execute normal operations.</li>
+        <li><code>OutOfRangeGrace</code>: tolerance period before suspension.</li>
+    </ul>
+
+    <h2>UI During Suspended State</h2>
+    <p>When you receive <code>OnInteractionSessionSuspended</code>:</p>
+    <ul>
+        <li>Show a <code>Session suspended</code> overlay.</li>
+        <li>Disable mutating operations.</li>
+        <li>Show the reason, for example out of range or visibility lost.</li>
+        <li>If the <code>ResumeSuspendedSession</code> capability is present, show a Resume button.</li>
+    </ul>
+
+    <h2>Upgrade And Downgrade</h2>
+    <p>A read-only player can request write lock if:</p>
+    <ul>
+        <li>The policy allows <code>bAllowWriteLockUpgrade</code>.</li>
+        <li>The <code>UpgradeToWriteLock</code> capability is granted.</li>
+        <li>No other player already owns write lock.</li>
+    </ul>
+    <p>Downgrade is useful when you want to keep viewing the chest but release the lock for other players.</p>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Two players cannot write to the same provider at the same time.</li>
+        <li>Read-only fallback works if enabled.</li>
+        <li>Range loss suspends or closes the session according to policy.</li>
+        <li>The UI clearly explains why an action is not available.</li>
+    </ul>
+</section>

@@ -1,0 +1,67 @@
+<section class="tutorial-section" id="bp-l1-09-fragments">
+    <h1>Layer 1 - Fragments And Item State</h1>
+    <p class="doc-lead">Fragments let you add modular data to items without creating a different item class for every case. In Blueprints, you will mainly use them to read ammo, durability, and condition in UI or gameplay logic.</p>
+
+    <h2>Fragment Definition</h2>
+    <p>Each <code>InventoryItemFragmentDefinition</code> contains:</p>
+    <ul>
+        <li><code>FragmentTypeTag</code>: identifies the fragment type.</li>
+        <li><code>DefaultFragmentData</code>: initial data created on each runtime item.</li>
+        <li><code>ContributedRuntimeTags</code>: tags added to the item when the fragment is present.</li>
+    </ul>
+
+    <h2>Assigning Fragments To Items</h2>
+    <p>Open <code>DA_Item_Rifle</code> and assign:</p>
+    <ul>
+        <li><code>DA_Fragment_Ammo</code></li>
+        <li><code>DA_Fragment_Durability</code></li>
+    </ul>
+    <p>Open <code>DA_Item_Medkit</code> and optionally assign <code>DA_Fragment_Condition</code> if you want to test a state.</p>
+
+    <h2>Reading Fragments In Blueprint</h2>
+    <p>From the Inventory component, you can read an item's fragments through dedicated nodes.</p>
+    <table class="data-table">
+        <thead><tr><th>Node</th><th>Use</th></tr></thead>
+        <tbody>
+            <tr><td><code>GetItemFragments</code></td><td>Returns all fragment views on the item.</td></tr>
+            <tr><td><code>GetFragmentByTag</code></td><td>Returns a specific fragment using the FragmentTypeTag.</td></tr>
+            <tr><td><code>HasFragment</code></td><td>Checks whether the item has a specific fragment.</td></tr>
+            <tr><td><code>TryGetAmmoFragment</code></td><td>Returns <code>InventoryAmmoFragmentData</code>.</td></tr>
+            <tr><td><code>TryGetDurabilityFragment</code></td><td>Returns <code>InventoryDurabilityFragmentData</code>.</td></tr>
+            <tr><td><code>TryGetConditionFragment</code></td><td>Returns <code>InventoryConditionFragmentData</code>.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Tooltip With Ammo And Durability</h2>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">WBP_ItemTooltip</span></div>
+        <pre><code>SetItemView(ItemView)
+  Inventory.TryGetAmmoFragment(ItemView.ItemHandle, OutAmmo)
+    True: Show CurrentAmmo / MaxAmmo and AmmoTypeTag
+  Inventory.TryGetDurabilityFragment(ItemView.ItemHandle, OutDurability)
+    True: Show CurrentDurability / MaxDurability
+  Inventory.TryGetConditionFragment(ItemView.ItemHandle, OutCondition)
+    True: Show ConditionTag</code></pre>
+    </div>
+
+    <h2>Runtime Tags From Fragments</h2>
+    <p>If a fragment contributes runtime tags, they appear in <code>ItemView.RuntimeTags</code>. You can use them to:</p>
+    <ul>
+        <li>Color an item in UI.</li>
+        <li>Filter items with <code>QueryItemsByTag</code>.</li>
+        <li>Allow or deny placement in specific containers.</li>
+        <li>Show states such as loaded, damaged, broken, or cursed.</li>
+    </ul>
+
+    <div class="info-box warning">
+        <div class="info-title">Modifying fragment data</div>
+        <p>The public Blueprint surface of Layer 1 exposes fragment queries and reading. If your game needs to change ammo or durability as real runtime logic, create your own gameplay layer that invokes safe operations or extend the plugin with dedicated APIs. Do not modify only the UI.</p>
+    </div>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>The rifle tooltip shows ammo and durability.</li>
+        <li>Items without fragments do not show empty sections.</li>
+        <li>Fragment runtime tags are visible in the debug UI.</li>
+    </ul>
+</section>

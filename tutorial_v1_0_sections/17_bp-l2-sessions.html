@@ -1,0 +1,79 @@
+<section class="tutorial-section" id="bp-l2-04-sessions">
+    <h1>Layer 2 - Opening And Controlling Sessions</h1>
+    <p class="doc-lead">Before manipulating an external inventory, you must open a session. In this tutorial, you wire trace, async open, close, resume, upgrade, and downgrade.</p>
+
+    <h2>Trace Toward The Provider</h2>
+    <p>In the player controller or character, create a function named <code>FindInteractionProvider</code>.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Find Provider</span></div>
+        <pre><code>Line Trace from camera
+If HitActor has InventoryExternalInventoryProviderComponent:
+  return HitActor
+Else:
+  return None</code></pre>
+    </div>
+
+    <h2>Open Interaction Session Async</h2>
+    <p>Use the async node to get clean Blueprint callbacks.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Open Chest</span></div>
+        <pre><code>Input Interact
+  ProviderActor = FindInteractionProvider
+  OpenInteractionSessionAsync
+    InteractionComponent = InventoryInteraction
+    ProviderActor = ProviderActor
+    RequestedMode = WriteExclusive
+    bAllowReadOnlyFallback = true
+    ContextTags = empty or InventoryX.Interaction.Context.PlayerExternal
+
+  OnOpened:
+    Store SessionView
+    Create WBP_InteractionRoot
+    Add To Viewport
+
+  OnRejected:
+    Print Result.ResultCode</code></pre>
+    </div>
+
+    <h2>Session View</h2>
+    <p><code>FInventoryInteractionSessionView</code> is the main source for Layer 2 UI.</p>
+    <ul>
+        <li><code>bHasActiveSession</code></li>
+        <li><code>SessionId</code> and <code>SessionEpoch</code></li>
+        <li><code>SessionState</code></li>
+        <li><code>SessionMode</code></li>
+        <li><code>LockState</code></li>
+        <li><code>CapabilitySnapshot</code></li>
+        <li><code>PrimaryEndpoint</code> and <code>SecondaryEndpoint</code></li>
+        <li><code>bPredictionActive</code> and <code>PendingOperationCount</code></li>
+    </ul>
+
+    <h2>Session Controls</h2>
+    <p>For close, resume, upgrade, and downgrade, you can use direct functions or the <code>RequestInteractionControlAsync</code> node.</p>
+    <table class="data-table">
+        <thead><tr><th>Action</th><th>Control Type</th><th>Use</th></tr></thead>
+        <tbody>
+            <tr><td>Close chest</td><td><code>CloseSession</code></td><td>When you close the UI or intentionally stop interacting.</td></tr>
+            <tr><td>Resume</td><td><code>RequestResume</code></td><td>When a suspended session becomes valid again.</td></tr>
+            <tr><td>Upgrade</td><td><code>RequestWriteLockUpgrade</code></td><td>Move from read-only to write-exclusive.</td></tr>
+            <tr><td>Downgrade</td><td><code>DowngradeToReadOnly</code></td><td>Release write lock while keeping the session open.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Events To Bind</h2>
+    <ul>
+        <li><code>OnInteractionSessionOpened</code></li>
+        <li><code>OnInteractionSessionClosed</code></li>
+        <li><code>OnInteractionSessionSuspended</code></li>
+        <li><code>OnInteractionSessionResumed</code></li>
+        <li><code>OnInteractionLockStateChanged</code></li>
+    </ul>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>Interacting with the chest opens a session.</li>
+        <li>The UI shows session state, mode, and lock.</li>
+        <li>Close session closes the UI and releases the lock.</li>
+        <li>Moving away changes the session to suspended if the policy requires it.</li>
+    </ul>
+</section>

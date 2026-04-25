@@ -1,0 +1,198 @@
+<section class="tutorial-section" id="bp-l1-03-data-assets">
+    <h1>Layer 1 - Creating The Core Data Assets</h1>
+    <p class="doc-lead">In this tutorial you create containers, slots, rules, fragments, cosmetics, and item definitions
+        from scratch. By the end, you will have the minimum assets for a backpack, equipment slots, a rifle, ammo, a
+        medkit, and a nestable backpack.</p>
+
+    <h2>How To Create A Data Asset</h2>
+    <p>In the Content Browser, use <code>Right Click &gt; Miscellaneous &gt; Data Asset</code>, then choose the correct
+        Inventory_X class. If you cannot find the classes, make sure the plugin is enabled and that you are searching
+        inside the Data Asset class picker.</p>
+
+    <h2>Containers</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Class</th>
+                <th>Recommended values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>DA_Container_PlayerBackpack</code></td>
+                <td><code>InventoryContainerDefinition</code></td>
+                <td>Type <code>InventoryX.Container.Type.PlayerBackpack</code>, Dimensions <code>8 x 6</code>, Allow
+                    Rotation <code>true</code>, Allow Nested Containers <code>true</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Container_PlayerEquipment</code></td>
+                <td><code>InventoryContainerDefinition</code></td>
+                <td>Type <code>InventoryX.Container.Type.Equipment</code>, Dimensions <code>0 x 0</code>, Slot Profiles:
+                    primary weapon and head, Allow Nested Containers <code>false</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Container_BackpackPocket</code></td>
+                <td><code>InventoryContainerDefinition</code></td>
+                <td>Type <code>InventoryX.Container.Type.PlayerBackpack</code>, Dimensions <code>4 x 4</code>, Allow
+                    Rotation <code>true</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="info-box info">
+        <div class="info-title">Grid or slot?</div>
+        <p>A container is grid-based if it has non-zero dimensions and no slot profiles. It is slot-based if it has slot
+            profiles. Do not configure both on the same container.</p>
+    </div>
+
+    <h2>Slot Profiles</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Class</th>
+                <th>Setup</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>DA_Slot_PrimaryWeapon</code></td>
+                <td><code>InventorySlotProfileDefinition</code></td>
+                <td>Slot Type Tag <code>InventoryX.Slot.Equip.PrimaryWeapon</code>. Accepted Item Query: item must match
+                    <code>InventoryX.Item.Category.Weapon.Rifle</code>. Max Items <code>1</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Slot_Head</code></td>
+                <td><code>InventorySlotProfileDefinition</code></td>
+                <td>Slot Type Tag <code>InventoryX.Slot.Equip.Head</code>. Accepted Item Query: use a helmet tag when
+                    you add a helmet. Max Items <code>1</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Rules</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Class</th>
+                <th>Setup</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>DA_RuleStack_AmmoLight</code></td>
+                <td><code>InventoryStackRuleDefinition</code></td>
+                <td>Max Stack Size <code>120</code>, Allow Split <code>true</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_RuleStack_Medkit</code></td>
+                <td><code>InventoryStackRuleDefinition</code></td>
+                <td>Max Stack Size <code>4</code>, Allow Split <code>true</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_RulePlacement_BackpackOnly</code></td>
+                <td><code>InventoryPlacementRuleDefinition</code></td>
+                <td>Required Container Query: container must match
+                    <code>InventoryX.Container.Type.PlayerBackpack</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_RuleEquip_PrimaryWeapon</code></td>
+                <td><code>InventoryEquipRuleDefinition</code></td>
+                <td>Compatible Slot Query: slot must match <code>InventoryX.Slot.Equip.PrimaryWeapon</code>. Exclusive
+                    Slot <code>true</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Fragments</h2>
+    <p>Create these assets in <code>Definitions/Fragments</code>. Each fragment has a <code>FragmentTypeTag</code> and
+        <code>DefaultFragmentData</code>.</p>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>DefaultFragmentData</th>
+                <th>Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>DA_Fragment_Ammo</code></td>
+                <td><code>InventoryAmmoFragmentData</code></td>
+                <td>Max Ammo <code>30</code>, Current Ammo <code>30</code>, Ammo Type Tag
+                    <code>InventoryX.Item.Category.Ammo.Light</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Fragment_Durability</code></td>
+                <td><code>InventoryDurabilityFragmentData</code></td>
+                <td>Max Durability <code>100</code>, Current Durability <code>100</code>.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Fragment_Condition</code></td>
+                <td><code>InventoryConditionFragmentData</code></td>
+                <td>Condition Tag of your choice, for example <code>InventoryX.State.Condition.Pristine</code> if
+                    available.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Cosmetics</h2>
+    <p>Create an <code>InventoryItemCosmetic</code> for every important item. For now, you can use icons and meshes from
+        the Third Person Template or placeholders created inside the project.</p>
+    <ul>
+        <li><code>DA_Cosmetic_Rifle</code>: Display Name <code>Rifle</code>, short description, placeholder icon.</li>
+        <li><code>DA_Cosmetic_AmmoLight</code>: Display Name <code>Light Ammo</code>.</li>
+        <li><code>DA_Cosmetic_Medkit</code>: Display Name <code>Medkit</code>.</li>
+        <li><code>DA_Cosmetic_Backpack</code>: Display Name <code>Backpack</code>.</li>
+    </ul>
+
+    <h2>Item Definitions</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Essential setup</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>DA_Item_Rifle</code></td>
+                <td>Tags <code>InventoryX.Item.Category.Weapon.Rifle</code>, Shape <code>2 x 5</code>, Supports Rotation
+                    <code>true</code>, backpack-only Placement Rule, primary weapon Equip Rule, ammo and durability
+                    fragments, rifle Cosmetic.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Item_AmmoLight</code></td>
+                <td>Tags <code>InventoryX.Item.Category.Ammo.Light</code>, Shape <code>1 x 1</code>, ammo Stack Rule,
+                    backpack-only Placement Rule, ammo Cosmetic.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Item_Medkit</code></td>
+                <td>Tags <code>InventoryX.Item.Category.Consumable.Medkit</code>, Shape <code>2 x 2</code>, medkit Stack
+                    Rule, backpack-only Placement Rule, medkit Cosmetic.</td>
+            </tr>
+            <tr>
+                <td><code>DA_Item_Backpack</code></td>
+                <td>Tags <code>InventoryX.Item.Category.Equipment.Backpack</code>, Shape <code>2 x 3</code>, Child
+                    Container Definitions: <code>DA_Container_BackpackPocket</code>, backpack Cosmetic.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="info-box tip">
+        <div class="info-title">Save your assets</div>
+        <p>Save all assets after configuring them. Some validation and automatic tags are applied on save, for example
+            the capability tag on items with child containers.</p>
+    </div>
+
+    <h2>Verification</h2>
+    <ul>
+        <li><code>DA_Container_PlayerBackpack</code> should be grid-based.</li>
+        <li><code>DA_Container_PlayerEquipment</code> should be slot-based.</li>
+        <li><code>DA_Item_Rifle</code> should be equippable.</li>
+        <li><code>DA_Item_AmmoLight</code> should be stackable.</li>
+        <li><code>DA_Item_Backpack</code> should have child containers.</li>
+    </ul>
+</section>

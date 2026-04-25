@@ -1,0 +1,88 @@
+<section class="tutorial-section" id="bp-l2-06-cross-operations">
+    <h1>Layer 2 - Operations Between Player And External Container</h1>
+    <p class="doc-lead">In this tutorial, you wire transfer, split, merge, and swap between primary and secondary endpoints using scoped handles and previews.</p>
+
+    <h2>Create Scoped Handles</h2>
+    <p>Before calling a Layer 2 operation, convert item handles and container handles into scoped handles.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Scoped Handles</span></div>
+        <pre><code>SourceScopedItem = MakeScopedItemHandle(SourceEndpointRole, SourceItemView.ItemHandle)
+SourceScopedContainer = MakeScopedContainerHandle(SourceEndpointRole, SourceItemView.ParentContainerHandle)
+TargetScopedContainer = MakeScopedContainerHandle(TargetEndpointRole, TargetContainerView.ContainerHandle)</code></pre>
+    </div>
+
+    <h2>Transfer Item</h2>
+    <p>Use transfer when moving a whole item between player and chest.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">TryTransferItem</span></div>
+        <pre><code>On Drop Item From Primary To Secondary Cell
+  SourceItem = MakeScopedItemHandle(Primary, ItemHandle)
+  SourceContainer = MakeScopedContainerHandle(Primary, ParentContainerHandle)
+  TargetContainer = MakeScopedContainerHandle(Secondary, ChestContainerHandle)
+  TargetPlacement = Make InventoryPlacementInfo(Grid, Cell X/Y, Rotation)
+
+  Preview = Interaction.PreviewTransferItem(SourceItem, SourceContainer, TargetContainer, TargetPlacement)
+  If Preview.bWouldSucceed:
+    Result = Interaction.TryTransferItem(SourceItem, SourceContainer, TargetContainer, TargetPlacement)</code></pre>
+    </div>
+
+    <h2>Deposit And Withdraw Direction</h2>
+    <table class="data-table">
+        <thead><tr><th>Direction</th><th>Source role</th><th>Target role</th><th>Capability</th></tr></thead>
+        <tbody>
+            <tr><td>Player -&gt; Chest</td><td>Primary</td><td>Secondary</td><td><code>DepositIntoExternalInventory</code></td></tr>
+            <tr><td>Chest -&gt; Player</td><td>Secondary</td><td>Primary</td><td><code>WithdrawFromExternalInventory</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Split Across Endpoints</h2>
+    <p>Use Layer 2 <code>TrySplitStack</code> when you want to transfer only part of a stack.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Cross Split</span></div>
+        <pre><code>Interaction.TrySplitStack(
+  SourceItem,
+  SourceContainer,
+  SplitQuantity,
+  TargetContainer,
+  TargetPlacement)</code></pre>
+    </div>
+
+    <h2>Merge Across Endpoints</h2>
+    <p>When dropping a player stack over a stack in the chest, try cross-endpoint merge first.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Cross Merge</span></div>
+        <pre><code>SourceItem = MakeScopedItemHandle(Primary, DraggedItemHandle)
+SourceContainer = MakeScopedContainerHandle(Primary, DraggedParentContainer)
+TargetItem = MakeScopedItemHandle(Secondary, TargetItemHandle)
+
+Preview = Interaction.PreviewMergeStack(SourceItem, SourceContainer, TargetItem)
+If Preview.bWouldSucceed:
+  Interaction.TryMergeStack(SourceItem, SourceContainer, TargetItem)</code></pre>
+    </div>
+
+    <h2>Swap Across Endpoints</h2>
+    <p>If merge is not valid, you can try a swap between player and chest.</p>
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">Cross Swap</span></div>
+        <pre><code>Interaction.TrySwapItems(SourceItem, SourceContainer, TargetItem)</code></pre>
+    </div>
+
+    <h2>Result Feedback</h2>
+    <p><code>FInventoryInteractionPreviewResult</code> and <code>FInventoryInteractionSubmitResult</code> include both the Layer 2 result and the Layer 1 results for primary and secondary. If an operation fails, show which level failed.</p>
+    <table class="data-table">
+        <thead><tr><th>Field</th><th>Use</th></tr></thead>
+        <tbody>
+            <tr><td><code>ResultCode</code></td><td>Layer 2 error: session, lock, capability, provider.</td></tr>
+            <tr><td><code>PrimaryInventoryResult</code></td><td>Error in the player inventory.</td></tr>
+            <tr><td><code>SecondaryInventoryResult</code></td><td>Error in the external inventory.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Verification</h2>
+    <ul>
+        <li>You can deposit an item from the player to the chest.</li>
+        <li>You can withdraw an item from the chest to the player.</li>
+        <li>Split stack creates only the requested quantity in the other endpoint.</li>
+        <li>Merge and swap respect rules and capabilities.</li>
+    </ul>
+</section>
